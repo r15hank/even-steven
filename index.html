@@ -1,0 +1,2414 @@
+<title>Even Steven</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout concept: a two-column ledger. Left: people, new expense, expense history.
+   Right: a sticky settlement slip (balances + who pays whom). Stacks on phones with the slip after the form. */
+:root {
+  --bg: #EDF0ED;
+  --surface: #FFFFFF;
+  --surface-2: #F4F6F4;
+  --ink: #15201C;
+  --muted: #566761;
+  --line: #D2DAD5;
+  --accent: #2347C8;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E3E9FB;
+  --pos: #1A7B49;
+  --neg: #BC3D29;
+  --warn: #8F5A00;
+  --av-s: 55%;
+  --av-l: 86%;
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --f-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body: 'Schibsted Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1412;
+    --surface: #161F1B;
+    --surface-2: #1B2621;
+    --ink: #E6EEEA;
+    --muted: #93A59D;
+    --line: #2B3A34;
+    --accent: #8EA5FF;
+    --accent-ink: #0E1412;
+    --accent-soft: #1F2A52;
+    --pos: #55CF8E;
+    --neg: #FF8F78;
+    --warn: #E8B04A;
+    --av-l: 30%;
+    --s1: #3987e5;
+    --s2: #d95926;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1412;
+  --surface: #161F1B;
+  --surface-2: #1B2621;
+  --ink: #E6EEEA;
+  --muted: #93A59D;
+  --line: #2B3A34;
+  --accent: #8EA5FF;
+  --accent-ink: #0E1412;
+  --accent-soft: #1F2A52;
+  --pos: #55CF8E;
+  --neg: #FF8F78;
+  --warn: #E8B04A;
+  --av-l: 30%;
+  --s1: #3987e5;
+  --s2: #d95926;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 15px/1.45 var(--f-body);
+  padding-block: 24px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1120px; margin: 0 auto; }
+h1, h2, h3, p, ul, dl, dd { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--f-mono); }
+.muted { color: var(--muted); }
+
+/* header + tabs */
+.top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; }
+.brand { font: 800 30px/1 var(--f-display); letter-spacing: -0.02em; }
+.tag-line { color: var(--muted); }
+.tabs { display: flex; gap: 2px; overflow-x: auto; border-bottom: 1px solid var(--line); margin-top: 18px; }
+.tab {
+  appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  padding: 10px 12px; font-weight: 500; color: var(--muted); cursor: pointer; white-space: nowrap;
+}
+.tab:hover { color: var(--ink); }
+.tab[aria-current="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tab.add { color: var(--accent); }
+
+/* inputs and buttons */
+input[type="text"], input[type="date"], textarea, select {
+  font: inherit; font-size: 16px; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 6px; padding: 9px 10px; min-height: 42px; width: 100%; min-width: 0;
+}
+textarea { resize: vertical; min-height: 62px; line-height: 1.4; }
+input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; flex: none; }
+.btn {
+  appearance: none; cursor: pointer; border: 1px solid transparent; border-radius: 6px; padding: 9px 16px; min-height: 42px;
+  font-weight: 600; background: var(--accent); color: var(--accent-ink);
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.ghost:hover { background: var(--surface-2); filter: none; }
+.btn.small { min-height: 34px; padding: 5px 12px; font-size: 14px; }
+.link { appearance: none; background: none; border: 0; padding: 0; cursor: pointer; color: var(--accent); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+.link.danger { color: var(--neg); }
+.link.armed { font-weight: 600; }
+.inline { display: flex; gap: 8px; }
+.inline input { flex: 1; }
+.fld { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; color: var(--muted); min-width: 0; }
+
+/* page grid */
+.layout {
+  display: grid; margin-top: 28px; align-items: start; column-gap: 44px; row-gap: 28px;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 390px);
+  grid-template-areas: "head slip" "form slip" "list slip";
+}
+.sec-head { grid-area: head; min-width: 0; }
+.sec-form { grid-area: form; min-width: 0; }
+.sec-list { grid-area: list; min-width: 0; }
+.sec-report { grid-area: form; min-width: 0; }
+.slip { grid-area: slip; min-width: 0; }
+.sec { border-top: 1px solid var(--line); padding-top: 18px; }
+.label { font: 600 12px/1 var(--f-body); text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 12px; }
+.sec-title { font: 700 20px/1.2 var(--f-display); margin-bottom: 14px; }
+
+/* group header */
+.ghead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-bottom: 22px; }
+.ghead h2 { font: 800 28px/1.1 var(--f-display); letter-spacing: -0.015em; overflow-wrap: anywhere; }
+.gtools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.gtools select { width: auto; min-height: 36px; padding: 5px 8px; font-size: 14px; }
+
+/* people */
+.chips { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+.chip .x { appearance: none; border: 0; background: none; cursor: pointer; color: var(--muted); font-size: 18px; line-height: 1; padding: 0 0 0 2px; }
+.chip .x:hover { color: var(--neg); }
+.av {
+  display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; flex: none;
+  font: 600 12px/1 var(--f-body); color: var(--ink); background: hsl(var(--h) var(--av-s) var(--av-l));
+}
+#mHint { font-size: 13px; color: var(--muted); margin-top: 8px; }
+#mErr { font-size: 13px; color: var(--neg); min-height: 1em; }
+
+/* expense form */
+.bare { border: 0; margin: 0; padding: 0; min-width: 0; }
+.bare:disabled { opacity: 0.5; }
+.row { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-bottom: 14px; }
+.row.amt { grid-template-columns: minmax(0, 1fr) minmax(0, 170px); }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--surface); min-height: 42px; }
+.seg button { flex: 1; appearance: none; border: 0; background: none; cursor: pointer; padding: 8px 6px; font-weight: 500; color: var(--muted); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-checked="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.people { margin-top: 2px; }
+.person { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+.person.off { opacity: 0.55; }
+.chk { display: flex; align-items: center; gap: 10px; min-width: 0; cursor: pointer; }
+.chk span { overflow-wrap: anywhere; }
+.field { display: inline-flex; align-items: center; gap: 6px; }
+.field input { width: 92px; text-align: right; font-family: var(--f-mono); min-height: 38px; padding: 6px 8px; }
+.unit { color: var(--muted); width: 1.2em; }
+.calc { min-width: 76px; text-align: right; font: 400 14px var(--f-mono); color: var(--muted); }
+.hint { font-size: 13px; margin-top: 10px; color: var(--muted); }
+.hint.ok { color: var(--pos); }
+.hint.warn { color: var(--warn); }
+.err { color: var(--neg); font-size: 14px; min-height: 1.4em; margin-top: 10px; }
+.status { color: var(--pos); font-size: 14px; min-height: 1.4em; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
+.need { padding: 12px 14px; background: var(--surface-2); border: 1px dashed var(--line); border-radius: 6px; margin-bottom: 14px; }
+
+/* expense history */
+.exps { list-style: none; padding: 0; }
+.exp { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; padding: 14px 0; border-top: 1px solid var(--line); }
+.exp .t { font-weight: 600; overflow-wrap: anywhere; }
+.exp .amt { font: 500 16px var(--f-mono); text-align: right; }
+.exp .meta { color: var(--muted); font-size: 13px; }
+.exp .acts { grid-column: 1 / -1; display: flex; gap: 16px; margin-top: 2px; }
+.exp details { grid-column: 1 / -1; }
+.exp summary { cursor: pointer; color: var(--muted); font-size: 13px; width: max-content; }
+.shares { display: flex; flex-wrap: wrap; gap: 6px 18px; list-style: none; padding: 8px 0 0; font-size: 13px; }
+.shares .mono { color: var(--muted); margin-left: 6px; }
+.chip-tag { font: 500 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; margin-left: 8px; color: var(--muted); vertical-align: middle; white-space: nowrap; }
+.chip-tag.pay { color: var(--pos); border-color: var(--pos); }
+.empty { color: var(--muted); padding: 14px 0; border-top: 1px solid var(--line); }
+
+/* settlement slip */
+.slip { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--ink); padding: 20px 20px 22px; }
+.slip h2 { font: 800 24px/1.1 var(--f-display); letter-spacing: -0.01em; margin-bottom: 14px; }
+.sw { display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 12px; cursor: pointer; margin-bottom: 18px; }
+.sw b { display: block; font-weight: 600; }
+.sw small { color: var(--muted); font-size: 13px; line-height: 1.35; display: block; margin-top: 2px; }
+.track { flex: none; width: 40px; height: 24px; border-radius: 999px; background: var(--line); position: relative; margin-top: 1px; transition: background 0.15s; }
+.track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--surface); transition: left 0.15s; }
+.sw[aria-checked="true"] .track { background: var(--accent); }
+.sw[aria-checked="true"] .track::after { left: 19px; }
+.spent { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 14px; margin-bottom: 18px; border-bottom: 1px solid var(--line); }
+.spent .mono { font-size: 20px; font-weight: 500; }
+.bals { list-style: none; padding: 0; display: grid; gap: 14px; margin-bottom: 24px; }
+.bal { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; align-items: center; }
+.who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.who span:last-child { overflow-wrap: anywhere; }
+.who small { display: block; color: var(--muted); font-size: 12px; line-height: 1.2; }
+.bal .num { font: 500 15px var(--f-mono); }
+.bal.pos .num { color: var(--pos); }
+.bal.neg .num { color: var(--neg); }
+.bar { grid-column: 1 / -1; height: 6px; position: relative; background: var(--surface-2); border-radius: 3px; }
+.bar::before { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--line); }
+.bar i { position: absolute; top: 0; bottom: 0; border-radius: 3px; }
+.bal.pos .bar i { left: 50%; background: var(--pos); }
+.bal.neg .bar i { right: 50%; background: var(--neg); }
+.pay-note { font-size: 13px; color: var(--muted); margin: -4px 0 8px; }
+.pays { list-style: none; padding: 0; }
+.pay { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; padding: 12px 0; border-top: 1px dashed var(--line); }
+.pay .line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; }
+.pay .arrow { color: var(--muted); }
+.pay .num { font: 500 16px var(--f-mono); }
+.pay .paybtns { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+.done { color: var(--pos); font-weight: 600; padding: 12px 0; border-top: 1px dashed var(--line); }
+
+.welcome { max-width: 520px; margin-top: 40px; display: grid; gap: 14px; }
+.welcome h2 { font: 800 26px/1.15 var(--f-display); }
+.welcome .actions { margin-top: 4px; }
+#ngForm { margin-top: 14px; max-width: 460px; }
+#storeNote { margin-top: 28px; font-size: 13px; color: var(--warn); }
+
+
+/* view tabs + report */
+.viewtabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin-top: 24px; }
+.sec-form, .sec-report { border-top: 0; padding-top: 0; }
+.rhead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px 20px; }
+.rhead .sec-title { margin-bottom: 4px; }
+.rhead p { overflow-wrap: anywhere; }
+.dl { display: flex; flex-wrap: wrap; gap: 10px; }
+#dlStatus { min-height: 1.4em; font-size: 14px; color: var(--muted); margin-top: 10px; }
+#dlStatus.ok { color: var(--pos); }
+#dlStatus.err { color: var(--neg); }
+.fine { font-size: 13px; color: var(--muted); margin-top: 8px; }
+.rsec { margin-top: 30px; min-width: 0; }
+.label.sub { margin-top: 24px; }
+.kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px 24px; }
+.kv > div { min-width: 0; }
+.kv dt { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.kv dd { font: 500 17px var(--f-mono); margin-top: 3px; overflow-wrap: anywhere; }
+.tablewrap { overflow-x: auto; margin-top: 18px; border-top: 1px solid var(--line); }
+.tbl { border-collapse: collapse; width: 100%; font-size: 14px; }
+.tbl th, .tbl td { padding: 9px 14px 9px 0; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: top; }
+.tbl th { font: 600 12px var(--f-body); text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+.tbl .n { text-align: right; font-family: var(--f-mono); }
+.tbl td.wrap { white-space: normal; min-width: 240px; }
+.tbl tfoot td { font-weight: 600; border-bottom: 0; }
+.tbl tr.pay-row td { color: var(--muted); }
+.pos-t, .ok-t { color: var(--pos); }
+.neg-t { color: var(--neg); }
+.plan { list-style: none; padding: 0; }
+.plan li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px dashed var(--line); }
+.plan .arrow { color: var(--muted); margin: 0 6px; }
+.insights { list-style: none; padding: 0; }
+.insights li { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 4px 16px; padding: 10px 0; border-top: 1px solid var(--line); }
+.insights b { font-weight: 600; }
+.insights span { overflow-wrap: anywhere; }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 26px; }
+.chart { min-width: 0; }
+.chart h5 { font: 600 14px var(--f-body); margin: 0 0 2px; }
+.chart .sub { font-size: 13px; color: var(--muted); margin: 0 0 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.hb { display: grid; gap: 14px; }
+.hb-row { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 10px; align-items: center; }
+.hb-name { font-size: 13px; overflow-wrap: anywhere; }
+.hb-bars { display: grid; gap: 2px; min-width: 0; }
+.bar-line { display: grid; grid-template-columns: minmax(0, 1fr) 76px; gap: 8px; align-items: center; }
+.bw { display: block; min-width: 0; }
+.bw i { display: block; height: 14px; border-radius: 0 4px 4px 0; }
+.bv { font: 400 12px var(--f-mono); color: var(--muted); text-align: right; }
+.cols { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+.col { flex: 1 0 36px; min-width: 36px; display: flex; flex-direction: column; align-items: center; }
+.col-plot { height: 150px; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; border-bottom: 1px solid var(--line); }
+.col-plot i { display: block; width: 100%; max-width: 24px; border-radius: 4px 4px 0 0; background: var(--s1); }
+.cap { font: 400 11px var(--f-mono); color: var(--muted); margin-bottom: 4px; white-space: nowrap; }
+.col-lab { font-size: 11px; color: var(--muted); margin-top: 6px; text-align: center; }
+.tipc:hover, .tipc:focus-visible { filter: brightness(1.15); }
+#tip { position: fixed; z-index: 20; pointer-events: none; display: none; background: var(--ink); color: var(--bg); font-size: 13px; padding: 6px 10px; border-radius: 6px; max-width: 260px; }
+.checks { margin-top: 14px; font-size: 14px; }
+.checks.ok { color: var(--pos); }
+.checks.bad { color: var(--neg); }
+
+/* notes, payments, save and load */
+.notes { color: var(--muted); font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 3px; }
+.paybox { margin-top: 26px; border-top: 1px solid var(--line); padding-top: 16px; }
+.paybox > summary { cursor: pointer; font: 700 18px/1.2 var(--f-display); }
+.paybox form { margin-top: 14px; }
+.paybox .fine { margin: 0 0 14px; }
+.iobar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; margin-top: 10px; min-height: 28px; }
+.iobar label.link { cursor: pointer; }
+.iobar label.link:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+#ioStatus { font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+#ioStatus.ok { color: var(--pos); }
+#ioStatus.err { color: var(--neg); }
+.loadpanel { border: 1px solid var(--line); background: var(--surface); padding: 14px 16px; margin-top: 12px; max-width: 560px; }
+.loadpanel p { margin-bottom: 12px; overflow-wrap: anywhere; }
+.loadpanel .actions { margin-top: 0; }
+.stack { margin-bottom: 14px; }
+@media (max-width: 560px) { .insights li { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 880px) {
+  .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "form" "slip" "list"; }
+  .slip { position: static; max-height: none; overflow: visible; }
+}
+@media (max-width: 460px) {
+  .row.amt { grid-template-columns: minmax(0, 1fr) minmax(0, 120px); }
+  .person { grid-template-columns: minmax(0, 1fr) auto; }
+  .person:has(.field) .calc { grid-column: 1 / -1; text-align: left; min-width: 0; }
+  .person .calc:empty { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .track, .track::after { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1 class="brand">Even Steven</h1>
+    <p class="tag-line">Split costs with your group, then settle with fewer payments.</p>
+  </header>
+  <nav id="tabs" class="tabs" aria-label="Groups"></nav>
+  <div class="iobar">
+    <label class="link" for="loadFile">Load group from file<input class="vh" type="file" id="loadFile" accept=".json,application/json"></label>
+    <span id="ioStatus" role="status"></span>
+  </div>
+  <div id="loadPanel" class="loadpanel" hidden></div>
+  <form id="ngForm" class="inline" hidden autocomplete="off">
+    <input id="ngName" type="text" maxlength="40" placeholder="Group name, like Ski weekend" aria-label="New group name">
+    <button class="btn" type="submit">Create</button>
+    <button class="btn ghost" type="button" id="ngCancel">Cancel</button>
+  </form>
+
+  <section id="welcome" class="welcome" hidden>
+    <h2>No groups yet</h2>
+    <p class="muted">Create a group, add the people in it, then log each expense with who paid and how it splits. Balances and payments appear beside it.</p>
+    <div class="actions"><button type="button" class="btn ghost" id="loadExample">Load an example group</button></div>
+  </section>
+
+  <div id="layout" class="layout" hidden>
+    <section class="sec-head">
+      <div class="ghead">
+        <h2 id="gName"></h2>
+        <div class="gtools">
+          <label class="fld" style="flex-direction:row;align-items:center;gap:8px">Currency
+            <select id="gCur" aria-label="Currency">
+              <option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option>
+              <option value="INR">INR ₹</option><option value="CAD">CAD $</option><option value="AUD">AUD $</option>
+            </select>
+          </label>
+          <button type="button" class="link" id="saveGroup">Save group file</button>
+          <button type="button" class="link danger" id="gDel">Delete group</button>
+        </div>
+      </div>
+      <h3 class="label">People</h3>
+      <ul id="chips" class="chips"></ul>
+      <form id="mForm" class="inline" autocomplete="off">
+        <input id="mName" type="text" maxlength="30" placeholder="Add a person" aria-label="Name of person to add">
+        <button class="btn" type="submit">Add</button>
+      </form>
+      <p id="mErr" role="alert"></p>
+      <p id="mHint"></p>
+      <div class="viewtabs" id="viewTabs">
+        <button type="button" class="tab" data-view="ledger" aria-current="true">Expenses</button>
+        <button type="button" class="tab" data-view="report">Report</button>
+      </div>
+    </section>
+
+    <section class="sec sec-form" id="secForm">
+      <h3 class="sec-title" id="fTitle">Add an expense</h3>
+      <p id="fNeed" class="need" hidden>Add at least two people above, then log expenses here.</p>
+      <form id="expForm" novalidate autocomplete="off">
+        <fieldset class="bare" id="fSet">
+          <div class="row amt">
+            <label class="fld" for="fDesc">What was it for
+              <input id="fDesc" type="text" maxlength="60" placeholder="Dinner, gas, tickets">
+            </label>
+            <label class="fld" for="fAmt">Total
+              <input id="fAmt" type="text" inputmode="decimal" placeholder="0.00" style="font-family:var(--f-mono)">
+            </label>
+          </div>
+          <div class="row">
+            <label class="fld" for="fDate">Date
+              <input id="fDate" type="date">
+            </label>
+            <label class="fld" for="fPayer">Paid by
+              <select id="fPayer"></select>
+            </label>
+          </div>
+          <div class="fld stack">Split
+            <div class="seg" id="fType" role="radiogroup" aria-label="How to split">
+              <button type="button" role="radio" data-type="equal" aria-checked="true">Equally</button>
+              <button type="button" role="radio" data-type="percent" aria-checked="false">By %</button>
+              <button type="button" role="radio" data-type="exact" aria-checked="false">Exact</button>
+            </div>
+          </div>
+          <div class="fld">Split between</div>
+          <div id="fPeople" class="people"></div>
+          <p id="fHint" class="hint"></p>
+          <label class="fld" for="fNotes" style="margin-top:16px">Notes (optional)
+            <textarea id="fNotes" rows="2" maxlength="400" placeholder="Anything worth remembering, like a booking reference or who ordered what"></textarea>
+          </label>
+          <p id="fError" class="err" role="alert"></p>
+          <div class="actions">
+            <button class="btn" type="submit" id="fSubmit">Add expense</button>
+            <button class="btn ghost" type="button" id="fCancel" hidden>Cancel</button>
+            <span id="fStatus" class="status" role="status"></span>
+          </div>
+        </fieldset>
+      </form>
+      <details class="paybox" id="payBox">
+        <summary id="pTitle">Record a payment</summary>
+        <form id="payForm" novalidate autocomplete="off">
+          <p class="fine">Payments count against what someone owes. Enter the full amount or only part of it.</p>
+          <div class="row">
+            <label class="fld" for="pFrom">Who paid
+              <select id="pFrom"></select>
+            </label>
+            <label class="fld" for="pTo">Paid to
+              <select id="pTo"></select>
+            </label>
+          </div>
+          <div class="row">
+            <label class="fld" for="pAmt">Amount
+              <input id="pAmt" type="text" inputmode="decimal" placeholder="0.00" style="font-family:var(--f-mono)">
+            </label>
+            <label class="fld" for="pDate">Date
+              <input id="pDate" type="date">
+            </label>
+          </div>
+          <label class="fld" for="pNotes">Notes (optional)
+            <textarea id="pNotes" rows="2" maxlength="400" placeholder="Bank transfer, cash, reference number"></textarea>
+          </label>
+          <p id="pHint" class="hint"></p>
+          <p id="pError" class="err" role="alert"></p>
+          <div class="actions">
+            <button class="btn" type="submit" id="pSubmit">Save payment</button>
+            <button class="btn ghost" type="button" id="pCancel" hidden>Cancel</button>
+            <button class="link" type="button" id="pUse" hidden>Use suggested amount</button>
+            <span id="pStatus" class="status" role="status"></span>
+          </div>
+        </form>
+      </details>
+    </section>
+
+    <section class="sec sec-list" id="secList">
+      <h3 class="label" id="listLabel">Expenses</h3>
+      <ul id="expList" class="exps"></ul>
+    </section>
+
+    <section class="sec sec-report" id="secReport" hidden>
+      <div class="rhead">
+        <div>
+          <h3 class="sec-title" id="rTitle">Expense report</h3>
+          <p class="muted" id="rSub"></p>
+        </div>
+        <div class="dl">
+          <button class="btn" id="dlXlsx" type="button" disabled>Download Excel</button>
+          <button class="btn ghost" id="dlPdf" type="button" disabled>Download PDF</button>
+          <button class="btn ghost" id="dlCsv" type="button" disabled>Download CSV</button>
+        </div>
+      </div>
+      <p id="dlStatus" role="status"></p>
+      <p class="fine">The PDF has the summary, insights and the full audit table. The Excel file has three sheets: Summary, Insights and Expense details. The CSV is the expense details table.</p>
+      <div id="reportBody"></div>
+    </section>
+
+    <aside class="slip" aria-label="Who owes what">
+      <h2>Who owes what</h2>
+      <button type="button" class="sw" id="smartSw" role="switch" aria-checked="false">
+        <span class="track" aria-hidden="true"></span>
+        <span><b>Smart split</b><small>Combine debts across the whole group so fewer payments settle everyone.</small></span>
+      </button>
+      <div id="slipBody"></div>
+    </aside>
+  </div>
+
+  <div id="tip" role="tooltip"></div>
+  <p id="storeNote" hidden>This browser is not saving data, so changes will be lost when you close the page.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function () {
+  'use strict';
+/* ---- core: money, splitting, settlement (pure functions, integer cents) ---- */
+
+// "12.5" -> 1250. Returns NaN when the text is not a valid amount with at most 2 decimals.
+function parseCents(str) {
+  const s = String(str == null ? '' : str).trim().replace(/[,\s]/g, '');
+  if (!/^(\d+(\.\d{0,2})?|\.\d{1,2})$/.test(s)) return NaN;
+  const parts = s.split('.');
+  const whole = parseInt(parts[0] || '0', 10);
+  const frac = parseInt(((parts[1] || '') + '00').slice(0, 2), 10);
+  return whole * 100 + frac;
+}
+
+// "33.33" -> 3333 (hundredths of a percent). NaN when invalid.
+function parseBps(str) {
+  const s = String(str == null ? '' : str).trim();
+  if (!/^(\d+(\.\d{1,2})?|\.\d{1,2})$/.test(s)) return NaN;
+  const parts = s.split('.');
+  return parseInt(parts[0] || '0', 10) * 100 + parseInt(((parts[1] || '') + '00').slice(0, 2), 10);
+}
+
+// Split `total` cents across ids in proportion to integer weights.
+// Largest-remainder method, so the shares always add up to exactly `total`.
+function allocate(total, ids, weights, denom) {
+  const base = [];
+  const frac = [];
+  let used = 0;
+  ids.forEach(function (id, i) {
+    const num = total * weights[i];
+    const f = Math.floor(num / denom);
+    base.push(f);
+    frac.push(num - f * denom);
+    used += f;
+  });
+  const rem = total - used;
+  const order = ids.map(function (_, i) { return i; }).sort(function (a, b) { return frac[b] - frac[a] || a - b; });
+  for (let k = 0; k < rem; k++) base[order[k % order.length]]++;
+  const out = {};
+  ids.forEach(function (id, i) { out[id] = base[i]; });
+  return out;
+}
+
+// Turn a split description into per-person cents.
+// type: 'equal' | 'percent' | 'exact'; values: {id: text typed by the user}
+function buildShares(type, total, ids, values) {
+  if (!ids.length) return { code: 'no_people' };
+  if (!(total > 0)) return { code: 'no_total' };
+  if (type === 'equal') {
+    return { shares: allocate(total, ids, ids.map(function () { return 1; }), ids.length) };
+  }
+  if (type === 'percent') {
+    const bps = ids.map(function (id) { return parseBps(values[id]); });
+    if (bps.some(Number.isNaN)) return { code: 'pct_missing' };
+    const sum = bps.reduce(function (a, b) { return a + b; }, 0);
+    if (sum !== 10000) return { code: 'pct_sum', diff: 10000 - sum };
+    return { shares: allocate(total, ids, bps, 10000) };
+  }
+  if (type === 'exact') {
+    const cs = ids.map(function (id) { return parseCents(values[id]); });
+    if (cs.some(Number.isNaN)) return { code: 'amt_missing' };
+    const sum = cs.reduce(function (a, b) { return a + b; }, 0);
+    if (sum !== total) return { code: 'amt_sum', diff: total - sum };
+    const out = {};
+    ids.forEach(function (id, i) { out[id] = cs[i]; });
+    return { shares: out };
+  }
+  return { code: 'bad_type' };
+}
+
+// Net position per person: positive = is owed money, negative = owes money.
+function netBalances(members, expenses) {
+  const net = {};
+  members.forEach(function (m) { net[m.id] = 0; });
+  expenses.forEach(function (e) {
+    net[e.payer] = (net[e.payer] || 0) + e.amount;
+    Object.keys(e.shares).forEach(function (id) { net[id] = (net[id] || 0) - e.shares[id]; });
+  });
+  return net;
+}
+
+// Who owes whom, person to person, with opposite debts between the same two people netted off.
+function directDebts(expenses) {
+  const owe = {};
+  expenses.forEach(function (e) {
+    Object.keys(e.shares).forEach(function (id) {
+      if (id === e.payer) return;
+      const k = id + '|' + e.payer;
+      owe[k] = (owe[k] || 0) + e.shares[id];
+    });
+  });
+  const out = [];
+  const seen = {};
+  Object.keys(owe).forEach(function (k) {
+    const parts = k.split('|');
+    const rk = parts[1] + '|' + parts[0];
+    if (seen[k] || seen[rk]) return;
+    seen[k] = seen[rk] = true;
+    const d = (owe[k] || 0) - (owe[rk] || 0);
+    if (d > 0) out.push({ from: parts[0], to: parts[1], amount: d });
+    else if (d < 0) out.push({ from: parts[1], to: parts[0], amount: -d });
+  });
+  return out.sort(function (a, b) { return b.amount - a.amount; });
+}
+
+// Smart split: settle everyone using as few payments as practical, from net balances alone.
+// Chains collapse (A owes B and B owes C the same amount -> A owes C), and uneven
+// amounts are matched largest-to-largest so nobody pays more than they owe overall.
+function simplify(net) {
+  const cr = [];
+  const dr = [];
+  Object.keys(net).forEach(function (id) {
+    if (net[id] > 0) cr.push({ id: id, v: net[id] });
+    else if (net[id] < 0) dr.push({ id: id, v: -net[id] });
+  });
+  const out = [];
+  // Pairs whose amounts match exactly settle in one payment and leave the pool.
+  for (let i = dr.length - 1; i >= 0; i--) {
+    const j = cr.findIndex(function (c) { return c.v === dr[i].v; });
+    if (j >= 0) {
+      out.push({ from: dr[i].id, to: cr[j].id, amount: dr[i].v });
+      dr.splice(i, 1);
+      cr.splice(j, 1);
+    }
+  }
+  while (cr.length && dr.length) {
+    cr.sort(function (a, b) { return b.v - a.v; });
+    dr.sort(function (a, b) { return b.v - a.v; });
+    const c = cr[0];
+    const d = dr[0];
+    const m = Math.min(c.v, d.v);
+    out.push({ from: d.id, to: c.id, amount: m });
+    c.v -= m;
+    d.v -= m;
+    if (c.v === 0) cr.shift();
+    if (d.v === 0) dr.shift();
+  }
+  return out.sort(function (a, b) { return b.amount - a.amount; });
+}
+
+
+/* ---- report: summary, insights, audit rows (pure) ---- */
+function pad2(n) { return (n < 10 ? '0' : '') + n; }
+function dateKey(ts) { const d = new Date(ts); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function stampText(ts) { const d = new Date(ts); return dateKey(ts) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
+function dateOf(e) { return e.date || dateKey(e.ts); }
+function pctText(str) {
+  const b = parseBps(str);
+  return Number.isNaN(b) ? String(str) : (b / 100).toFixed(2).replace(/\.?0+$/, '');
+}
+function sumOf(list, f) { return list.reduce(function (a, x) { return a + f(x); }, 0); }
+
+// fmt(cents) -> text, shortDate(ts) -> text. Everything money-shaped stays in integer cents.
+function buildReport(g, fmt, shortDate, now) {
+  const members = g.members;
+  const names = {};
+  members.forEach(function (m) { names[m.id] = m.name; });
+  const nm = function (id) { return names[id] || 'Someone'; };
+  const entries = g.expenses.map(function (e, i) { return { e: e, i: i }; })
+    .sort(function (a, b) { const da = dateOf(a.e), db = dateOf(b.e); return da < db ? -1 : da > db ? 1 : (a.e.ts - b.e.ts || a.i - b.i); })
+    .map(function (x) { return x.e; });
+  const spend = entries.filter(function (e) { return !e.payment; });
+  const pays = entries.filter(function (e) { return e.payment; });
+  const spent = sumOf(spend, function (e) { return e.amount; });
+  const net = netBalances(members, g.expenses);
+  const direct = directDebts(g.expenses);
+  const smart = simplify(net);
+
+  const people = members.map(function (m) {
+    const paid = sumOf(spend.filter(function (e) { return e.payer === m.id; }), function (e) { return e.amount; });
+    const share = sumOf(spend, function (e) { return e.shares[m.id] || 0; });
+    const sent = sumOf(pays.filter(function (e) { return e.payer === m.id; }), function (e) { return e.amount; });
+    const received = sumOf(pays, function (e) { return e.shares[m.id] || 0; });
+    const n = paid - share + sent - received;
+    return { id: m.id, name: m.name, paid: paid, share: share, sent: sent, received: received, net: n,
+      status: n > 0 ? 'Gets back' : n < 0 ? 'Owes' : 'Settled up' };
+  });
+
+  const dayMap = {};
+  const days = [];
+  spend.forEach(function (e) {
+    const k = dateOf(e);
+    if (!dayMap[k]) { dayMap[k] = { key: k, label: shortDate(k), amount: 0, count: 0 }; days.push(dayMap[k]); }
+    dayMap[k].amount += e.amount;
+    dayMap[k].count += 1;
+  });
+  const mix = { equal: 0, percent: 0, exact: 0 };
+  spend.forEach(function (e) { mix[e.type] = (mix[e.type] || 0) + 1; });
+
+  const plural = function (n, one, many) { return n + ' ' + (n === 1 ? one : many); };
+  const insights = [];
+  if (spend.length) {
+    const avgPer = people.length ? Math.round(spent / people.length) : 0;
+    insights.push({ label: 'Average expense', text: fmt(Math.round(spent / spend.length)) + ' per expense across ' + plural(spend.length, 'expense', 'expenses') + (people.length ? ', about ' + fmt(avgPer) + ' per person.' : '.') });
+    const big = spend.reduce(function (a, b) { return b.amount > a.amount ? b : a; });
+    insights.push({ label: 'Biggest expense', text: big.desc + ', ' + fmt(big.amount) + ', paid by ' + nm(big.payer) + ' on ' + shortDate(dateOf(big)) + '.' });
+    const top = people.reduce(function (a, b) { return b.paid > a.paid ? b : a; }, people[0]);
+    if (top && top.paid > 0 && spent > 0) {
+      insights.push({ label: 'Paid the most', text: top.name + ' fronted ' + fmt(top.paid) + ', which is ' + Math.round(top.paid * 100 / spent) + '% of everything spent.' });
+    }
+    if (people.length > 1) {
+      const hi = people.reduce(function (a, b) { return b.share > a.share ? b : a; });
+      const lo = people.reduce(function (a, b) { return b.share < a.share ? b : a; });
+      if (hi.share > lo.share) insights.push({ label: 'Share of costs', text: hi.name + ' has the largest share at ' + fmt(hi.share) + ' and ' + lo.name + ' the smallest at ' + fmt(lo.share) + '.' });
+    }
+    if (days.length > 1) {
+      const bd = days.reduce(function (a, b) { return b.amount > a.amount ? b : a; });
+      insights.push({ label: 'Busiest day', text: bd.label + ' had the most spending at ' + fmt(bd.amount) + ' across ' + plural(bd.count, 'expense', 'expenses') + '.' });
+    }
+    const parts = [];
+    if (mix.equal) parts.push(mix.equal + ' equal');
+    if (mix.percent) parts.push(mix.percent + ' by percentage');
+    if (mix.exact) parts.push(mix.exact + ' by exact amount');
+    insights.push({ label: 'How costs were split', text: parts.join(', ') + '.' });
+  }
+  const owes = people.filter(function (p) { return p.net < 0; }).sort(function (a, b) { return a.net - b.net; })[0];
+  const owed = people.filter(function (p) { return p.net > 0; }).sort(function (a, b) { return b.net - a.net; })[0];
+  if (owes) insights.push({ label: 'Owes the most', text: owes.name + ' owes ' + fmt(-owes.net) + ' overall.' });
+  if (owed) insights.push({ label: 'Owed the most', text: owed.name + ' is owed ' + fmt(owed.net) + ' overall.' });
+  const outstanding = sumOf(people.filter(function (p) { return p.net > 0; }), function (p) { return p.net; });
+  if (spend.length) {
+    insights.push({ label: 'Still outstanding', text: outstanding > 0 ? fmt(outstanding) + ' still needs to change hands to settle up.' : 'Everyone is settled up.' });
+  }
+  if (smart.length) {
+    insights.push({ label: 'Smart split', text: direct.length > smart.length
+      ? 'Everyone settles up in ' + plural(smart.length, 'payment', 'payments') + ' instead of ' + direct.length + ' direct ones.'
+      : plural(smart.length, 'payment settles', 'payments settle') + ' everyone, with or without smart split.' });
+  }
+  if (pays.length) {
+    insights.push({ label: 'Payments recorded', text: plural(pays.length, 'payment', 'payments') + ' totaling ' + fmt(sumOf(pays, function (e) { return e.amount; })) + ' already marked as paid.' });
+  }
+
+  const audit = entries.map(function (e, i) {
+    const ids = Object.keys(e.shares);
+    const total = sumOf(ids, function (id) { return e.shares[id]; });
+    let method, desc, detail;
+    if (e.payment) {
+      method = 'Payment';
+      desc = 'Payment: ' + nm(e.payer) + ' to ' + nm(ids[0]);
+      detail = nm(e.payer) + ' paid ' + nm(ids[0]);
+    } else if (e.type === 'percent') {
+      method = 'Percent'; desc = e.desc;
+      detail = ids.map(function (id) { return nm(id) + ' ' + pctText(e.values[id]) + '%'; }).join(', ');
+    } else if (e.type === 'exact') {
+      method = 'Exact'; desc = e.desc;
+      detail = ids.map(function (id) { return nm(id) + ' ' + fmt(e.shares[id]); }).join(', ');
+    } else {
+      method = 'Equal'; desc = e.desc;
+      detail = 'Between ' + ids.length + ': ' + ids.map(nm).join(', ');
+    }
+    return { n: i + 1, date: dateOf(e), shortDate: shortDate(dateOf(e)), notes: e.notes || '', entered: stampText(e.ts), kind: e.payment ? 'Payment' : 'Expense',
+      desc: desc, payer: nm(e.payer), total: e.amount, method: method, detail: detail, count: ids.length, shares: e.shares, sharesTotal: total, diff: total - e.amount };
+  });
+
+  const netSum = sumOf(Object.keys(net), function (k) { return net[k]; });
+  return {
+    group: { name: g.name, currency: g.currency, smart: !!g.smart },
+    generated: stampText(now || Date.now()),
+    members: members.map(function (m) { return { id: m.id, name: m.name }; }),
+    totals: {
+      spent: spent, expenseCount: spend.length, paymentCount: pays.length, paymentTotal: sumOf(pays, function (e) { return e.amount; }),
+      people: members.length, avgExpense: spend.length ? Math.round(spent / spend.length) : 0,
+      avgPerPerson: members.length ? Math.round(spent / members.length) : 0,
+      first: spend.length ? shortDate(dateOf(spend[0])) : '', last: spend.length ? shortDate(dateOf(spend[spend.length - 1])) : '',
+      outstanding: outstanding
+    },
+    people: people, days: days, mix: mix, insights: insights, audit: audit,
+    plans: { direct: direct, smart: smart },
+    checks: {
+      sharesMatch: audit.every(function (r) { return r.diff === 0; }),
+      balancesZero: netSum === 0,
+      netsMatch: people.every(function (p) { return p.net === net[p.id]; })
+    }
+  };
+}
+
+// Rows for the Excel workbook and CSV. Money cells are {money: cents}; everything else is text, a count, or null.
+function reportSheets(rep) {
+  const M = function (c) { return { money: c }; };
+  const t = rep.totals;
+  const nm = {};
+  rep.members.forEach(function (m) { nm[m.id] = m.name; });
+  const planRows = function (list) { return list.map(function (d) { return [nm[d.from], nm[d.to], M(d.amount)]; }); };
+
+  const summary = [
+    [rep.group.name],
+    ['Expense report', 'Generated ' + rep.generated],
+    [],
+    ['Currency', rep.group.currency],
+    ['Total spent', M(t.spent)],
+    ['Expenses', t.expenseCount],
+    ['Payments recorded', t.paymentCount, M(t.paymentTotal)],
+    ['People', t.people],
+    ['Average expense', M(t.avgExpense)],
+    ['Average per person', M(t.avgPerPerson)],
+    ['Period', t.first ? (t.first === t.last ? t.first : t.first + ' to ' + t.last) : 'No expenses yet'],
+    ['Smart split', rep.group.smart ? 'On' : 'Off'],
+    [],
+    ['Balances by person'],
+    ['Person', 'Paid', 'Share', 'Payments sent', 'Payments received', 'Net balance', 'Status']
+  ];
+  rep.people.forEach(function (p) {
+    summary.push([p.name, M(p.paid), M(p.share), M(p.sent), M(p.received), M(p.net), p.status]);
+  });
+  summary.push(['Total', M(sumOf(rep.people, function (p) { return p.paid; })), M(sumOf(rep.people, function (p) { return p.share; })),
+    M(sumOf(rep.people, function (p) { return p.sent; })), M(sumOf(rep.people, function (p) { return p.received; })),
+    M(sumOf(rep.people, function (p) { return p.net; })), '']);
+  summary.push([]);
+  summary.push(['Positive net balance means the person is owed money. Negative means they owe money.']);
+  summary.push([]);
+  summary.push(['Settle-up plan with smart split (' + rep.plans.smart.length + (rep.plans.smart.length === 1 ? ' payment)' : ' payments)')]);
+  summary.push(['From', 'To', 'Amount']);
+  if (rep.plans.smart.length) planRows(rep.plans.smart).forEach(function (r) { summary.push(r); }); else summary.push(['Everyone is settled up.']);
+  summary.push([]);
+  summary.push(['Direct debts between pairs (' + rep.plans.direct.length + (rep.plans.direct.length === 1 ? ' payment)' : ' payments)')]);
+  summary.push(['From', 'To', 'Amount']);
+  if (rep.plans.direct.length) planRows(rep.plans.direct).forEach(function (r) { summary.push(r); }); else summary.push(['Everyone is settled up.']);
+  summary.push([]);
+  summary.push(['Checks']);
+  summary.push(['Every expense\'s shares add up to its total', rep.checks.sharesMatch ? 'Yes' : 'No']);
+  summary.push(['Balances add up to zero', rep.checks.balancesZero ? 'Yes' : 'No']);
+
+  const insights = [['Insight', 'Detail']];
+  rep.insights.forEach(function (i) { insights.push([i.label, i.text]); });
+  if (!rep.insights.length) insights.push(['No insights yet', 'Add an expense to see insights.']);
+  insights.push([]);
+  insights.push(['Spending by day']);
+  insights.push(['Date', 'Spent', 'Expenses']);
+  rep.days.forEach(function (d) { insights.push([d.key, M(d.amount), d.count]); });
+  if (!rep.days.length) insights.push(['No expenses yet']);
+
+  const head = ['#', 'Date', 'Entered at', 'Type', 'Description', 'Notes', 'Paid by', 'Total', 'Split method', 'Split detail']
+    .concat(rep.members.map(function (m) { return m.name + ' share'; })).concat(['Shares total', 'Difference']);
+  const details = [head];
+  rep.audit.forEach(function (r) {
+    details.push([r.n, r.date, r.entered, r.kind, r.desc, r.notes, r.payer, M(r.total), r.method, r.detail]
+      .concat(rep.members.map(function (m) { return r.shares[m.id] != null ? M(r.shares[m.id]) : null; }))
+      .concat([M(r.sharesTotal), M(r.diff)]));
+  });
+  const ex = rep.audit.filter(function (r) { return r.kind === 'Expense'; });
+  details.push(['', '', '', 'Expense totals', '', '', '', M(sumOf(ex, function (r) { return r.total; })), '', '']
+    .concat(rep.members.map(function (m) { return M(sumOf(ex, function (r) { return r.shares[m.id] || 0; })); }))
+    .concat([M(sumOf(ex, function (r) { return r.sharesTotal; })), M(sumOf(ex, function (r) { return r.diff; }))]));
+  return { summary: summary, insights: insights, details: details };
+}
+
+// CSV text. Cells that start like a formula get a leading apostrophe so spreadsheets keep them as text.
+function toCsv(rows) {
+  return rows.map(function (row) {
+    return row.map(function (c) {
+      if (c == null) return '';
+      let s = typeof c === 'object' && c.money != null ? (c.money / 100).toFixed(2) : String(c);
+      if (typeof c === 'string' && /^[=+\-@\t]/.test(s)) s = "'" + s;
+      return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }).join(',');
+  }).join('\r\n');
+}
+
+
+/* ---- loading a saved group (validate everything, remap every id) ---- */
+function validDateStr(s) {
+  if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const p = s.split('-').map(Number);
+  const d = new Date(p[0], p[1] - 1, p[2]);
+  return d.getFullYear() === p[0] && d.getMonth() === p[1] - 1 && d.getDate() === p[2];
+}
+
+// Returns {group} with fresh internal ids, or {error}. newId() makes ids for people and expenses.
+function validateGroup(raw, newId) {
+  const CURS = ['USD', 'EUR', 'GBP', 'INR', 'CAD', 'AUD'];
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { error: 'This file does not contain a group.' };
+  const name = typeof raw.name === 'string' ? raw.name.trim().slice(0, 60) : '';
+  if (!name) return { error: 'The group in this file has no name.' };
+  if (!Array.isArray(raw.members) || !Array.isArray(raw.expenses)) return { error: 'The group in this file is missing its people or its expenses.' };
+  if (raw.members.length > 100 || raw.expenses.length > 5000) return { error: 'The group in this file is larger than this app supports.' };
+  const idMap = {};
+  const rev = {};
+  const taken = {};
+  const members = [];
+  for (let i = 0; i < raw.members.length; i++) {
+    const m = raw.members[i];
+    const nm = m && typeof m.name === 'string' ? m.name.trim().slice(0, 30) : '';
+    if (!nm || typeof m.id !== 'string' || idMap[m.id]) return { error: 'The people list has an entry with no name or a repeated id.' };
+    if (taken[nm.toLowerCase()]) return { error: 'The name ' + nm + ' appears twice in the people list.' };
+    taken[nm.toLowerCase()] = true;
+    const nid = newId();
+    idMap[m.id] = nid;
+    rev[nid] = m.id;
+    members.push({ id: nid, name: nm });
+  }
+  const expenses = [];
+  for (let i = 0; i < raw.expenses.length; i++) {
+    const e = raw.expenses[i];
+    const at = 'Expense ' + (i + 1) + ': ';
+    if (!e || typeof e !== 'object') return { error: at + 'not a valid entry.' };
+    if (!Number.isInteger(e.amount) || e.amount <= 0) return { error: at + 'the amount must be a positive whole number of cents.' };
+    if (!idMap[e.payer]) return { error: at + 'the person who paid is not in the people list.' };
+    if (!e.shares || typeof e.shares !== 'object') return { error: at + 'it has no shares.' };
+    const shares = {};
+    let sum = 0;
+    const keys = Object.keys(e.shares);
+    for (let k = 0; k < keys.length; k++) {
+      const v = e.shares[keys[k]];
+      if (!idMap[keys[k]] || !Number.isInteger(v) || v < 0) return { error: at + 'a share is invalid.' };
+      shares[idMap[keys[k]]] = v;
+      sum += v;
+    }
+    const ids = Object.keys(shares);
+    if (!ids.length || sum !== e.amount) return { error: at + 'the shares do not add up to the amount.' };
+    const payment = e.payment === true;
+    const payer = idMap[e.payer];
+    if (payment && (ids.length !== 1 || shares[payer] != null)) return { error: at + 'a payment needs exactly one recipient other than the payer.' };
+    let type = e.type === 'percent' || e.type === 'exact' ? e.type : 'equal';
+    if (payment) type = 'exact';
+    let values = {};
+    if (type !== 'equal') {
+      const src = e.values && typeof e.values === 'object' ? e.values : {};
+      ids.forEach(function (nid) { if (typeof src[rev[nid]] === 'string') values[nid] = src[rev[nid]]; });
+    }
+    // The saved split must reproduce the saved shares, otherwise editing it would silently change amounts.
+    const check = buildShares(type, e.amount, ids, values);
+    const same = check.shares && ids.every(function (nid) { return check.shares[nid] === shares[nid]; });
+    if (!same) {
+      type = 'exact';
+      values = {};
+      ids.forEach(function (nid) { values[nid] = (shares[nid] / 100).toFixed(2); });
+    }
+    const ts = Number.isFinite(e.ts) ? e.ts : Date.now();
+    expenses.push({
+      id: newId(),
+      desc: typeof e.desc === 'string' && e.desc.trim() ? e.desc.trim().slice(0, 60) : (payment ? 'Payment' : 'Expense'),
+      notes: typeof e.notes === 'string' ? e.notes.slice(0, 500) : '',
+      amount: e.amount, payer: payer, type: type, values: type === 'equal' ? {} : values, shares: shares,
+      ts: ts, date: validDateStr(e.date) ? e.date : dateKey(ts), payment: payment
+    });
+  }
+  return { group: {
+    id: typeof raw.id === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(raw.id) ? raw.id : newId(),
+    name: name, currency: CURS.indexOf(raw.currency) >= 0 ? raw.currency : 'USD', smart: raw.smart === true,
+    members: members, expenses: expenses
+  } };
+}
+
+/* ---- minimal PDF writer: A4, Helvetica, text / rules / rectangles / tables ---- */
+const W_REG = [278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278,
+  556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 278, 278, 584, 584, 584, 556, 1015,
+  667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611,
+  278, 278, 278, 469, 556, 333,
+  556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556, 556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500,
+  334, 260, 334, 584];
+const W_BOLD = [278, 333, 474, 556, 556, 889, 722, 238, 333, 333, 389, 584, 278, 333, 278, 278,
+  556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 333, 333, 584, 584, 584, 611, 975,
+  722, 722, 722, 722, 667, 611, 778, 722, 278, 556, 722, 611, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611,
+  333, 278, 333, 584, 556, 333,
+  556, 611, 556, 611, 556, 333, 611, 611, 278, 278, 556, 278, 889, 611, 611, 611, 611, 389, 556, 333, 611, 556, 778, 556, 556, 500,
+  389, 280, 389, 584];
+
+// Reduce text to what the standard PDF font can show (Latin-1 plus the euro sign).
+function pdfSafe(s) {
+  return String(s == null ? '' : s)
+    .replace(/[‘’′]/g, "'").replace(/[“”]/g, '"')
+    .replace(/[–—−]/g, '-').replace(/→/g, '>').replace(/…/g, '...')
+    .replace(/\r/g, '').replace(/\t/g, ' ')
+    .replace(/[^\n\x20-\x7E -ÿ€]/g, '?');
+}
+function glyphWidth(ch, bold) {
+  const t = bold ? W_BOLD : W_REG;
+  const c = ch.charCodeAt(0);
+  if (c >= 32 && c <= 126) return t[c - 32];
+  const b = ch.normalize('NFD').charCodeAt(0);
+  if (b >= 32 && b <= 126) return t[b - 32];
+  return 556;
+}
+function textWidth(s, size, bold) {
+  let w = 0;
+  for (const ch of s) w += glyphWidth(ch, bold);
+  return w * size / 1000;
+}
+function wrapText(s, maxW, size, bold) {
+  const out = [];
+  pdfSafe(s).split('\n').forEach(function (para) {
+    if (para === '') { out.push(''); return; }
+    let line = '';
+    para.split(' ').forEach(function (word) {
+      const trial = line ? line + ' ' + word : word;
+      if (textWidth(trial, size, bold) <= maxW + 0.05) { line = trial; return; }
+      if (line) { out.push(line); line = ''; }
+      let chunk = '';
+      for (const ch of word) {
+        if (chunk && textWidth(chunk + ch, size, bold) > maxW + 0.05) { out.push(chunk); chunk = ch; } else chunk += ch;
+      }
+      line = chunk;
+    });
+    out.push(line);
+  });
+  return out;
+}
+function pdfEsc(s) {
+  let o = '';
+  for (const ch of s) {
+    const c = ch.charCodeAt(0);
+    if (ch === '(' || ch === ')' || ch === '\\') o += '\\' + ch;
+    else if (c >= 32 && c <= 126) o += ch;
+    else if (c === 0x20AC) o += '\\200';
+    else if (c >= 160 && c <= 255) o += '\\' + c.toString(8);
+    else o += '?';
+  }
+  return o;
+}
+function num2(n) { return String(Math.round(n * 100) / 100); }
+function rgbOp(c, stroke) { return c.map(function (x) { return (x / 255).toFixed(3); }).join(' ') + (stroke ? ' RG' : ' rg'); }
+
+function PdfDoc() {
+  this.pages = [];
+  this.page = null;
+  this.ml = 42; this.mt = 46; this.mb = 50;
+  this.landscape = false;
+  this.y = this.mt;
+}
+PdfDoc.prototype.addPage = function (landscape) {
+  this.landscape = !!landscape;
+  const w = landscape ? 841.89 : 595.28;
+  const h = landscape ? 595.28 : 841.89;
+  this.page = { w: w, h: h, ops: [] };
+  this.pages.push(this.page);
+  this.y = this.mt;
+  return this.page;
+};
+PdfDoc.prototype.ensure = function (h) {
+  if (this.y + h > this.page.h - this.mb) { this.addPage(this.landscape); return true; }
+  return false;
+};
+PdfDoc.prototype.text = function (s, x, y, o) {
+  o = o || {};
+  const size = o.size || 10;
+  const bold = !!o.bold;
+  const safe = pdfSafe(s).replace(/\n/g, ' ');
+  if (!safe) return;
+  const w = textWidth(safe, size, bold);
+  const px = o.align === 'right' ? x - w : o.align === 'center' ? x - w / 2 : x;
+  this.page.ops.push(rgbOp(o.color || [21, 32, 28], false) + ' BT /' + (bold ? 'F2' : 'F1') + ' ' + num2(size) + ' Tf 1 0 0 1 ' +
+    num2(px) + ' ' + num2(this.page.h - y) + ' Tm (' + pdfEsc(safe) + ') Tj ET');
+};
+PdfDoc.prototype.rect = function (x, y, w, h, color) {
+  this.page.ops.push(rgbOp(color, false) + ' ' + num2(x) + ' ' + num2(this.page.h - y - h) + ' ' + num2(w) + ' ' + num2(h) + ' re f');
+};
+PdfDoc.prototype.line = function (x1, y1, x2, y2, color, width) {
+  this.page.ops.push(rgbOp(color, true) + ' ' + num2(width || 0.5) + ' w ' + num2(x1) + ' ' + num2(this.page.h - y1) + ' m ' + num2(x2) + ' ' + num2(this.page.h - y2) + ' l S');
+};
+
+// o: {cols:[{align, wrap}], head, rows, foot, size, x, width}. Cells are text or {t, color, bold}.
+PdfDoc.prototype.table = function (o) {
+  const self = this;
+  const size = o.size || 9;
+  const pad = 5, padV = 4, lineH = size * 1.32;
+  const x0 = o.x != null ? o.x : this.ml;
+  const total = o.width != null ? o.width : this.page.w - this.ml * 2;
+  const cellT = function (c) { return c && typeof c === 'object' ? c.t : c; };
+  const cellB = function (c) { return !!(c && typeof c === 'object' && c.bold); };
+  const all = (o.head ? [o.head] : []).concat(o.rows, o.foot ? [o.foot] : []);
+  const words = function (ln) { return ln.split(' '); };
+  const minW = o.cols.map(function (c, i) {
+    let m = 0;
+    all.forEach(function (r) {
+      const cell = r[i];
+      const bold = (r === o.head || r === o.foot) || cellB(cell);
+      pdfSafe(cellT(cell)).split('\n').forEach(function (ln) { words(ln).forEach(function (wd) { m = Math.max(m, textWidth(wd, size, bold)); }); });
+    });
+    return m + pad * 2;
+  });
+  const nat = o.cols.map(function (c, i) {
+    let m = 0;
+    all.forEach(function (r) {
+      const cell = r[i];
+      const bold = (r === o.head || r === o.foot) || cellB(cell);
+      if (r === o.head) { m = Math.max(m, minW[i] - pad * 2); return; }
+      pdfSafe(cellT(cell)).split('\n').forEach(function (ln) { m = Math.max(m, textWidth(ln, size, bold)); });
+    });
+    return Math.max(minW[i], Math.min(m + pad * 2, c.wrap ? 420 : 300));
+  });
+  let w = nat.slice();
+  const sum = w.reduce(function (a, b) { return a + b; }, 0);
+  const wrapIdx = o.cols.map(function (c, i) { return c.wrap ? i : -1; }).filter(function (i) { return i >= 0; });
+  if (sum < total) {
+    const growIdx = wrapIdx.length ? wrapIdx : o.cols.map(function (c, i) { return i; });
+    growIdx.forEach(function (i) { w[i] += (total - sum) / growIdx.length; });
+  } else if (sum > total) {
+    let over = sum - total;
+    const shrink = function (idxs) {
+      const sl = idxs.reduce(function (a, i) { return a + w[i] - minW[i]; }, 0);
+      if (sl <= 0 || over <= 0.01) return;
+      const take = Math.min(over, sl);
+      idxs.forEach(function (i) { w[i] -= take * (w[i] - minW[i]) / sl; });
+      over -= take;
+    };
+    shrink(wrapIdx);
+    shrink(o.cols.map(function (c, i) { return i; }).filter(function (i) { return wrapIdx.indexOf(i) < 0; }));
+    if (over > 0.01) {
+      const s2 = w.reduce(function (a, b) { return a + b; }, 0);
+      w = w.map(function (x) { return x * total / s2; });
+    }
+  }
+  const draw = function (cells, kind) {
+    const bold = kind !== 'body';
+    const sz = kind === 'head' ? size - 1 : size;
+    const lines = o.cols.map(function (c, i) {
+      const cell = cells[i];
+      return wrapText(cellT(cell), w[i] - pad * 2, sz, bold || cellB(cell));
+    });
+    const n = Math.max(1, Math.max.apply(null, lines.map(function (l) { return l.length; })));
+    const h = n * lineH + padV * 2;
+    if (self.y + h > self.page.h - self.mb) {
+      self.addPage(self.landscape);
+      if (o.head && kind !== 'head') draw(o.head, 'head');
+    }
+    let x = x0;
+    const top = self.y;
+    o.cols.forEach(function (c, i) {
+      const cell = cells[i];
+      const color = (cell && typeof cell === 'object' && cell.color) || (kind === 'head' ? [86, 103, 97] : [21, 32, 28]);
+      lines[i].forEach(function (ln, k) {
+        const base = top + padV + k * lineH + sz;
+        if (c.align === 'right') self.text(ln, x + w[i] - pad, base, { size: sz, bold: bold || cellB(cell), color: color, align: 'right' });
+        else self.text(ln, x + pad, base, { size: sz, bold: bold || cellB(cell), color: color });
+      });
+      x += w[i];
+    });
+    if (kind === 'foot') self.line(x0, top, x0 + total, top, [21, 32, 28], 0.8);
+    self.y = top + h;
+    if (kind === 'head') self.line(x0, self.y, x0 + total, self.y, [21, 32, 28], 0.8);
+    else if (kind === 'body') self.line(x0, self.y, x0 + total, self.y, [210, 218, 213], 0.5);
+  };
+  if (o.head) draw(o.head, 'head');
+  o.rows.forEach(function (r) { draw(r, 'body'); });
+  if (o.foot) draw(o.foot, 'foot');
+  this.y += 8;
+};
+
+PdfDoc.prototype.output = function () {
+  const n = this.pages.length;
+  const objs = [];
+  const kids = [];
+  objs[1] = '<< /Type /Catalog /Pages 2 0 R >>';
+  objs[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+  objs[4] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+  this.pages.forEach(function (pg, i) {
+    const pn = 5 + i * 2;
+    kids.push(pn + ' 0 R');
+    const stream = pg.ops.join('\n');
+    objs[pn] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + num2(pg.w) + ' ' + num2(pg.h) + '] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ' + (pn + 1) + ' 0 R >>';
+    objs[pn + 1] = '<< /Length ' + stream.length + ' >>\nstream\n' + stream + '\nendstream';
+  });
+  objs[2] = '<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + n + ' >>';
+  let out = '%PDF-1.4\n';
+  const offs = [];
+  for (let i = 1; i < objs.length; i++) {
+    offs[i] = out.length;
+    out += i + ' 0 obj\n' + objs[i] + '\nendobj\n';
+  }
+  const xref = out.length;
+  out += 'xref\n0 ' + objs.length + '\n0000000000 65535 f \n';
+  for (let i = 1; i < objs.length; i++) out += ('0000000000' + offs[i]).slice(-10) + ' 00000 n \n';
+  out += 'trailer\n<< /Size ' + objs.length + ' /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF\n';
+  const bytes = new Uint8Array(out.length);
+  for (let i = 0; i < out.length; i++) bytes[i] = out.charCodeAt(i) & 255;
+  return bytes;
+};
+
+// The report as a PDF. num(cents) formats an amount without a currency symbol (the standard PDF font has no rupee sign).
+function buildReportPdf(rep, num) {
+  const INK = [21, 32, 28], MUTED = [86, 103, 97], LINE = [210, 218, 213], POS = [26, 123, 73], NEG = [188, 61, 41], S1 = [42, 120, 214], S2 = [235, 104, 52];
+  const doc = new PdfDoc();
+  doc.addPage(false);
+  const L = doc.ml;
+  const CW = doc.page.w - L * 2;
+  const t = rep.totals;
+  const heading = function (label) {
+    doc.ensure(40);
+    doc.y += 14;
+    doc.text(label.toUpperCase(), L, doc.y, { size: 8.5, bold: true, color: MUTED });
+    doc.y += 8;
+  };
+
+  wrapText(rep.group.name, CW, 20, true).forEach(function (ln) {
+    doc.y += 22;
+    doc.text(ln, L, doc.y, { size: 20, bold: true });
+  });
+  doc.y += 16;
+  doc.text('Expense report  -  generated ' + rep.generated + '  -  amounts in ' + rep.group.currency, L, doc.y, { size: 9, color: MUTED });
+  doc.y += 8;
+  doc.line(L, doc.y, L + CW, doc.y, INK, 1.2);
+
+  heading('Summary');
+  const facts = [
+    ['Total spent', num(t.spent)], ['Expenses', String(t.expenseCount)], ['Average expense', num(t.avgExpense)], ['Per person', num(t.avgPerPerson)],
+    ['Period', t.first ? (t.first === t.last ? t.first : t.first + ' to ' + t.last) : 'None yet'],
+    ['Payments made', t.paymentCount ? t.paymentCount + ' / ' + num(t.paymentTotal) : 'None'],
+    ['Still outstanding', num(t.outstanding)], ['People', String(t.people)]
+  ];
+  const colW = CW / 4;
+  doc.ensure(90);
+  facts.forEach(function (f, i) {
+    const x = L + (i % 4) * colW;
+    const y = doc.y + Math.floor(i / 4) * 38;
+    doc.text(f[0].toUpperCase(), x, y + 8, { size: 7, color: MUTED });
+    doc.text(f[1], x, y + 24, { size: 12, bold: true });
+  });
+  doc.y += 2 * 38 + 4;
+
+  heading('Balances by person');
+  const sg = function (c) { return c === 0 ? num(0) : (c > 0 ? '+' : '-') + num(Math.abs(c)); };
+  const tot = { paid: 0, share: 0, sent: 0, received: 0, net: 0 };
+  const prow = rep.people.map(function (p) {
+    Object.keys(tot).forEach(function (k) { tot[k] += p[k]; });
+    return [p.name, num(p.paid), num(p.share), num(p.sent), num(p.received), { t: sg(p.net), color: p.net > 0 ? POS : p.net < 0 ? NEG : INK, bold: true }, p.status];
+  });
+  doc.table({
+    cols: [{ wrap: true }, { align: 'right' }, { align: 'right' }, { align: 'right' }, { align: 'right' }, { align: 'right' }, {}],
+    head: ['Person', 'Paid', 'Share', 'Sent', 'Received', 'Net', 'Status'],
+    rows: prow, foot: ['Total', num(tot.paid), num(tot.share), num(tot.sent), num(tot.received), sg(tot.net), ''], size: 9
+  });
+  doc.text('Net is paid minus share, adjusted for payments already marked as paid. Positive means the person is owed money.', L, doc.y, { size: 8, color: MUTED });
+  doc.y += 6;
+
+  const plan = rep.group.smart ? rep.plans.smart : rep.plans.direct;
+  const nm = {};
+  rep.members.forEach(function (m) { nm[m.id] = m.name; });
+  heading('Settle-up plan  -  ' + (rep.group.smart ? 'smart split' : 'direct debts'));
+  if (plan.length) {
+    doc.table({
+      cols: [{ wrap: true }, { wrap: true }, { align: 'right' }], head: ['From', 'To', 'Amount'],
+      rows: plan.map(function (d) { return [nm[d.from], nm[d.to], num(d.amount)]; }), size: 9
+    });
+  } else {
+    doc.y += 12;
+    doc.text(t.expenseCount ? 'Everyone is settled up.' : 'Nothing to settle yet.', L, doc.y, { size: 9.5, color: MUTED });
+    doc.y += 8;
+  }
+
+  heading('Insights');
+  if (rep.insights.length) {
+    doc.table({
+      cols: [{}, { wrap: true }],
+      rows: rep.insights.map(function (i) { return [{ t: i.label, bold: true }, i.text]; }), size: 9
+    });
+  } else {
+    doc.y += 12;
+    doc.text('Add an expense to see insights.', L, doc.y, { size: 9.5, color: MUTED });
+    doc.y += 8;
+  }
+
+  if (t.expenseCount) {
+    doc.ensure(60 + 32 * Math.min(rep.people.length, 3));
+    heading('Paid vs. share');
+    doc.rect(L, doc.y + 2, 8, 8, S1);
+    doc.text('Paid', L + 13, doc.y + 10, { size: 8, color: MUTED });
+    doc.rect(L + 50, doc.y + 2, 8, 8, S2);
+    doc.text('Share', L + 63, doc.y + 10, { size: 8, color: MUTED });
+    doc.y += 20;
+    let max = 1;
+    rep.people.forEach(function (p) { max = Math.max(max, p.paid, p.share); });
+    const nameW = 110, valW = 62;
+    const bx = L + nameW;
+    const bw = CW - nameW - valW - 6;
+    rep.people.forEach(function (p) {
+      doc.ensure(32);
+      doc.text(wrapText(p.name, nameW - 8, 9, false)[0], L, doc.y + 15, { size: 9 });
+      [[p.paid, S1], [p.share, S2]].forEach(function (b, k) {
+        const y = doc.y + k * 12;
+        if (b[0] > 0) doc.rect(bx, y + 3, Math.max(1.5, bw * b[0] / max), 9, b[1]);
+        doc.text(num(b[0]), L + CW, y + 11, { size: 8, color: MUTED, align: 'right' });
+      });
+      doc.y += 32;
+    });
+  }
+
+  doc.addPage(true);
+  doc.text('EXPENSE AUDIT', L, doc.y + 8, { size: 8.5, bold: true, color: MUTED });
+  doc.y += 16;
+  if (!rep.audit.length) {
+    doc.text('Nothing to audit yet.', L, doc.y + 10, { size: 9.5, color: MUTED });
+  } else {
+    const memTot = {};
+    let grand = 0;
+    const rows = rep.audit.map(function (r) {
+      const pay = r.kind === 'Payment';
+      if (!pay) {
+        grand += r.total;
+        rep.members.forEach(function (m) { memTot[m.id] = (memTot[m.id] || 0) + (r.shares[m.id] || 0); });
+      }
+      const c = function (v) { return pay ? { t: v, color: MUTED } : v; };
+      const split = r.method === 'Equal'
+        ? (r.count === rep.members.length ? 'Equal, everyone' : 'Equal: ' + Object.keys(r.shares).map(function (id) { return nm[id]; }).join(', '))
+        : r.method + ': ' + r.detail;
+      return [c(String(r.n)), c(r.shortDate), c(r.desc), c(r.notes), c(r.payer), c(num(r.total)), c(split)]
+        .concat(rep.members.map(function (m) { return c(r.shares[m.id] != null ? num(r.shares[m.id]) : ''); }))
+        .concat([r.diff === 0 ? { t: 'Matches', color: POS } : { t: 'Off by ' + num(Math.abs(r.diff)), color: NEG }]);
+    });
+    const cols = [{}, {}, { wrap: true }, { wrap: true }, { wrap: true }, { align: 'right' }, { wrap: true }]
+      .concat(rep.members.map(function () { return { align: 'right' }; })).concat([{}]);
+    doc.table({
+      cols: cols, size: 8,
+      head: ['#', 'Date', 'Description', 'Notes', 'Paid by', 'Total', 'Split'].concat(rep.members.map(function (m) { return m.name; })).concat(['Check']),
+      rows: rows,
+      foot: ['', '', 'Expense totals', '', '', num(grand), ''].concat(rep.members.map(function (m) { return num(memTot[m.id] || 0); })).concat([''])
+    });
+    const ok = rep.checks.sharesMatch && rep.checks.balancesZero;
+    doc.ensure(16);
+    doc.text(ok ? 'Checks passed. Every expense\'s shares add up to its total, and all balances add up to zero.'
+      : 'Check failed. Some shares do not add up to their expense total.', L, doc.y + 8, { size: 9, bold: true, color: ok ? POS : NEG });
+  }
+
+  doc.pages.forEach(function (pg, i) {
+    doc.page = pg;
+    doc.line(L, pg.h - 36, pg.w - L, pg.h - 36, LINE, 0.5);
+    doc.text('Even Steven', L, pg.h - 24, { size: 8, color: MUTED });
+    doc.text('Page ' + (i + 1) + ' of ' + doc.pages.length, pg.w - L, pg.h - 24, { size: 8, color: MUTED, align: 'right' });
+  });
+  return doc.output();
+}
+
+
+
+  var KEY = 'even-steven:v1';
+  var LOCALES = { USD: 'en-US', EUR: 'en-IE', GBP: 'en-GB', INR: 'en-IN', CAD: 'en-CA', AUD: 'en-AU' };
+  var DAY = 86400000;
+  var canSave = true;
+  var armed = null;
+  var armTimer = null;
+  var flashTimer = null;
+  var view = 'ledger';
+  var dlApi = null;
+  var dlResolved = false;
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function uid() { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3); }
+  function hue(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360; return h; }
+  function money(c, cur) {
+    try { return new Intl.NumberFormat(LOCALES[cur] || 'en-US', { style: 'currency', currency: cur }).format(c / 100); }
+    catch (e) { return (c / 100).toFixed(2) + ' ' + cur; }
+  }
+  function sym(cur) {
+    try {
+      var p = new Intl.NumberFormat(LOCALES[cur] || 'en-US', { style: 'currency', currency: cur }).formatToParts(0);
+      for (var i = 0; i < p.length; i++) if (p[i].type === 'currency') return p[i].value;
+    } catch (e) {}
+    return cur;
+  }
+  function bpsText(b) { return (b / 100).toFixed(2).replace(/\.?0+$/, ''); }
+  function fmtDate(ts) { return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+
+  /* ---------- state ---------- */
+  function todayStr() { return dateKey(Date.now()); }
+  function fmtDay(d) {
+    var p = String(d).split('-').map(Number);
+    var o = { month: 'short', day: 'numeric' };
+    if (p[0] !== new Date().getFullYear()) o.year = 'numeric';
+    return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString('en-US', o);
+  }
+  function makeExpense(o) {
+    var r = buildShares(o.type, o.amount, o.ids, o.values || {});
+    var ts = Date.now() - (o.daysAgo || 0) * DAY;
+    return {
+      id: uid(), desc: o.desc, notes: o.notes || '', amount: o.amount, payer: o.payer, type: o.type,
+      values: o.type === 'equal' ? {} : Object.assign({}, o.values), shares: r.shares,
+      ts: ts, date: dateKey(ts), payment: false
+    };
+  }
+  function paymentObj(from, to, amount, date, notes, id, ts) {
+    var sh = {}; sh[to] = amount;
+    var vals = {}; vals[to] = (amount / 100).toFixed(2);
+    return { id: id || uid(), desc: 'Payment', notes: notes || '', amount: amount, payer: from, type: 'exact', values: vals, shares: sh,
+      ts: ts || Date.now(), date: date || todayStr(), payment: true };
+  }
+  function exampleGroup() {
+    var names = ['Ana', 'Ben', 'Chloe', 'Dev'];
+    var members = names.map(function (n) { return { id: uid(), name: n }; });
+    var all = members.map(function (m) { return m.id; });
+    var ana = members[0].id, ben = members[1].id, chloe = members[2].id, dev = members[3].id;
+    var pct = {}; pct[ana] = '30'; pct[ben] = '20'; pct[chloe] = '20'; pct[dev] = '30';
+    var yesterday = Date.now() - DAY;
+    return {
+      id: uid(), name: 'Cabin weekend (example)', currency: 'USD', smart: false, members: members,
+      expenses: [
+        makeExpense({ desc: 'Cabin rental', amount: 48000, payer: ana, type: 'equal', ids: all, daysAgo: 6, notes: 'Deposit included. The balance was paid on arrival.' }),
+        makeExpense({ desc: 'Groceries', amount: 9640, payer: ben, type: 'equal', ids: all, daysAgo: 5 }),
+        makeExpense({ desc: 'Gas', amount: 6200, payer: chloe, type: 'equal', ids: [ana, chloe, dev], daysAgo: 5, notes: 'Ben took the train, so he is not in this one.' }),
+        makeExpense({ desc: 'Dinner out', amount: 13800, payer: dev, type: 'percent', ids: all, values: pct, daysAgo: 4, notes: 'Birthday dinner, Ana and Dev had the larger orders.' }),
+        paymentObj(ben, ana, 5000, dateKey(yesterday), 'Part payment by bank transfer', null, yesterday)
+      ]
+    };
+  }
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var s = JSON.parse(raw);
+        if (s && Array.isArray(s.groups)) {
+          s.groups.forEach(function (g) {
+            (g.expenses || []).forEach(function (e) {
+              if (!validDateStr(e.date)) e.date = dateKey(e.ts || Date.now());
+              if (typeof e.notes !== 'string') e.notes = '';
+            });
+          });
+          return s;
+        }
+      }
+    } catch (e) { canSave = false; }
+    return null;
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { canSave = false; }
+    $('#storeNote').hidden = canSave;
+  }
+  var state = loadState();
+  if (!state) { state = { groups: [exampleGroup()], activeId: null }; }
+  if (!state.groups.some(function (g) { return g.id === state.activeId; })) {
+    state.activeId = state.groups.length ? state.groups[0].id : null;
+  }
+  function active() {
+    for (var i = 0; i < state.groups.length; i++) if (state.groups[i].id === state.activeId) return state.groups[i];
+    return null;
+  }
+  function nameOf(g, id) {
+    for (var i = 0; i < g.members.length; i++) if (g.members[i].id === id) return g.members[i].name;
+    return 'Someone';
+  }
+  function memberUsed(g, id) {
+    return g.expenses.some(function (e) { return e.payer === id || e.shares[id] != null; });
+  }
+  function avatar(m) {
+    return '<span class="av" style="--h:' + hue(m.id) + '" aria-hidden="true">' + esc(m.name.charAt(0).toUpperCase()) + '</span>';
+  }
+  function arm(key) {
+    armed = key;
+    clearTimeout(armTimer);
+    armTimer = setTimeout(function () { armed = null; var g = active(); if (g) renderSide(g); }, 3500);
+  }
+
+  /* ---------- expense form state ---------- */
+  var form = { groupId: null, type: 'equal', included: new Set(), values: {}, touched: false, editingId: null };
+
+  function includedIds(g) {
+    return g.members.filter(function (m) { return form.included.has(m.id); }).map(function (m) { return m.id; });
+  }
+  function syncChrome() {
+    var editing = !!form.editingId;
+    $('#fTitle').textContent = editing ? 'Edit expense' : 'Add an expense';
+    $('#fSubmit').textContent = editing ? 'Save changes' : 'Add expense';
+    $('#fCancel').hidden = !editing;
+    $$('#fType button').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.type === form.type)); });
+  }
+  function resetForm(g) {
+    form.groupId = g.id;
+    form.type = 'equal';
+    form.included = new Set(g.members.map(function (m) { return m.id; }));
+    form.values = {};
+    form.touched = false;
+    form.editingId = null;
+    $('#fDesc').value = '';
+    $('#fAmt').value = '';
+    $('#fDate').value = todayStr();
+    $('#fNotes').value = '';
+    $('#fError').textContent = '';
+    syncChrome();
+  }
+  function refill() {
+    var g = active();
+    var ids = includedIds(g);
+    form.values = {};
+    form.touched = false;
+    if (!ids.length) return;
+    var ones = ids.map(function () { return 1; });
+    if (form.type === 'percent') {
+      var a = allocate(10000, ids, ones, ids.length);
+      ids.forEach(function (id) { form.values[id] = bpsText(a[id]); });
+    } else if (form.type === 'exact') {
+      var t = parseCents($('#fAmt').value);
+      if (t > 0) {
+        var b = allocate(t, ids, ones, ids.length);
+        ids.forEach(function (id) { form.values[id] = (b[id] / 100).toFixed(2); });
+      }
+    }
+  }
+
+  /* ---------- rendering ---------- */
+  function renderTabs() {
+    var html = state.groups.map(function (g) {
+      return '<button type="button" class="tab" data-id="' + g.id + '"' + (g.id === state.activeId ? ' aria-current="true"' : '') + '>' + esc(g.name) + '</button>';
+    }).join('');
+    html += '<button type="button" class="tab add" id="addGroupBtn">+ New group</button>';
+    $('#tabs').innerHTML = html;
+  }
+  function renderHead(g) {
+    $('#gName').textContent = g.name;
+    $('#gCur').value = g.currency;
+    var gd = $('#gDel');
+    gd.textContent = armed === 'group' ? 'Click again to delete' : 'Delete group';
+    gd.classList.toggle('armed', armed === 'group');
+    $('#chips').innerHTML = g.members.map(function (m) {
+      var rm = memberUsed(g, m.id) ? '' : '<button class="x" type="button" data-act="rm" data-id="' + m.id + '" aria-label="Remove ' + esc(m.name) + '">×</button>';
+      return '<li class="chip">' + avatar(m) + '<span>' + esc(m.name) + '</span>' + rm + '</li>';
+    }).join('') || '<li class="muted">No one yet.</li>';
+    $('#mHint').textContent = g.members.length < 2
+      ? 'Add at least two people to start splitting expenses.'
+      : 'People who appear in an expense can’t be removed.';
+  }
+  function renderPayer(g, prefer) {
+    var sel = $('#fPayer');
+    var cur = prefer || sel.value;
+    sel.innerHTML = g.members.map(function (m) { return '<option value="' + m.id + '">' + esc(m.name) + '</option>'; }).join('');
+    if (g.members.some(function (m) { return m.id === cur; })) sel.value = cur;
+  }
+  function renderPeople() {
+    var g = active();
+    var unit = form.type === 'percent' ? '%' : sym(g.currency);
+    $('#fPeople').innerHTML = g.members.map(function (m) {
+      var on = form.included.has(m.id);
+      var field = form.type === 'equal' ? '' :
+        '<span class="field"><input class="val" type="text" inputmode="decimal" autocomplete="off" data-act="val" ' +
+        'aria-label="' + (form.type === 'percent' ? 'Percent' : 'Amount') + ' for ' + esc(m.name) + '" ' +
+        'value="' + esc(form.values[m.id] == null ? '' : form.values[m.id]) + '"' + (on ? '' : ' disabled') + '>' +
+        '<span class="unit">' + esc(unit) + '</span></span>';
+      return '<div class="person' + (on ? '' : ' off') + '" data-id="' + m.id + '">' +
+        '<label class="chk"><input type="checkbox" data-act="inc"' + (on ? ' checked' : '') + '><span>' + esc(m.name) + '</span></label>' +
+        field + '<span class="calc" data-calc></span></div>';
+    }).join('');
+    updateHints();
+  }
+  function updateHints() {
+    var g = active();
+    if (!g) return;
+    var cur = g.currency;
+    var rawTotal = parseCents($('#fAmt').value);
+    var total = Number.isNaN(rawTotal) ? 0 : rawTotal;
+    var ids = includedIds(g);
+    var ones = ids.map(function () { return 1; });
+    var msg = '', cls = 'hint', calc = {};
+    if (!ids.length) {
+      msg = 'Choose at least one person.'; cls += ' warn';
+    } else if (form.type === 'equal') {
+      if (total > 0) calc = allocate(total, ids, ones, ids.length);
+      msg = ids.length === 1 ? 'Only one person is sharing this.' : 'Split evenly between ' + ids.length + ' people.';
+    } else if (form.type === 'percent') {
+      var bps = ids.map(function (id) { return parseBps(form.values[id]); });
+      var missing = bps.some(Number.isNaN);
+      var sum = bps.filter(function (b) { return !Number.isNaN(b); }).reduce(function (a, b) { return a + b; }, 0);
+      var diff = 10000 - sum;
+      if (diff === 0 && !missing) {
+        msg = 'Adds up to 100%.'; cls += ' ok';
+        if (total > 0) calc = allocate(total, ids, bps, 10000);
+      } else {
+        msg = diff >= 0 ? bpsText(diff) + '% still to assign.' : bpsText(-diff) + '% over 100%.';
+        cls += ' warn';
+        if (total > 0) ids.forEach(function (id, i) { if (!Number.isNaN(bps[i])) calc[id] = Math.round(total * bps[i] / 10000); });
+      }
+    } else {
+      var cs = ids.map(function (id) { return parseCents(form.values[id]); });
+      var miss = cs.some(Number.isNaN);
+      var s2 = cs.filter(function (c) { return !Number.isNaN(c); }).reduce(function (a, b) { return a + b; }, 0);
+      if (!(total > 0)) { msg = 'Enter the total first.'; cls += ' warn'; }
+      else if (s2 === total && !miss) { msg = 'Adds up to the total.'; cls += ' ok'; }
+      else if (s2 <= total) { msg = money(total - s2, cur) + ' left to assign.'; cls += ' warn'; }
+      else { msg = money(s2 - total, cur) + ' over the total.'; cls += ' warn'; }
+    }
+    var hint = $('#fHint');
+    hint.className = cls;
+    hint.textContent = msg;
+    $$('#fPeople .person').forEach(function (row) {
+      var v = calc[row.dataset.id];
+      $('[data-calc]', row).textContent = v != null ? money(v, cur) : '';
+    });
+  }
+  function renderForm(g) {
+    var valid = new Set(g.members.map(function (m) { return m.id; }));
+    Array.from(form.included).forEach(function (id) { if (!valid.has(id)) form.included.delete(id); });
+    renderPayer(g);
+    renderPeople();
+    renderPayForm(g);
+    $('#fSet').disabled = g.members.length < 2;
+    $('#fNeed').hidden = g.members.length >= 2;
+  }
+  function renderList(g) {
+    var n = g.expenses.length;
+    $('#listLabel').textContent = 'Expenses' + (n ? ' · ' + n : '');
+    var ul = $('#expList');
+    if (!n) { ul.innerHTML = '<li class="empty">No expenses yet. Add the first one above.</li>'; return; }
+    ul.innerHTML = g.expenses.slice().sort(function (a, b) {
+      var da = dateOf(a), db = dateOf(b);
+      return da < db ? 1 : da > db ? -1 : b.ts - a.ts;
+    }).map(function (e) {
+      var cur = g.currency;
+      var payer = nameOf(g, e.payer);
+      var title, tag, meta;
+      if (e.payment) {
+        var toId = Object.keys(e.shares)[0];
+        title = esc(payer) + ' paid ' + esc(nameOf(g, toId));
+        tag = '<span class="chip-tag pay">Payment</span>';
+        meta = fmtDay(dateOf(e));
+      } else {
+        title = esc(e.desc);
+        var label = e.type === 'equal' ? 'Equal · ' + Object.keys(e.shares).length : e.type === 'percent' ? 'By %' : 'Exact';
+        tag = '<span class="chip-tag">' + label + '</span>';
+        meta = esc(payer) + ' paid · ' + fmtDay(dateOf(e));
+      }
+      var shares = Object.keys(e.shares).map(function (id) {
+        return '<li>' + esc(nameOf(g, id)) + '<span class="mono">' + money(e.shares[id], cur) + '</span></li>';
+      }).join('');
+      var key = 'exp:' + e.id;
+      var acts = '<button type="button" class="link" data-act="' + (e.payment ? 'editpay' : 'edit') + '" data-id="' + e.id + '">Edit</button>' +
+        '<button type="button" class="link danger' + (armed === key ? ' armed' : '') + '" data-act="del" data-id="' + e.id + '">' + (armed === key ? 'Click again to delete' : 'Delete') + '</button>';
+      return '<li class="exp"><div><span class="t">' + title + '</span>' + tag + '<div class="meta">' + meta + '</div>' +
+        (e.notes ? '<div class="notes">' + esc(e.notes) + '</div>' : '') + '</div>' +
+        '<div class="amt">' + money(e.amount, cur) + '</div>' +
+        (e.payment ? '' : '<details><summary>Who owes their share</summary><ul class="shares">' + shares + '</ul></details>') +
+        '<div class="acts">' + acts + '</div></li>';
+    }).join('');
+  }
+  function renderSlip(g) {
+    var cur = g.currency;
+    $('#smartSw').setAttribute('aria-checked', String(!!g.smart));
+    var net = netBalances(g.members, g.expenses);
+    var direct = directDebts(g.expenses);
+    var smart = simplify(net);
+    var debts = g.smart ? smart : direct;
+    var spent = g.expenses.filter(function (e) { return !e.payment; }).reduce(function (a, e) { return a + e.amount; }, 0);
+    var maxAbs = 1;
+    g.members.forEach(function (m) { maxAbs = Math.max(maxAbs, Math.abs(net[m.id] || 0)); });
+
+    var html = '<div class="spent"><span class="muted">Spent together</span><span class="mono">' + money(spent, cur) + '</span></div>';
+    html += '<h3 class="label">Balances</h3>';
+    if (!g.members.length) {
+      html += '<p class="muted" style="margin-bottom:24px">Add people to see balances.</p>';
+    } else {
+      var sorted = g.members.slice().sort(function (a, b) { return (net[b.id] || 0) - (net[a.id] || 0); });
+      html += '<ul class="bals">' + sorted.map(function (m) {
+        var v = net[m.id] || 0;
+        var cls = v > 0 ? 'pos' : v < 0 ? 'neg' : '';
+        var st = v > 0 ? 'gets back' : v < 0 ? 'owes' : 'settled up';
+        var w = Math.round(Math.abs(v) / maxAbs * 50);
+        return '<li class="bal ' + cls + '"><span class="who">' + avatar(m) + '<span>' + esc(m.name) + '<small>' + st + '</small></span></span>' +
+          '<span class="num">' + (v === 0 ? money(0, cur) : money(Math.abs(v), cur)) + '</span>' +
+          '<span class="bar" aria-hidden="true"><i style="width:' + w + '%"></i></span></li>';
+      }).join('') + '</ul>';
+    }
+    html += '<h3 class="label">' + (g.smart ? 'Settle up' : 'Who owes whom') + '</h3>';
+    if (g.smart) {
+      var np = smart.length;
+      var note = np === 0 ? '' : np + (np === 1 ? ' payment settles' : ' payments settle') + ' everyone' +
+        (direct.length > np ? ', down from ' + direct.length + ' direct debts.' : '.');
+      if (note) html += '<p class="pay-note">' + note + '</p>';
+    } else if (debts.length) {
+      html += '<p class="pay-note">Debts between pairs of people. Turn on smart split to combine them.</p>';
+    }
+    if (!g.expenses.length) {
+      html += '<p class="muted">Add an expense to see who owes what.</p>';
+    } else if (!debts.length) {
+      html += '<p class="done">Everyone is settled up.</p>';
+    } else {
+      html += '<ul class="pays">' + debts.map(function (d) {
+        return '<li class="pay"><span class="line"><b>' + esc(nameOf(g, d.from)) + '</b><span class="arrow" aria-label="pays">→</span><b>' + esc(nameOf(g, d.to)) + '</b></span>' +
+          '<span class="num">' + money(d.amount, cur) + '</span>' +
+          '<span class="paybtns"><button type="button" class="btn ghost small" data-act="settle" data-from="' + d.from + '" data-to="' + d.to + '" data-amt="' + d.amount + '">Paid in full</button>' +
+          '<button type="button" class="btn ghost small" data-act="part" data-from="' + d.from + '" data-to="' + d.to + '" data-amt="' + d.amount + '">Part payment</button></span></li>';
+      }).join('') + '</ul>';
+    }
+    $('#slipBody').innerHTML = html;
+  }
+  function renderSide(g) { renderHead(g); renderList(g); renderSlip(g); if (view === 'report') renderReport(g); }
+  function render() {
+    var g = active();
+    renderTabs();
+    $('#welcome').hidden = !!g;
+    $('#layout').hidden = !g;
+    $('#storeNote').hidden = canSave;
+    if (!g) { $('#ngForm').hidden = false; return; }
+    if (form.groupId !== g.id) { resetForm(g); resetPayFields(); }
+    renderHead(g);
+    renderForm(g);
+    renderList(g);
+    renderSlip(g);
+    renderView(g);
+  }
+
+  /* ---------- actions ---------- */
+  function flash(msg) {
+    var el = $('#fStatus');
+    el.textContent = msg;
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(function () { el.textContent = ''; }, 3500);
+  }
+  function messageFor(r, cur) {
+    switch (r.code) {
+      case 'no_people': return 'Choose at least one person to split with.';
+      case 'no_total': return 'Enter a total greater than zero, like 48.50.';
+      case 'pct_missing': return 'Enter a percentage for everyone you selected.';
+      case 'pct_sum': return r.diff > 0 ? bpsText(r.diff) + '% is still unassigned. Percentages must add up to 100%.' : 'Percentages are ' + bpsText(-r.diff) + '% over 100%.';
+      case 'amt_missing': return 'Enter an amount for everyone you selected.';
+      case 'amt_sum': return r.diff > 0 ? money(r.diff, cur) + ' is still unassigned. Amounts must add up to the total.' : 'Amounts are ' + money(-r.diff, cur) + ' over the total.';
+      default: return 'Check the split and try again.';
+    }
+  }
+  function showNewGroup(on) {
+    $('#ngForm').hidden = !on;
+    if (on) { $('#ngName').value = ''; $('#ngName').focus(); }
+  }
+  function backToCleanForm(g, payer) {
+    resetForm(g);
+    renderPayer(g, payer);
+    renderPeople();
+  }
+
+  $('#tabs').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button');
+    if (!b) return;
+    if (b.id === 'addGroupBtn') { showNewGroup(true); return; }
+    if (b.dataset.id) { state.activeId = b.dataset.id; armed = null; showNewGroup(false); save(); render(); }
+  });
+  $('#ngCancel').addEventListener('click', function () { if (state.groups.length) showNewGroup(false); });
+  $('#ngForm').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var name = $('#ngName').value.trim();
+    if (!name) { $('#ngName').focus(); return; }
+    var g = { id: uid(), name: name, currency: 'USD', smart: false, members: [], expenses: [] };
+    state.groups.push(g);
+    state.activeId = g.id;
+    armed = null;
+    showNewGroup(false);
+    save();
+    render();
+    $('#mName').focus();
+  });
+  $('#loadExample').addEventListener('click', function () {
+    var g = exampleGroup();
+    state.groups.push(g);
+    state.activeId = g.id;
+    showNewGroup(false);
+    save();
+    render();
+  });
+  $('#gCur').addEventListener('change', function () {
+    var g = active();
+    g.currency = $('#gCur').value;
+    save();
+    render();
+  });
+  $('#gDel').addEventListener('click', function () {
+    var g = active();
+    if (armed === 'group') {
+      armed = null;
+      state.groups = state.groups.filter(function (x) { return x.id !== g.id; });
+      state.activeId = state.groups.length ? state.groups[0].id : null;
+      form.groupId = null;
+      save();
+      render();
+    } else {
+      arm('group');
+      renderHead(g);
+    }
+  });
+  $('#smartSw').addEventListener('click', function () {
+    var g = active();
+    g.smart = !g.smart;
+    save();
+    renderSlip(g);
+    if (view === 'report') renderReport(g);
+  });
+
+  $('#mForm').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var g = active();
+    var name = $('#mName').value.trim();
+    var err = $('#mErr');
+    err.textContent = '';
+    if (!name) { $('#mName').focus(); return; }
+    if (g.members.some(function (m) { return m.name.toLowerCase() === name.toLowerCase(); })) {
+      err.textContent = name + ' is already in this group. Use a different name, like ' + name + ' B.';
+      return;
+    }
+    var m = { id: uid(), name: name };
+    g.members.push(m);
+    if (form.groupId === g.id) {
+      form.included.add(m.id);
+      if (form.type !== 'equal') refill();
+    }
+    $('#mName').value = '';
+    save();
+    render();
+    $('#mName').focus();
+  });
+  $('#chips').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button[data-act="rm"]');
+    if (!b) return;
+    var g = active();
+    if (memberUsed(g, b.dataset.id)) return;
+    g.members = g.members.filter(function (m) { return m.id !== b.dataset.id; });
+    form.included.delete(b.dataset.id);
+    if (form.type !== 'equal') refill();
+    save();
+    render();
+  });
+
+  $('#fType').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button[data-type]');
+    if (!b || b.dataset.type === form.type) return;
+    form.type = b.dataset.type;
+    refill();
+    syncChrome();
+    renderPeople();
+  });
+  $('#fPeople').addEventListener('change', function (ev) {
+    var t = ev.target;
+    if (t.dataset.act !== 'inc') return;
+    var id = t.closest('.person').dataset.id;
+    if (t.checked) form.included.add(id); else form.included.delete(id);
+    if (form.type !== 'equal') refill();
+    renderPeople();
+  });
+  $('#fPeople').addEventListener('input', function (ev) {
+    var t = ev.target;
+    if (t.dataset.act !== 'val') return;
+    form.values[t.closest('.person').dataset.id] = t.value;
+    form.touched = true;
+    updateHints();
+  });
+  $('#fAmt').addEventListener('input', function () {
+    if (form.type === 'exact' && !form.touched) { refill(); renderPeople(); }
+    else updateHints();
+  });
+  $('#fCancel').addEventListener('click', function () {
+    var g = active();
+    backToCleanForm(g, $('#fPayer').value);
+  });
+  $('#expForm').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var g = active();
+    var err = $('#fError');
+    err.textContent = '';
+    var total = parseCents($('#fAmt').value);
+    var ids = includedIds(g);
+    if (!(total > 0)) { err.textContent = 'Enter a total greater than zero, like 48.50.'; $('#fAmt').focus(); return; }
+    var r = buildShares(form.type, total, ids, form.values);
+    if (!r.shares) { err.textContent = messageFor(r, g.currency); return; }
+    var payer = $('#fPayer').value;
+    var values = {};
+    if (form.type !== 'equal') ids.forEach(function (id) { values[id] = form.values[id]; });
+    var desc = $('#fDesc').value.trim() || 'Expense';
+    var date = $('#fDate').value || todayStr();
+    if (!validDateStr(date)) { err.textContent = 'Pick a valid date.'; $('#fDate').focus(); return; }
+    var notes = $('#fNotes').value.trim();
+    var editing = !!form.editingId;
+    if (editing) {
+      for (var i = 0; i < g.expenses.length; i++) {
+        if (g.expenses[i].id === form.editingId) {
+          g.expenses[i] = Object.assign({}, g.expenses[i], { desc: desc, notes: notes, date: date, amount: total, payer: payer, type: form.type, values: values, shares: r.shares });
+        }
+      }
+    } else {
+      g.expenses.push({ id: uid(), desc: desc, notes: notes, date: date, amount: total, payer: payer, type: form.type, values: values, shares: r.shares, ts: Date.now(), payment: false });
+    }
+    save();
+    renderSide(g);
+    backToCleanForm(g, payer);
+    flash((editing ? 'Saved ' : 'Added ') + desc + ' · ' + money(total, g.currency));
+    $('#fDesc').focus();
+  });
+
+  $('#expList').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button[data-act]');
+    if (!b) return;
+    var g = active();
+    var id = b.dataset.id;
+    if (b.dataset.act === 'del') {
+      var key = 'exp:' + id;
+      if (armed === key) {
+        armed = null;
+        g.expenses = g.expenses.filter(function (e) { return e.id !== id; });
+        if (form.editingId === id) backToCleanForm(g, $('#fPayer').value);
+        if (pay.editingId === id) resetPayFields();
+        save();
+        renderSide(g);
+        renderPeople();
+        updatePayHint();
+      } else {
+        arm(key);
+        renderList(g);
+      }
+      return;
+    }
+    var e = g.expenses.filter(function (x) { return x.id === id; })[0];
+    if (!e) return;
+    if (b.dataset.act === 'edit') {
+      form.editingId = e.id;
+      form.type = e.type;
+      form.included = new Set(Object.keys(e.shares));
+      form.values = Object.assign({}, e.values);
+      form.touched = true;
+      $('#fDesc').value = e.desc;
+      $('#fAmt').value = (e.amount / 100).toFixed(2);
+      $('#fDate').value = dateOf(e);
+      $('#fNotes').value = e.notes || '';
+      $('#fError').textContent = '';
+      renderPayer(g, e.payer);
+      syncChrome();
+      renderPeople();
+      $('#fTitle').scrollIntoView({ block: 'start' });
+      $('#fDesc').focus();
+    } else if (b.dataset.act === 'editpay') {
+      openPayForm(g, e.payer, Object.keys(e.shares)[0], e.amount, e);
+    }
+  });
+
+  $('#slipBody').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button[data-act]');
+    if (!b) return;
+    var g = active();
+    var amt = parseInt(b.dataset.amt, 10);
+    if (b.dataset.act === 'settle') {
+      g.expenses.push(paymentObj(b.dataset.from, b.dataset.to, amt, todayStr(), ''));
+      save();
+      renderSide(g);
+      updatePayHint();
+    } else if (b.dataset.act === 'part') {
+      openPayForm(g, b.dataset.from, b.dataset.to, amt, null);
+    }
+  });
+
+  /* ---------- report view ---------- */
+  function reportFor(g) {
+    return buildReport(g, function (c) { return money(c, g.currency); }, fmtDay, Date.now());
+  }
+  function signed(c, cur) { return c === 0 ? money(0, cur) : (c > 0 ? '+' : '−') + money(Math.abs(c), cur); }
+  function kv(k, v) { return '<div><dt>' + esc(k) + '</dt><dd>' + esc(v) + '</dd></div>'; }
+
+  function renderView(g) {
+    $$('#viewTabs button').forEach(function (b) {
+      if (b.dataset.view === view) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+    });
+    var isReport = view === 'report';
+    $('#secForm').hidden = isReport;
+    $('#secList').hidden = isReport;
+    $('#secReport').hidden = !isReport;
+    if (isReport) renderReport(g);
+  }
+
+  function renderReport(g) {
+    var cur = g.currency;
+    var M = function (c) { return money(c, cur); };
+    var rep = reportFor(g);
+    var t = rep.totals;
+    $('#rSub').textContent = g.name + ' · generated ' + rep.generated;
+    var h = '';
+
+    h += '<div class="rsec"><h4 class="label">Summary</h4><dl class="kv">' +
+      kv('Total spent', M(t.spent)) + kv('Expenses', String(t.expenseCount)) + kv('Average expense', M(t.avgExpense)) +
+      kv('Per person', M(t.avgPerPerson)) +
+      kv('Period', t.first ? (t.first === t.last ? t.first : t.first + ' to ' + t.last) : 'None yet') +
+      kv('Payments made', t.paymentCount ? t.paymentCount + ' · ' + M(t.paymentTotal) : 'None') +
+      kv('Still outstanding', M(t.outstanding)) + '</dl>';
+
+    h += '<div class="tablewrap"><table class="tbl"><thead><tr><th>Person</th><th class="n">Paid</th><th class="n">Share</th>' +
+      '<th class="n" title="Payments sent">Sent</th><th class="n" title="Payments received">Received</th><th class="n">Net</th><th>Status</th></tr></thead><tbody>';
+    var tot = { paid: 0, share: 0, sent: 0, received: 0, net: 0 };
+    rep.people.forEach(function (p) {
+      Object.keys(tot).forEach(function (k) { tot[k] += p[k]; });
+      h += '<tr><td>' + esc(p.name) + '</td><td class="n">' + M(p.paid) + '</td><td class="n">' + M(p.share) + '</td><td class="n">' + M(p.sent) +
+        '</td><td class="n">' + M(p.received) + '</td><td class="n ' + (p.net > 0 ? 'pos-t' : p.net < 0 ? 'neg-t' : '') + '">' + signed(p.net, cur) +
+        '</td><td>' + p.status + '</td></tr>';
+    });
+    h += '</tbody><tfoot><tr><td>Total</td><td class="n">' + M(tot.paid) + '</td><td class="n">' + M(tot.share) + '</td><td class="n">' + M(tot.sent) +
+      '</td><td class="n">' + M(tot.received) + '</td><td class="n">' + signed(tot.net, cur) + '</td><td></td></tr></tfoot></table></div>';
+    h += '<p class="fine">Net is paid minus share, adjusted for payments already marked as paid. Positive means the person is owed money.</p>';
+
+    var plan = g.smart ? rep.plans.smart : rep.plans.direct;
+    h += '<h4 class="label sub">Settle-up plan · ' + (g.smart ? 'smart split' : 'direct debts') + '</h4>';
+    if (plan.length) {
+      h += '<ul class="plan">' + plan.map(function (d) {
+        return '<li><span><b>' + esc(nameOf(g, d.from)) + '</b><span class="arrow">→</span><b>' + esc(nameOf(g, d.to)) + '</b></span><span class="mono">' + M(d.amount) + '</span></li>';
+      }).join('') + '</ul>';
+    } else {
+      h += '<p class="muted">' + (t.expenseCount ? 'Everyone is settled up.' : 'Nothing to settle yet.') + '</p>';
+    }
+    h += '</div>';
+
+    h += '<div class="rsec"><h4 class="label">Insights</h4>';
+    if (rep.insights.length) {
+      h += '<ul class="insights">' + rep.insights.map(function (i) {
+        return '<li><b>' + esc(i.label) + '</b><span>' + esc(i.text) + '</span></li>';
+      }).join('') + '</ul>';
+    } else {
+      h += '<p class="muted">Add an expense to see insights.</p>';
+    }
+
+    if (t.expenseCount) {
+      var max = 1;
+      rep.people.forEach(function (p) { max = Math.max(max, p.paid, p.share); });
+      var line = function (slot, val, label, name) {
+        var w = val > 0 ? Math.max(1, Math.round(val / max * 100)) : 0;
+        return '<div class="bar-line"><span class="bw"><i class="tipc" tabindex="0" data-tip="' + esc(name + ' · ' + label + ' ' + M(val)) +
+          '" style="width:' + w + '%;background:var(--' + slot + ')"></i></span><span class="bv">' + M(val) + '</span></div>';
+      };
+      h += '<div class="charts"><div class="chart"><h5>Paid vs. share</h5><p class="sub">What each person fronted compared with what they owe for.</p>' +
+        '<div class="legend"><span><i style="background:var(--s1)"></i>Paid</span><span><i style="background:var(--s2)"></i>Share</span></div><div class="hb">' +
+        rep.people.map(function (p) {
+          return '<div class="hb-row"><span class="hb-name">' + esc(p.name) + '</span><div class="hb-bars">' +
+            line('s1', p.paid, 'Paid', p.name) + line('s2', p.share, 'Share', p.name) + '</div></div>';
+        }).join('') + '</div></div>';
+      if (rep.days.length > 1) {
+        var shown = rep.days.slice(-14);
+        var dmax = Math.max.apply(null, shown.map(function (d) { return d.amount; }));
+        h += '<div class="chart"><h5>Spending by day</h5><p class="sub">Expenses only, not payments.</p><div class="cols">' + shown.map(function (d) {
+          var pct = Math.max(2, Math.round(d.amount / dmax * 78));
+          return '<div class="col"><div class="col-plot">' + (d.amount === dmax ? '<span class="cap">' + M(d.amount) + '</span>' : '') +
+            '<i class="tipc" tabindex="0" data-tip="' + esc(d.label + ' · ' + M(d.amount) + ' across ' + d.count + (d.count === 1 ? ' expense' : ' expenses')) +
+            '" style="height:' + pct + '%"></i></div><span class="col-lab">' + esc(d.label) + '</span></div>';
+        }).join('') + '</div></div>';
+      }
+      h += '</div>';
+    }
+    h += '</div>';
+
+    h += '<div class="rsec"><h4 class="label">Expense audit</h4>';
+    if (!rep.audit.length) {
+      h += '<p class="muted">Nothing to audit yet.</p>';
+    } else {
+      h += '<div class="tablewrap"><table class="tbl"><thead><tr><th>#</th><th>Date</th><th>Description</th><th>Notes</th><th>Paid by</th><th class="n">Total</th><th>Split</th>' +
+        rep.members.map(function (m) { return '<th class="n">' + esc(m.name) + '</th>'; }).join('') + '<th>Check</th></tr></thead><tbody>';
+      var memTot = {};
+      var grand = 0;
+      rep.audit.forEach(function (r) {
+        var isPay = r.kind === 'Payment';
+        if (!isPay) {
+          grand += r.total;
+          rep.members.forEach(function (m) { memTot[m.id] = (memTot[m.id] || 0) + (r.shares[m.id] || 0); });
+        }
+        h += '<tr' + (isPay ? ' class="pay-row"' : '') + '><td>' + r.n + '</td><td>' + esc(r.shortDate) + '</td><td>' + esc(r.desc) + '</td><td class="wrap">' + esc(r.notes) + '</td><td>' + esc(r.payer) +
+          '</td><td class="n">' + M(r.total) + '</td><td class="wrap">' + esc(r.method + ': ' + r.detail) + '</td>' +
+          rep.members.map(function (m) { return '<td class="n">' + (r.shares[m.id] != null ? M(r.shares[m.id]) : '') + '</td>'; }).join('') +
+          (r.diff === 0 ? '<td class="ok-t">Matches</td>' : '<td class="neg-t">Off by ' + M(Math.abs(r.diff)) + '</td>') + '</tr>';
+      });
+      h += '</tbody><tfoot><tr><td></td><td></td><td>Expense totals</td><td></td><td></td><td class="n">' + M(grand) + '</td><td></td>' +
+        rep.members.map(function (m) { return '<td class="n">' + M(memTot[m.id] || 0) + '</td>'; }).join('') + '<td></td></tr></tfoot></table></div>';
+      var ok = rep.checks.sharesMatch && rep.checks.balancesZero;
+      h += '<p class="checks ' + (ok ? 'ok' : 'bad') + '">' + (ok
+        ? 'Checks passed. Every expense’s shares add up to its total, and all balances add up to zero.'
+        : 'Check failed. Some shares do not add up to their expense total.') + '</p>';
+    }
+    h += '</div>';
+    $('#reportBody').innerHTML = h;
+  }
+
+  /* ---------- downloads ---------- */
+  function setDlStatus(msg, kind) {
+    var el = $('#dlStatus');
+    el.textContent = msg;
+    el.className = kind || '';
+  }
+  function dlRefresh() {
+    var hasLib = typeof XLSX !== 'undefined';
+    $('#dlXlsx').disabled = !dlApi || !hasLib;
+    $('#dlPdf').disabled = !dlApi;
+    $('#dlCsv').disabled = !dlApi;
+    if (dlResolved && !dlApi) setDlStatus('Downloads are not available in this view. Open the artifact in claude.ai to download the report.');
+    else if (dlApi && !hasLib) setDlStatus('Excel export could not load. The PDF and CSV downloads still work.');
+  }
+  function sheetFrom(aoa) {
+    var moneyCells = [];
+    var widths = [];
+    var rows = aoa.map(function (row, r) {
+      return row.map(function (c, ci) {
+        var v, len;
+        if (c == null) { v = null; len = 0; }
+        else if (typeof c === 'object') { v = c.money / 100; moneyCells.push({ r: r, c: ci }); len = v.toFixed(2).length; }
+        else { v = c; len = String(c).length; }
+        if (row.length > 1) widths[ci] = Math.max(widths[ci] || 8, Math.min(len + 2, 60));
+        return v;
+      });
+    });
+    var ws = XLSX.utils.aoa_to_sheet(rows);
+    moneyCells.forEach(function (p) {
+      var a = XLSX.utils.encode_cell({ r: p.r, c: p.c });
+      if (ws[a]) ws[a].z = '#,##0.00';
+    });
+    ws['!cols'] = Array.from(widths, function (w) { return { wch: w || 8 }; });
+    return ws;
+  }
+  function makeWorkbook(rep) {
+    var s = reportSheets(rep);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, sheetFrom(s.summary), 'Summary');
+    XLSX.utils.book_append_sheet(wb, sheetFrom(s.insights), 'Insights');
+    XLSX.utils.book_append_sheet(wb, sheetFrom(s.details), 'Expense details');
+    return wb;
+  }
+  function fileBase(g) {
+    var slug = g.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'group';
+    return 'even-steven-' + slug + '-' + dateKey(Date.now());
+  }
+  function pdfMoney(c, cur) {
+    return cur === 'INR' ? 'Rs ' + (c / 100).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : money(c, cur);
+  }
+  function pdfNum(c, cur) {
+    return new Intl.NumberFormat(LOCALES[cur] || 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(c / 100);
+  }
+  function makePdf(g) {
+    var rep = buildReport(g, function (c) { return pdfMoney(c, g.currency); }, fmtDay, Date.now());
+    return buildReportPdf(rep, function (c) { return pdfNum(c, g.currency); });
+  }
+  async function saveVia(filename, data, say) {
+    say(dlApi === browserDl ? 'Saving ' + filename + '…' : 'Confirm the download to save ' + filename + '.');
+    try {
+      await dlApi.save({ filename: filename, data: data });
+      say('Saved ' + filename, 'ok');
+    } catch (e) {
+      var code = e && e.code;
+      say(code === 'unsupported' ? 'Your browser blocked the download.' : code === 'declined' ? 'Download cancelled.'
+        : code === 'rate_limited' ? 'A download prompt is already open. Finish it, then try again.'
+        : 'This view could not save the file' + (code ? ' (' + code + ').' : '.'), 'err');
+    }
+  }
+  async function doDownload(kind) {
+    var g = active();
+    if (!g || !dlApi) return;
+    var rep = reportFor(g);
+    var filename, data;
+    try {
+      if (kind === 'xlsx') {
+        data = XLSX.write(makeWorkbook(rep), { bookType: 'xlsx', type: 'array' });
+        filename = fileBase(g) + '.xlsx';
+      } else if (kind === 'pdf') {
+        data = makePdf(g);
+        filename = fileBase(g) + '.pdf';
+      } else {
+        data = '﻿' + toCsv(reportSheets(rep).details);
+        filename = fileBase(g) + '-details.csv';
+      }
+    } catch (e) {
+      setDlStatus('Could not build the file. Try again.', 'err');
+      return;
+    }
+    await saveVia(filename, data, setDlStatus);
+  }
+
+  $('#viewTabs').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button[data-view]');
+    if (!b || b.dataset.view === view) return;
+    view = b.dataset.view;
+    var g = active();
+    if (g) renderView(g);
+  });
+  $('#dlXlsx').addEventListener('click', function () { doDownload('xlsx'); });
+  $('#dlPdf').addEventListener('click', function () { doDownload('pdf'); });
+  $('#dlCsv').addEventListener('click', function () { doDownload('csv'); });
+
+  var tip = $('#tip');
+  function showTip(el, x, y) {
+    tip.textContent = el.getAttribute('data-tip');
+    tip.style.display = 'block';
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    var left = Math.min(Math.max(8, x + 12), window.innerWidth - w - 8);
+    var top = y - h - 12 < 8 ? y + 16 : y - h - 12;
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+  }
+  function hideTip() { tip.style.display = 'none'; }
+  var rb = $('#reportBody');
+  rb.addEventListener('pointermove', function (ev) {
+    var el = ev.target.closest('[data-tip]');
+    if (el) showTip(el, ev.clientX, ev.clientY); else hideTip();
+  });
+  rb.addEventListener('pointerleave', hideTip);
+  rb.addEventListener('focusin', function (ev) {
+    var el = ev.target.closest('[data-tip]');
+    if (!el) return;
+    var r = el.getBoundingClientRect();
+    showTip(el, r.left + r.width / 2, r.top);
+  });
+  rb.addEventListener('focusout', hideTip);
+
+
+  /* ---------- recording payments ---------- */
+  var pay = { editingId: null };
+
+  function fillPaySelects(g, from, to) {
+    var opts = g.members.map(function (m) { return '<option value="' + m.id + '">' + esc(m.name) + '</option>'; }).join('');
+    $('#pFrom').innerHTML = opts;
+    $('#pTo').innerHTML = opts;
+    var ids = g.members.map(function (m) { return m.id; });
+    $('#pFrom').value = ids.indexOf(from) >= 0 ? from : ids[0];
+    var other = ids.filter(function (id) { return id !== $('#pFrom').value; })[0];
+    $('#pTo').value = ids.indexOf(to) >= 0 && to !== $('#pFrom').value ? to : other;
+  }
+  function suggestedAmount(g, from, to) {
+    var rest = g.expenses.filter(function (e) { return e.id !== pay.editingId; });
+    var plan = g.smart ? simplify(netBalances(g.members, rest)) : directDebts(rest);
+    for (var i = 0; i < plan.length; i++) if (plan[i].from === from && plan[i].to === to) return plan[i].amount;
+    return 0;
+  }
+  function updatePayHint() {
+    var g = active();
+    if (!g || g.members.length < 2) return;
+    var cur = g.currency;
+    var from = $('#pFrom').value, to = $('#pTo').value;
+    var typed = parseCents($('#pAmt').value);
+    var sug = from !== to ? suggestedAmount(g, from, to) : 0;
+    var msg = '', cls = 'hint';
+    if (from === to) { msg = 'Choose two different people.'; cls += ' warn'; }
+    else if (sug > 0) {
+      msg = nameOf(g, from) + ' owes ' + nameOf(g, to) + ' ' + money(sug, cur) + ' in the current plan.';
+      if (typed > 0 && typed < sug) { msg += ' ' + money(sug - typed, cur) + ' would still be left to pay.'; cls += ' ok'; }
+      else if (typed > sug) { msg += ' This is ' + money(typed - sug, cur) + ' more, so ' + nameOf(g, to) + ' would then owe ' + nameOf(g, from) + ' the difference.'; cls += ' warn'; }
+      else if (typed === sug) { msg += ' This pays it in full.'; cls += ' ok'; }
+    } else {
+      msg = 'Nothing is owed from ' + nameOf(g, from) + ' to ' + nameOf(g, to) + ' in the current plan. You can still record the payment.';
+    }
+    var h = $('#pHint');
+    h.className = cls;
+    h.textContent = msg;
+    $('#pUse').hidden = !(sug > 0 && typed !== sug);
+  }
+  function syncPayChrome() {
+    var editing = !!pay.editingId;
+    $('#pTitle').textContent = editing ? 'Edit payment' : 'Record a payment';
+    $('#pSubmit').textContent = editing ? 'Save changes' : 'Save payment';
+    $('#pCancel').hidden = !editing;
+  }
+  function renderPayForm(g) {
+    $('#payBox').hidden = g.members.length < 2;
+    if (g.members.length < 2) return;
+    fillPaySelects(g, $('#pFrom').value, $('#pTo').value);
+    if (!$('#pDate').value) $('#pDate').value = todayStr();
+    syncPayChrome();
+    updatePayHint();
+  }
+  function resetPayFields() {
+    pay.editingId = null;
+    $('#pAmt').value = '';
+    $('#pNotes').value = '';
+    $('#pDate').value = todayStr();
+    $('#pError').textContent = '';
+    syncPayChrome();
+    updatePayHint();
+  }
+  function openPayForm(g, from, to, amount, editing) {
+    if (view !== 'ledger') { view = 'ledger'; renderView(g); }
+    pay.editingId = editing ? editing.id : null;
+    fillPaySelects(g, from, to);
+    $('#pAmt').value = (amount / 100).toFixed(2);
+    $('#pDate').value = editing ? dateOf(editing) : todayStr();
+    $('#pNotes').value = editing ? editing.notes || '' : '';
+    $('#pError').textContent = '';
+    $('#payBox').open = true;
+    syncPayChrome();
+    updatePayHint();
+    $('#pTitle').scrollIntoView({ block: 'start' });
+    $('#pAmt').focus();
+    $('#pAmt').select();
+  }
+  var payFlash = null;
+  $('#pFrom').addEventListener('change', updatePayHint);
+  $('#pTo').addEventListener('change', updatePayHint);
+  $('#pAmt').addEventListener('input', updatePayHint);
+  $('#pUse').addEventListener('click', function () {
+    var g = active();
+    var sug = suggestedAmount(g, $('#pFrom').value, $('#pTo').value);
+    if (sug > 0) { $('#pAmt').value = (sug / 100).toFixed(2); updatePayHint(); }
+  });
+  $('#pCancel').addEventListener('click', function () { resetPayFields(); });
+  $('#payForm').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var g = active();
+    var err = $('#pError');
+    err.textContent = '';
+    var from = $('#pFrom').value, to = $('#pTo').value;
+    if (from === to) { err.textContent = 'Choose two different people.'; return; }
+    var amt = parseCents($('#pAmt').value);
+    if (!(amt > 0)) { err.textContent = 'Enter an amount greater than zero, like 25.00.'; $('#pAmt').focus(); return; }
+    var date = $('#pDate').value || todayStr();
+    if (!validDateStr(date)) { err.textContent = 'Pick a valid date.'; $('#pDate').focus(); return; }
+    var notes = $('#pNotes').value.trim();
+    var editing = !!pay.editingId;
+    if (editing) {
+      for (var i = 0; i < g.expenses.length; i++) {
+        if (g.expenses[i].id === pay.editingId) g.expenses[i] = paymentObj(from, to, amt, date, notes, g.expenses[i].id, g.expenses[i].ts);
+      }
+    } else {
+      g.expenses.push(paymentObj(from, to, amt, date, notes));
+    }
+    save();
+    renderSide(g);
+    renderPeople();
+    resetPayFields();
+    var st = $('#pStatus');
+    st.textContent = (editing ? 'Saved ' : 'Recorded ') + nameOf(g, from) + ' paying ' + nameOf(g, to) + ' ' + money(amt, g.currency);
+    clearTimeout(payFlash);
+    payFlash = setTimeout(function () { st.textContent = ''; }, 4000);
+  });
+
+  /* ---------- save and load a group file ---------- */
+  function setIo(msg, kind) {
+    var el = $('#ioStatus');
+    el.textContent = msg;
+    el.className = kind || '';
+  }
+  function groupJson(g) {
+    return JSON.stringify({ app: 'even-steven', version: 1, exportedAt: new Date().toISOString(), group: g }, null, 2);
+  }
+  $('#saveGroup').addEventListener('click', function () {
+    var g = active();
+    if (!g) return;
+    if (!dlApi) { setIo('Saving files is not available in this view. Open the artifact in claude.ai to save a group file.', 'err'); return; }
+    saveVia(fileBase(g) + '.json', groupJson(g), setIo);
+  });
+
+  var pendingImport = null;
+  function uniqueName(name) {
+    var taken = function (n) { return state.groups.some(function (g) { return g.name === n; }); };
+    var base = name + ' (copy)';
+    var out = base;
+    for (var k = 2; taken(out); k++) out = base + ' ' + k;
+    return out;
+  }
+  function commitImport(list, mode) {
+    list.forEach(function (ng) {
+      var idx = state.groups.findIndex(function (g) { return g.id === ng.id; });
+      if (idx >= 0 && mode === 'replace') {
+        state.groups[idx] = ng;
+      } else {
+        if (idx >= 0) { ng.id = uid(); ng.name = uniqueName(ng.name); }
+        state.groups.push(ng);
+      }
+    });
+    state.activeId = list[list.length - 1].id;
+    form.groupId = null;
+    armed = null;
+    pendingImport = null;
+    $('#loadPanel').hidden = true;
+    showNewGroup(false);
+    save();
+    render();
+    setIo(list.length === 1 ? 'Loaded ' + list[0].name + '. You can add and edit expenses as usual.' : 'Loaded ' + list.length + ' groups.', 'ok');
+  }
+  function importText(text) {
+    var data;
+    try { data = JSON.parse(text.replace(/^﻿/, '')); }
+    catch (e) { setIo('That file is not valid JSON, so nothing was loaded.', 'err'); return; }
+    var raws = data && Array.isArray(data.groups) ? data.groups : data && data.group ? [data.group] : [data];
+    if (!raws.length || raws.length > 50) { setIo('That file does not contain a group.', 'err'); return; }
+    var good = [];
+    for (var i = 0; i < raws.length; i++) {
+      var r = validateGroup(raws[i], uid);
+      if (r.error) { setIo('Nothing was loaded. ' + (raws.length > 1 ? 'Group ' + (i + 1) + ': ' : '') + r.error, 'err'); return; }
+      good.push(r.group);
+    }
+    var clash = good.filter(function (ng) { return state.groups.some(function (g) { return g.id === ng.id; }); });
+    if (!clash.length) { commitImport(good, 'add'); return; }
+    pendingImport = good;
+    var names = clash.map(function (ng) { return esc(ng.name); }).join(', ');
+    $('#loadPanel').innerHTML = '<p>You already have ' + (clash.length === 1 ? 'a group that matches' : 'groups that match') + ' <b>' + names +
+      '</b>. Replace ' + (clash.length === 1 ? 'it' : 'them') + ' with the file’s version, or add the file as separate ' + (clash.length === 1 ? 'a copy' : 'copies') + '?</p>' +
+      '<div class="actions"><button type="button" class="btn" data-mode="replace">Replace</button>' +
+      '<button type="button" class="btn ghost" data-mode="copy">Add as a copy</button>' +
+      '<button type="button" class="btn ghost" data-mode="cancel">Cancel</button></div>';
+    $('#loadPanel').hidden = false;
+    setIo('');
+  }
+  $('#loadPanel').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button[data-mode]');
+    if (!b || !pendingImport) return;
+    if (b.dataset.mode === 'cancel') { pendingImport = null; $('#loadPanel').hidden = true; setIo('Load cancelled.'); return; }
+    commitImport(pendingImport, b.dataset.mode);
+  });
+  $('#loadFile').addEventListener('change', function (ev) {
+    var f = ev.target.files && ev.target.files[0];
+    ev.target.value = '';
+    if (!f) return;
+    if (f.size > 10 * 1024 * 1024) { setIo('That file is too large to be a saved group.', 'err'); return; }
+    var rd = new FileReader();
+    rd.onload = function () { importText(String(rd.result)); };
+    rd.onerror = function () { setIo('Could not read that file.', 'err'); };
+    rd.readAsText(f);
+  });
+
+  /* Outside claude.ai there is no download service, so fall back to a normal browser download. */
+  var MIME = { pdf: 'application/pdf', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', csv: 'text/csv;charset=utf-8', json: 'application/json' };
+  var browserDl = {
+    save: function (o) {
+      return new Promise(function (resolve, reject) {
+        try {
+          var ext = String(o.filename).split('.').pop();
+          var blob = o.data instanceof Blob ? o.data : new Blob([o.data], { type: MIME[ext] || 'application/octet-stream' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = o.filename;
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function () { a.remove(); URL.revokeObjectURL(url); }, 1000);
+          resolve();
+        } catch (e) { reject({ code: 'unsupported' }); }
+      });
+    }
+  };
+  function useBrowserDl() { dlApi = browserDl; dlResolved = true; dlRefresh(); }
+  if (window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('downloads').then(function (d) { if (d) { dlApi = d; dlResolved = true; dlRefresh(); } else useBrowserDl(); })
+      .catch(useBrowserDl);
+  } else {
+    useBrowserDl();
+  }
+
+  save();
+  render();
+})();
+</script>
