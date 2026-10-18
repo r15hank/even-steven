@@ -352,6 +352,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .stack { margin-bottom: 14px; }
 @media (max-width: 560px) { .insights li { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 1200px) {
+  .row.date-payer { grid-template-columns: minmax(0, 1fr); }
   .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "form" "slip" "list"; row-gap: 24px; }
   .slip { position: static; max-height: none; overflow: visible; }
   #viewTabs button[data-view="settle"] { display: block; }
@@ -476,7 +477,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
               <input id="fAmt" type="text" inputmode="decimal" placeholder="0.00" style="font-family:var(--f-mono)">
             </label>
           </div>
-          <div class="row">
+          <div class="row date-payer">
             <label class="fld" for="fDate">Date
               <input id="fDate" type="date">
             </label>
