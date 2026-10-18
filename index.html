@@ -456,14 +456,27 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
   <header class="top">
     <h1 class="brand">Even Steven</h1>
     <p class="tag-line">Split costs with your group, then settle with fewer payments.</p>
-    <button type="button" class="btn ghost small tour-trigger" id="startTour">Take a tour</button>
+    <div class="top-actions">
+      <button type="button" class="btn ghost small" id="openGroupActions"><span class="btn-icon" aria-hidden="true">▦</span>Group actions</button>
+      <button type="button" class="btn ghost small" id="loadExample"><span class="btn-icon" aria-hidden="true">✦</span>Example group</button>
+      <button type="button" class="btn ghost small tour-trigger" id="startTour"><span class="btn-icon" aria-hidden="true">?</span>Take a tour</button>
+    </div>
   </header>
+  <p id="ioStatus" role="status"></p>
   <nav id="tabs" class="tabs" aria-label="Groups"></nav>
-  <div class="iobar">
-    <button type="button" class="btn ghost small" id="openLoadGroup"><span class="btn-icon" aria-hidden="true">↑</span>Load group</button>
-    <input class="vh" type="file" id="loadFile" accept=".json,application/json">
-    <span id="ioStatus" role="status"></span>
-  </div>
+  <input class="vh" type="file" id="loadFile" accept=".json,application/json">
+  <dialog class="group-dialog manager-dialog" id="groupActionsDialog" aria-labelledby="groupActionsTitle">
+    <div class="dialog-mark" aria-hidden="true">▦</div>
+    <h2 id="groupActionsTitle">Group actions</h2>
+    <p class="manager-current">Current group: <strong id="managerGroupName">None selected</strong></p>
+    <div class="manager-actions">
+      <button type="button" class="btn primary" id="manageCreate"><span class="btn-icon" aria-hidden="true">＋</span>Create a group</button>
+      <button type="button" class="btn" id="manageLoad"><span class="btn-icon" aria-hidden="true">⇧</span>Load group file</button>
+      <button type="button" class="btn" id="saveGroup"><span class="btn-icon save-icon" aria-hidden="true">▣</span>Save current group</button>
+      <button type="button" class="btn danger-action" id="gDel"><span class="btn-icon" aria-hidden="true">×</span>Delete current group</button>
+    </div>
+    <div class="dialog-actions"><button type="button" class="btn ghost" data-close="groupActionsDialog">Done</button></div>
+  </dialog>
   <dialog class="group-dialog" id="loadGroupDialog" aria-labelledby="loadGroupTitle">
     <div class="dialog-mark load-mark" aria-hidden="true">↑</div>
     <h2 id="loadGroupTitle">Load a group</h2>
@@ -487,9 +500,8 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
   <dialog class="confirm-dialog" id="loadPanel" aria-labelledby="importDialogTitle"></dialog>
 
   <section id="welcome" class="welcome" hidden>
-    <h2>No groups yet</h2>
-    <p class="muted">Create a group, add the people in it, then log each expense with who paid and how it splits. Balances and payments appear beside it.</p>
-    <div class="actions"><button type="button" class="btn ghost" id="loadExample"><span class="btn-icon" aria-hidden="true">✦</span>Load an example group</button></div>
+    <h2>No group selected</h2>
+    <p class="muted">Create a group or load a saved group file. The example group is beside the tour button.</p>
   </section>
 
   <div id="layout" class="layout" hidden>
@@ -503,11 +515,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
               <option value="INR">INR ₹</option><option value="CAD">CAD $</option><option value="AUD">AUD $</option>
             </select>
           </label>
-          <button type="button" class="btn ghost small" id="saveGroup"><span class="btn-icon" aria-hidden="true">↓</span>Save group</button>
-          <details class="g-more">
-            <summary class="btn ghost small"><span class="btn-icon" aria-hidden="true">···</span>More</summary>
-            <div class="g-menu"><button type="button" class="link danger" id="gDel"><span class="btn-icon" aria-hidden="true">×</span>Delete group</button></div>
-          </details>
+          
         </div>
       </div>
       <h3 class="label">People</h3>
