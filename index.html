@@ -1622,6 +1622,7 @@ function buildReportPdf(rep, num) {
   function renderHead(g) {
     $('#gName').textContent = g.name;
     $('#gCur').value = g.currency;
+    $('#saveGroupMessage').textContent = 'Save a portable copy of “' + g.name + '” with its people and expenses. You can load it on another device later.';
     $('#gDel').textContent = 'Delete group';
     $('#chips').innerHTML = g.members.map(function (m) {
       var rm = memberUsed(g, m.id) ? '' : '<button class="x" type="button" data-act="rm" data-id="' + m.id + '" aria-label="Remove ' + esc(m.name) + '">×</button>';
@@ -2445,7 +2446,21 @@ function buildReportPdf(rep, num) {
     var g = active();
     if (!g) return;
     if (!dlApi) { setIo('Saving files is not available in this view. Open the artifact in claude.ai to save a group file.', 'err'); return; }
+    $('#saveGroupDialog').showModal();
+  });
+  $('#confirmSaveGroup').addEventListener('click', function () {
+    var g = active();
+    if (!g) return;
+    $('#saveGroupDialog').close();
     saveVia(fileBase(g) + '.json', groupJson(g), setIo);
+  });
+  $('#openLoadGroup').addEventListener('click', function () { $('#loadGroupDialog').showModal(); });
+  $('#chooseLoadFile').addEventListener('click', function () { $('#loadFile').click(); });
+  $('[data-close]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var d = $('#' + b.dataset.close);
+      if (d && d.open) d.close();
+    });
   });
 
   var pendingImport = null;
@@ -2507,6 +2522,7 @@ function buildReportPdf(rep, num) {
     commitImport(pendingImport, b.dataset.mode);
   });
   $('#loadFile').addEventListener('change', function (ev) {
+    if ($('#loadGroupDialog').open) $('#loadGroupDialog').close();
     var f = ev.target.files && ev.target.files[0];
     ev.target.value = '';
     if (!f) return;
