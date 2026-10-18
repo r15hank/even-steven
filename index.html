@@ -1,6 +1,16 @@
 <title>Even Steven</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
+<script>
+  try {
+    var savedTheme = localStorage.getItem('even-steven:theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.setAttribute('data-theme', savedTheme);
+    var savedLightPalette = localStorage.getItem('even-steven:light-palette');
+    var savedDarkPalette = localStorage.getItem('even-steven:dark-palette');
+    if (savedLightPalette) document.documentElement.setAttribute('data-light-palette', savedLightPalette);
+    if (savedDarkPalette) document.documentElement.setAttribute('data-dark-palette', savedDarkPalette);
+  } catch (e) {}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
@@ -8,15 +18,15 @@
 /* Layout concept: a two-column ledger. Left: people, new expense, expense history.
    Right: a sticky settlement slip (balances + who pays whom). Stacks on phones with the slip after the form. */
 :root {
-  --bg: #EDF0ED;
+  --bg: #F6F3EB;
   --surface: #FFFFFF;
-  --surface-2: #F4F6F4;
-  --ink: #15201C;
-  --muted: #566761;
-  --line: #D2DAD5;
-  --accent: #2347C8;
+  --surface-2: #FBFAF6;
+  --ink: #282823;
+  --muted: #686860;
+  --line: #DEDbd1;
+  --accent: #4059C7;
   --accent-ink: #FFFFFF;
-  --accent-soft: #E3E9FB;
+  --accent-soft: #E9EDFF;
   --pos: #1A7B49;
   --neg: #BC3D29;
   --warn: #8F5A00;
@@ -24,48 +34,67 @@
   --av-l: 86%;
   --s1: #2a78d6;
   --s2: #eb6834;
+  color-scheme: light;
   --f-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
   --f-body: 'Schibsted Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --f-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0E1412;
-    --surface: #161F1B;
-    --surface-2: #1B2621;
-    --ink: #E6EEEA;
-    --muted: #93A59D;
-    --line: #2B3A34;
-    --accent: #8EA5FF;
-    --accent-ink: #0E1412;
-    --accent-soft: #1F2A52;
-    --pos: #55CF8E;
-    --neg: #FF8F78;
+    --bg: #151817;
+    --surface: #1E2421;
+    --surface-2: #252C28;
+    --ink: #ECF1ED;
+    --muted: #AAB7B0;
+    --line: #35423B;
+    --accent: #A7B6FF;
+    --accent-ink: #151817;
+    --accent-soft: #29314A;
+    --pos: #56C78B;
+    --neg: #FF9589;
     --warn: #E8B04A;
     --av-l: 30%;
-    --s1: #3987e5;
-    --s2: #d95926;
+    --s1: #68A8FF;
+    --s2: #FF9B68;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0E1412;
-  --surface: #161F1B;
-  --surface-2: #1B2621;
-  --ink: #E6EEEA;
-  --muted: #93A59D;
-  --line: #2B3A34;
-  --accent: #8EA5FF;
-  --accent-ink: #0E1412;
-  --accent-soft: #1F2A52;
-  --pos: #55CF8E;
-  --neg: #FF8F78;
+  --bg: #151817;
+  --surface: #1E2421;
+  --surface-2: #252C28;
+  --ink: #ECF1ED;
+  --muted: #AAB7B0;
+  --line: #35423B;
+  --accent: #A7B6FF;
+  --accent-ink: #151817;
+  --accent-soft: #29314A;
+  --pos: #56C78B;
+  --neg: #FF9589;
   --warn: #E8B04A;
   --av-l: 30%;
-  --s1: #3987e5;
-  --s2: #d95926;
+  --s1: #68A8FF;
+  --s2: #FF9B68;
   color-scheme: dark;
 }
+:root[data-theme="light"][data-light-palette="soft-blue"] {
+  --bg: #F1F5FB; --surface: #FFFFFF; --surface-2: #F7F9FD; --ink: #182338; --muted: #5C687B; --line: #D7E0EC;
+  --accent: #3B5CCC; --accent-ink: #FFFFFF; --accent-soft: #E8EDFF; --pos: #17835A; --s1: #3779D0; --s2: #EB793A; color-scheme: light;
+}
+:root[data-theme="light"][data-light-palette="clean-neutral"] {
+  --bg: #F7F8FA; --surface: #FFFFFF; --surface-2: #F5F6F8; --ink: #1E293B; --muted: #647184; --line: #DCE1E8;
+  --accent: #2F5FE3; --accent-ink: #FFFFFF; --accent-soft: #E9EFFF; --pos: #16845B; --s1: #3975CF; --s2: #ED7A3C; color-scheme: light;
+}
+:root[data-theme="light"][data-light-palette="warm-paper"] { color-scheme: light; }
+:root[data-theme="dark"][data-dark-palette="midnight-blue"] {
+  --bg: #111827; --surface: #182338; --surface-2: #202D43; --ink: #EEF3FF; --muted: #A4B1C6; --line: #34415A;
+  --accent: #9CB3FF; --accent-ink: #111827; --accent-soft: #27375C; --pos: #59CF9A; --neg: #FF9589; --s1: #6CA9FF; --s2: #FF9C6A; --av-l: 30%; color-scheme: dark;
+}
+:root[data-theme="dark"][data-dark-palette="plum-slate"] {
+  --bg: #171521; --surface: #211F2C; --surface-2: #2A2837; --ink: #F0EDF7; --muted: #B4AFC3; --line: #3C394C;
+  --accent: #B4A1FF; --accent-ink: #171521; --accent-soft: #352E50; --pos: #5ACA94; --neg: #FF988E; --s1: #79AAFF; --s2: #FFA06E; --av-l: 30%; color-scheme: dark;
+}
+:root[data-theme="dark"][data-dark-palette="warm-charcoal"] { color-scheme: dark; }
 
 * { box-sizing: border-box; }
 body {
@@ -85,11 +114,47 @@ button { font: inherit; color: inherit; }
 
 /* header + tabs */
 .top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; }
+.brand-block { display: grid; gap: 5px; }
 .brand { font: 800 30px/1 var(--f-display); letter-spacing: -0.02em; }
 .tag-line { color: var(--muted); }
 .tabs { display: flex; gap: 2px; overflow-x: auto; overflow-y: hidden; border-bottom: 1px solid var(--line); margin-top: 18px; }
 
-.tour-trigger { margin-left: auto; }
+.top-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex: 1 1 auto; min-width: 0; }
+.group-shortcuts { display: flex; align-items: center; gap: 8px; }
+.head-menu { position: relative; }
+.head-menu > summary { list-style: none; cursor: pointer; }
+.head-menu > summary::-webkit-details-marker { display: none; }
+.head-menu-pop { position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; min-width: 176px; padding: 6px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); box-shadow: 0 10px 30px rgba(0,0,0,.14); }
+.head-menu-pop button { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; border-radius: 7px; padding: 10px 11px; background: transparent; color: var(--ink); text-align: left; font: 500 14px/1.25 var(--f-body); cursor: pointer; }
+.head-menu-pop button:hover { background: var(--surface-2); }
+.head-menu-pop .menu-danger { color: var(--neg); }
+.settings-menu .settings-pop { left: auto; right: 0; width: min(360px, calc(100vw - 32px)); padding: 8px; }
+.settings-menu .settings-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 42px; padding: 10px 11px; border: 0; border-radius: 7px; background: transparent; color: var(--ink); text-align: left; font: 500 14px/1.25 var(--f-body); cursor: pointer; }
+.settings-menu .settings-row:hover, .settings-menu .settings-row[aria-expanded="true"] { background: var(--surface-2); }
+.settings-menu .settings-row .settings-icon { display: inline-grid; place-items: center; width: 20px; height: 20px; color: var(--accent); }
+.settings-menu .settings-row .settings-arrow { margin-left: auto; color: var(--muted); }
+.settings-divider { height: 1px; margin: 5px 4px; background: var(--line); }
+.settings-subpanel { padding: 4px 8px 10px 38px; }
+.settings-subpanel[hidden], .settings-palette-set[hidden] { display: none !important; }
+.settings-subpanel .settings-row { min-height: 38px; padding: 8px 9px; font-size: 13px; }
+.theme-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
+.settings-menu .theme-modes button { display: block; width: auto; min-height: 34px; padding: 7px 4px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); text-align: center; font: 600 12px var(--f-body); cursor: pointer; }
+.settings-menu .theme-modes button[aria-pressed="true"] { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,.10); }
+.theme-mode-note { margin: 8px 2px 5px; color: var(--muted); font-size: 11px; }
+.settings-palette-set { display: grid; gap: 3px; }
+.settings-menu .settings-palette { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 34px; padding: 6px 7px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+.settings-menu .settings-palette:hover { background: var(--surface-2); }
+.settings-menu .settings-palette[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.palette-swatches { display: inline-flex; gap: 3px; flex: none; }
+.palette-swatches i { display: block; width: 14px; height: 14px; border: 1px solid rgba(100,110,120,.25); border-radius: 4px; }
+.palette-label { font-size: 12px; font-weight: 600; }
+.palette-desc { margin-left: auto; color: var(--muted); font-size: 10px; }
+.theme-menu .theme-mark { display: inline-grid; place-items: center; width: 20px; height: 20px; color: var(--muted); }
+.gtools .head-menu-pop { left: auto; right: 0; }
+.gtools .head-menu-pop .btn { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 10px 11px; border: 0; background: transparent; color: var(--ink); font-weight: 500; text-align: left; }
+.gtools .head-menu-pop .btn:hover { background: var(--surface-2); filter: none; transform: none; }
+.icon { width: 17px; height: 17px; display: inline-block; flex: none; vertical-align: -3px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tour-trigger { margin-left: 0; flex: none; }
 .tour-overlay[hidden] { display: none; }
 .tour-overlay { position: fixed; inset: 0; z-index: 10000; }
 .tour-overlay[data-intro="true"] { background: rgba(10, 18, 14, 0.68); }
@@ -109,7 +174,14 @@ button { font: inherit; color: inherit; }
 .tour-step { font: 500 12px var(--f-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
 .tour-controls { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 18px; }
 .tour-controls #tourPrev { margin-right: auto; }
+.tour-timer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; color: var(--muted); font-size: 12px; }
+.tour-timer button { padding: 5px 9px; font-size: 12px; }
+.tour-progress { height: 3px; margin-top: 7px; overflow: hidden; border-radius: 99px; background: var(--surface-2); }
+.tour-progress span { display: block; width: 100%; height: 100%; background: var(--accent); transform-origin: left center; }
 @media (max-width: 560px) {
+  .top-actions { flex-basis: 100%; order: 4; }
+  .top-actions { flex-wrap: wrap; }
+  .group-shortcuts { flex-wrap: wrap; }
   .tour-trigger { margin-left: 0; }
   .tour-card { padding: 16px; }
 }
@@ -120,6 +192,7 @@ button { font: inherit; color: inherit; }
 .tab:hover { color: var(--ink); }
 .tab[aria-current="true"] { color: var(--ink); border-bottom-color: var(--accent); }
 .tab.add { color: var(--accent); }
+.tab.add .view-icon { font-size: 18px; }
 
 /* inputs and buttons */
 input[type="text"], input[type="date"], textarea, select {
@@ -140,15 +213,19 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .file-mark { display: inline-grid; place-items: center; width: 22px; height: 24px; border-radius: 4px; font: 800 11px/1 var(--f-body); }
 .xlsx-mark { background: #1A7B49; color: #fff; }
 .pdf-mark { background: #BC3D29; color: #fff; font-size: 8px; }
-.csv-mark { background: #E8EDF0; color: #40514B; font-size: 8px; }
+.csv-mark { background: #2864C8; color: #fff; font-size: 8px; }
 .export-excel { background: #EAF5ED; border-color: #B9DCC2; color: #176B39; }
 .export-pdf { background: #FFF0EC; border-color: #F0C6BA; color: #A63C27; }
-.payment-action { background: #E8F5F2; border-color: #BFDFD9; color: #12665D; }
+.export-csv { background: #EDF3FF; border-color: #BED0F5; color: #214F9F; }
+.payment-action { background: #0F6258; border-color: #0F6258; color: #fff; }
+.payment-action:hover { background: #0B554D; border-color: #0B554D; color: #fff; filter: none; }
 .btn { transition: transform .14s ease, filter .14s ease; }
 .btn:hover { transform: translateY(-1px); }
 .btn:active { transform: translateY(0); }
 #saveGroup { color: var(--accent); }
 #saveGroup:hover { background: var(--accent-soft); }
+#gDel { color: var(--neg); }
+#gDel:hover { background: color-mix(in srgb, var(--neg) 10%, transparent); }
 #openLoadGroup { color: var(--accent); border-color: var(--accent-soft); }
 #tabs .tab.add { color: var(--accent); font-weight: 700; }
 #tabs .tab.add .view-icon { font-size: 18px; }
@@ -161,7 +238,15 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .paybtns [data-act="part"] { color: var(--accent); }
 .paybtns [data-act="part"]::before { content: "↔"; margin-right: 6px; }
 #fCancel::before, #pCancel::before { content: "×"; margin-right: 6px; font-weight: 800; }
-.paybox > summary::before { content: "↔"; color: var(--accent); margin-right: 8px; font-weight: 800; }
+.record-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 18px; }
+.entry-switch { display: inline-flex; gap: 3px; padding: 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
+.entry-label { color: var(--muted); font: 700 12px/1 var(--f-body); letter-spacing: .09em; text-transform: uppercase; }
+.entry-switch button { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--muted); padding: 9px 15px; min-height: 40px; font: 600 14px/1.2 var(--f-body); cursor: pointer; transition: background .14s ease, color .14s ease, box-shadow .14s ease; }
+.entry-switch button[aria-pressed="true"] { color: #fff; box-shadow: 0 2px 7px rgba(21,32,28,.18); }
+.entry-switch button[data-entry="expense"][aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.entry-switch button[data-entry="payment"][aria-pressed="true"] { background: #12665D; color: #fff; }
+.entry-switch button:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 560px) { .record-toolbar { align-items: flex-start; flex-direction: column; gap: 8px; } .entry-switch { display: flex; width: 100%; } .entry-switch button { flex: 1; padding-inline: 8px; } }
 .group-dialog, .confirm-dialog { width: min(480px, calc(100vw - 32px)); padding: 24px; border: 1px solid var(--line); border-top: 4px solid var(--accent); border-radius: 14px; background: var(--surface); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.24); }
 .group-dialog::backdrop, .confirm-dialog::backdrop { background: rgba(10,18,14,.58); }
 .group-dialog h2 { font: 800 24px/1.15 var(--f-display); margin: 8px 0; }
@@ -202,6 +287,11 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .sec { border-top: 1px solid var(--line); padding-top: 18px; }
 .label { font: 600 12px/1 var(--f-body); text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 12px; }
 .sec-title { font: 700 20px/1.2 var(--f-display); margin-bottom: 14px; }
+.audit-history > summary { display: flex; align-items: center; list-style: none; cursor: pointer; }
+.audit-history > summary::-webkit-details-marker { display: none; }
+.audit-history > summary .icon { margin-right: 8px; color: var(--accent); }
+.audit-history > summary::after { content: "⌄"; margin-left: auto; font-size: 18px; color: var(--muted); }
+.audit-history:not([open]) > summary::after { content: "›"; }
 
 /* group header */
 .ghead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-bottom: 22px; }
@@ -220,6 +310,29 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .chip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
 .chip .x { appearance: none; border: 0; background: none; cursor: pointer; color: var(--muted); font-size: 18px; line-height: 1; padding: 0 0 0 2px; }
 .chip .x:hover { color: var(--neg); }
+.payer-picker { display: flex; flex-wrap: wrap; gap: 8px; }
+.payer-choice { appearance: none; display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 5px 12px 5px 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); cursor: pointer; font: 500 14px/1.2 var(--f-body); }
+.payer-choice:hover { background: var(--surface-2); }
+.payer-choice[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 12%, transparent); font-weight: 600; }
+.payer-choice .payer-check { display: none; width: 16px; height: 16px; }
+.payer-choice[aria-pressed="true"] .payer-check { display: block; }
+.payer-choice .av { width: 28px; height: 28px; }
+.payer-choice.other { border-style: dashed; color: var(--muted); padding-inline: 14px; }
+.payer-choice.other[aria-pressed="true"] { border-style: solid; color: var(--accent); }
+.payer-choice.other[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.payer-add { position: absolute; z-index: 12; top: calc(100% + 5px); left: 0; right: 0; display: flex; flex-wrap: wrap; align-items: end; gap: 8px; margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: 0 10px 28px rgba(21,32,28,.16); }
+.payer-add[hidden] { display: none; }
+.payer-add label { flex: 1 1 180px; font-size: 13px; font-weight: 600; }
+.payer-add input { display: block; margin-top: 5px; }
+.payer-add .help { flex: 1 0 100%; color: var(--muted); font-size: 12px; }
+.payer-add .btn { min-height: 42px; }
+.payer-results { display: grid; gap: 3px; flex: 1 0 100%; max-height: 220px; overflow: auto; }
+.payer-result { display: flex; align-items: center; gap: 9px; width: 100%; padding: 7px 9px; border: 0; border-radius: 6px; background: transparent; color: var(--ink); text-align: left; cursor: pointer; font: 500 14px var(--f-body); }
+.payer-result:hover, .payer-result:focus-visible { background: var(--accent-soft); color: var(--accent); }
+.payer-no-results { padding: 7px 9px; color: var(--muted); font-size: 13px; }
+.payer-field { display: grid; gap: 7px; min-width: 0; position: relative; }
+.payer-field > span { font-weight: 500; }
+.payer-native { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
 .av {
   display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; flex: none;
   font: 600 12px/1 var(--f-body); color: var(--ink); background: hsl(var(--h) var(--av-s) var(--av-l));
@@ -232,6 +345,10 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .bare:disabled { opacity: 0.5; }
 .row { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-bottom: 14px; }
 .row.amt { grid-template-columns: minmax(0, 1fr) minmax(0, 170px); }
+.row.pay-party { grid-template-columns: minmax(0, 1fr) 42px minmax(0, 1fr); align-items: end; }
+.swap-payment { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 1px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--accent); cursor: pointer; }
+.swap-payment:hover { background: var(--accent-soft); }
+.swap-payment .swap-label { display: none; }
 .seg { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--surface); min-height: 42px; }
 .seg button { flex: 1; appearance: none; border: 0; background: none; cursor: pointer; padding: 8px 6px; font-weight: 500; color: var(--muted); }
 .seg button + button { border-left: 1px solid var(--line); }
@@ -310,6 +427,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .done { color: var(--pos); font-weight: 600; padding: 12px 0; border-top: 1px dashed var(--line); }
 
 .welcome { max-width: 520px; margin-top: 40px; display: grid; gap: 14px; }
+.welcome[hidden], .layout[hidden] { display: none !important; }
 .welcome h2 { font: 800 26px/1.15 var(--f-display); }
 .welcome .actions { margin-top: 4px; }
 #ngForm { margin-top: 14px; max-width: 460px; }
@@ -324,7 +442,10 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .rhead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px 20px; }
 .rhead .sec-title { margin-bottom: 4px; }
 .rhead p { overflow-wrap: anywhere; }
-.dl { display: flex; flex-wrap: wrap; gap: 10px; }
+.export-menu { position: relative; }
+.export-pop { right: 0; left: auto; min-width: 220px; }
+.export-pop .btn { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 42px; padding: 10px 11px; margin: 2px 0; border: 0; background: transparent; color: var(--ink); font-weight: 500; text-align: left; }
+.export-pop .btn:hover { background: var(--surface-2); filter: none; transform: none; }
 #dlStatus { min-height: 1.4em; font-size: 14px; color: var(--muted); margin-top: 10px; }
 #dlStatus.ok { color: var(--pos); }
 #dlStatus.err { color: var(--neg); }
@@ -380,8 +501,8 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 
 /* notes, payments, save and load */
 .notes { color: var(--muted); font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 3px; }
-.paybox { margin-top: 26px; border-top: 1px solid var(--line); padding-top: 16px; }
-.paybox > summary { cursor: pointer; font: 700 18px/1.2 var(--f-display); }
+.paybox { margin: 0; padding: 0; border: 0; }
+.paybox > .sec-title { font: 700 20px/1.2 var(--f-display); }
 .paybox form { margin-top: 14px; }
 .paybox .fine { margin: 0 0 14px; }
 .iobar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; margin-top: 10px; min-height: 28px; }
@@ -411,7 +532,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
   .brand { font-size: 27px; }
   .top { align-items: center; gap: 8px 12px; }
   .tag-line { flex: 1 1 100%; order: 3; }
-  .tour-trigger { margin-left: auto; }
+  .tour-trigger { margin-left: 0; }
   .layout { margin-top: 20px; row-gap: 20px; }
   .ghead { align-items: flex-start; flex-direction: column; margin-bottom: 18px; }
   .ghead h2 { font-size: 25px; }
@@ -421,6 +542,9 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
   .viewtabs { margin-top: 20px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .viewtabs .tab { padding-inline: 8px; }
   .row, .row.amt { grid-template-columns: minmax(0, 1fr); }
+  .row.pay-party { grid-template-columns: minmax(0, 1fr); }
+  .swap-payment { display: flex; align-items: center; justify-content: center; gap: 7px; width: auto; height: 36px; margin: -3px auto 12px; padding: 0 14px; border-radius: 999px; }
+  .swap-payment .swap-label { display: inline; }
   .actions .btn, .dl .btn { flex: 1 1 auto; }
   .slip { padding: 16px; }
   .insights li { grid-template-columns: minmax(0, 1fr); }
@@ -454,29 +578,43 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 
 <div class="wrap">
   <header class="top">
-    <h1 class="brand">Even Steven</h1>
-    <p class="tag-line">Split costs with your group, then settle with fewer payments.</p>
+    <div class="brand-block">
+      <h1 class="brand">Even Steven</h1>
+      <p class="tag-line">Split costs with your group, then settle with fewer payments.</p>
+    </div>
     <div class="top-actions">
-      <button type="button" class="btn ghost small" id="openGroupActions"><span class="btn-icon" aria-hidden="true">▦</span>Group actions</button>
-      <button type="button" class="btn ghost small" id="loadExample"><span class="btn-icon" aria-hidden="true">✦</span>Example group</button>
-      <button type="button" class="btn ghost small tour-trigger" id="startTour"><span class="btn-icon" aria-hidden="true">?</span>Take a tour</button>
+      <details class="head-menu settings-menu" id="settingsMenu"><summary class="btn ghost small"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 1.7-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.1h-2.4v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L8 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H6.7v-2.4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L8 8.6 9.7 7l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6v-.1h2.4v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.7 1.7-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.1v2.4H21a1.7 1.7 0 0 0-1.6 1z"/></svg>Settings ▾</summary>
+        <div class="head-menu-pop settings-pop">
+          <button class="settings-row" type="button" id="settingsLoadToggle" data-settings-toggle="load" aria-expanded="false"><svg class="icon settings-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v2H5a2 2 0 0 0-2 2z"/><path d="m3 13 2 6h14l2-10H5a2 2 0 0 0-2 4z"/></svg>Load group<span class="settings-arrow" aria-hidden="true">›</span></button>
+          <div class="settings-subpanel" id="settingsLoadPanel" hidden>
+            <button class="settings-row" type="button" id="openLoadGroup"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7.5h7l2 2h8.5v9H4zM8 7.5V5h8l2 2.5M12 12v5m-2-2 2 2 2-2"/></svg>Load from file…</button>
+            <button class="settings-row" type="button" id="loadExample"><span class="settings-icon" aria-hidden="true">✦</span>Example group</button>
+          </div>
+          <div class="settings-divider"></div>
+          <button class="settings-row" type="button" id="settingsThemeToggle" data-settings-toggle="theme" aria-expanded="true"><span class="settings-icon" aria-hidden="true">◐</span>Theme<span class="settings-arrow" aria-hidden="true">⌄</span></button>
+          <div class="settings-subpanel" id="settingsThemePanel" role="group" aria-label="Theme preferences">
+            <div class="theme-modes" id="themeModes" role="group" aria-label="Theme mode"><button type="button" data-theme-choice="system" aria-pressed="true">System</button><button type="button" data-theme-choice="light" aria-pressed="false">Light</button><button type="button" data-theme-choice="dark" aria-pressed="false">Dark</button></div>
+            <p class="theme-mode-note" id="themeModeNote">System follows your device appearance.</p>
+            <div class="settings-palette-set" id="lightPaletteSet" hidden>
+              <button type="button" class="settings-palette" data-theme-palette="light" data-palette-value="warm-paper" aria-pressed="true"><span class="palette-swatches"><i style="background:#F6F3EB"></i><i style="background:#FFFFFF"></i><i style="background:#4059C7"></i></span><span class="palette-label">Warm paper</span><span class="palette-desc">Cozy</span></button>
+              <button type="button" class="settings-palette" data-theme-palette="light" data-palette-value="soft-blue" aria-pressed="false"><span class="palette-swatches"><i style="background:#F1F5FB"></i><i style="background:#FFFFFF"></i><i style="background:#3B5CCC"></i></span><span class="palette-label">Soft blue</span><span class="palette-desc">Calm</span></button>
+              <button type="button" class="settings-palette" data-theme-palette="light" data-palette-value="clean-neutral" aria-pressed="false"><span class="palette-swatches"><i style="background:#F7F8FA"></i><i style="background:#FFFFFF"></i><i style="background:#2F5FE3"></i></span><span class="palette-label">Clean neutral</span><span class="palette-desc">Crisp</span></button>
+            </div>
+            <div class="settings-palette-set" id="darkPaletteSet" hidden>
+              <button type="button" class="settings-palette" data-theme-palette="dark" data-palette-value="warm-charcoal" aria-pressed="true"><span class="palette-swatches"><i style="background:#151817"></i><i style="background:#1E2421"></i><i style="background:#A7B6FF"></i></span><span class="palette-label">Warm charcoal</span><span class="palette-desc">Cozy</span></button>
+              <button type="button" class="settings-palette" data-theme-palette="dark" data-palette-value="midnight-blue" aria-pressed="false"><span class="palette-swatches"><i style="background:#111827"></i><i style="background:#182338"></i><i style="background:#9CB3FF"></i></span><span class="palette-label">Midnight blue</span><span class="palette-desc">Calm</span></button>
+              <button type="button" class="settings-palette" data-theme-palette="dark" data-palette-value="plum-slate" aria-pressed="false"><span class="palette-swatches"><i style="background:#171521"></i><i style="background:#211F2C"></i><i style="background:#B4A1FF"></i></span><span class="palette-label">Plum slate</span><span class="palette-desc">Expressive</span></button>
+            </div>
+          </div>
+          <div class="settings-divider"></div>
+          <button type="button" class="settings-row tour-trigger" id="startTour"><span class="settings-icon" aria-hidden="true">✦</span>Take a tour<span class="settings-arrow" aria-hidden="true">›</span></button>
+        </div>
+      </details>
     </div>
   </header>
   <p id="ioStatus" role="status"></p>
   <nav id="tabs" class="tabs" aria-label="Groups"></nav>
   <input class="vh" type="file" id="loadFile" accept=".json,application/json">
-  <dialog class="group-dialog manager-dialog" id="groupActionsDialog" aria-labelledby="groupActionsTitle">
-    <div class="dialog-mark" aria-hidden="true">▦</div>
-    <h2 id="groupActionsTitle">Group actions</h2>
-    <p class="manager-current">Current group: <strong id="managerGroupName">None selected</strong></p>
-    <div class="manager-actions">
-      <button type="button" class="btn primary" id="manageCreate"><span class="btn-icon" aria-hidden="true">＋</span>Create a group</button>
-      <button type="button" class="btn" id="manageLoad"><span class="btn-icon" aria-hidden="true">⇧</span>Load group file</button>
-      <button type="button" class="btn" id="saveGroup"><span class="btn-icon save-icon" aria-hidden="true">▣</span>Save current group</button>
-      <button type="button" class="btn danger-action" id="gDel"><span class="btn-icon" aria-hidden="true">×</span>Delete current group</button>
-    </div>
-    <div class="dialog-actions"><button type="button" class="btn ghost" data-close="groupActionsDialog">Done</button></div>
-  </dialog>
   <dialog class="group-dialog" id="loadGroupDialog" aria-labelledby="loadGroupTitle">
     <div class="dialog-mark load-mark" aria-hidden="true">↑</div>
     <h2 id="loadGroupTitle">Load a group</h2>
@@ -501,7 +639,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 
   <section id="welcome" class="welcome" hidden>
     <h2>No group selected</h2>
-    <p class="muted">Create a group or load a saved group file. The example group is beside the tour button.</p>
+    <p class="muted">Create a group or open the Load group menu for a saved file or example.</p>
   </section>
 
   <div id="layout" class="layout" hidden>
@@ -509,6 +647,13 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
       <div class="ghead">
         <h2 id="gName"></h2>
         <div class="gtools">
+          <details class="head-menu" id="groupActionsMenu">
+            <summary class="btn ghost small"><span class="btn-icon" aria-hidden="true">⚙</span>Group actions ▾</summary>
+            <div class="head-menu-pop">
+              <button type="button" class="btn ghost small" id="saveGroup" title="Save a backup of this group"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 3h12l4 4v14H3V5a2 2 0 0 1 2-2zM7 3v6h10V4M7 21v-7h10v7"/><path d="M14 5v3"/></svg>Save group</button>
+              <button type="button" class="btn ghost small menu-danger" id="gDel"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg>Delete group</button>
+            </div>
+          </details>
           <label class="fld" style="flex-direction:row;align-items:center;gap:8px">Currency
             <select id="gCur" aria-label="Currency">
               <option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option>
@@ -527,13 +672,20 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
       <p id="mErr" role="alert"></p>
       <p id="mHint"></p>
       <div class="viewtabs" id="viewTabs">
-        <button type="button" class="tab" data-view="ledger" aria-current="true"><span class="view-icon" aria-hidden="true">▤</span>Expenses</button>
+        <button type="button" class="tab" data-view="ledger" aria-current="true"><svg class="icon view-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>Transactions</button>
         <button type="button" class="tab" data-view="settle"><span class="view-icon" aria-hidden="true">↔</span>Settle</button>
-        <button type="button" class="tab" data-view="report"><span class="view-icon" aria-hidden="true">▥</span>Report</button>
+        <button type="button" class="tab" data-view="report"><svg class="icon view-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM14 3v5h5M8 16v-3m4 3V9m4 7v-5"/></svg>Report</button>
       </div>
     </section>
 
     <section class="sec sec-form" id="secForm">
+      <div class="record-toolbar">
+        <span class="entry-label">Record</span>
+        <div class="entry-switch" role="group" aria-label="Record type">
+          <button type="button" data-entry="expense" aria-pressed="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM14 3v5h5M8 12h8M8 16h4"/><path d="M17.5 12.5v5M15 15h5"/></svg>Expense</button>
+          <button type="button" data-entry="payment" aria-pressed="false"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H20v15H5a2 2 0 0 1-2-2V7.5zM3.5 8H20M15 12h6v5h-6a2.5 2.5 0 0 1 0-5z"/><circle cx="17.5" cy="14.5" r=".7"/></svg>Payment</button>
+        </div>
+      </div>
       <h3 class="sec-title" id="fTitle">Add an expense</h3>
       <p id="fNeed" class="need" hidden>Add at least two people above, then log expenses here.</p>
       <form id="expForm" novalidate autocomplete="off">
@@ -550,9 +702,16 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
             <label class="fld" for="fDate">Date
               <input id="fDate" type="date">
             </label>
-            <label class="fld" for="fPayer">Paid by
-              <select id="fPayer"></select>
-            </label>
+            <div class="payer-field"><span>Paid by</span>
+              <select id="fPayer" class="payer-native" tabindex="-1" aria-hidden="true"></select>
+              <div class="payer-picker" id="fPayerChoices" role="group" aria-label="Paid by"></div>
+              <div class="payer-add" id="fPayerAdd" hidden>
+                <label for="fPayerName">Find a person<input id="fPayerName" type="search" maxlength="30" placeholder="Type a name to search"></label>
+                <div class="payer-results" id="fPayerResults" role="listbox" aria-label="People in this group"></div>
+                <button class="btn primary" type="button" id="fPayerAddButton">Add to group</button>
+                <p class="help">They’ll be added to this group. You can leave them out of the expense split below.</p>
+              </div>
+            </div>
           </div>
           <div class="fld stack">Split
             <div class="seg" id="fType" role="radiogroup" aria-label="How to split">
@@ -569,23 +728,38 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
           </label>
           <p id="fError" class="err" role="alert"></p>
           <div class="actions">
-            <button class="btn primary" type="submit" id="fSubmit"><span class="btn-icon" aria-hidden="true">＋</span>Add expense</button>
+            <button class="btn primary" type="submit" id="fSubmit"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM14 3v5h5M8 12h8M8 16h4"/><path d="M17.5 12.5v5M15 15h5"/></svg>Record expense</button>
             <button class="btn ghost" type="button" id="fCancel" hidden>Cancel</button>
             <span id="fStatus" class="status" role="status"></span>
           </div>
         </fieldset>
       </form>
-      <details class="paybox" id="payBox">
-        <summary id="pTitle">Record a payment</summary>
+      <section class="paybox" id="payBox" hidden>
+        <h3 class="sec-title" id="pTitle">Record a payment</h3>
         <form id="payForm" novalidate autocomplete="off">
           <p class="fine">Payments count against what someone owes. Enter the full amount or only part of it.</p>
-          <div class="row">
-            <label class="fld" for="pFrom">Who paid
-              <select id="pFrom"></select>
-            </label>
-            <label class="fld" for="pTo">Paid to
-              <select id="pTo"></select>
-            </label>
+          <div class="row pay-party">
+            <div class="payer-field"><span>Who paid</span>
+              <select id="pFrom" class="payer-native" tabindex="-1" aria-hidden="true"></select>
+              <div class="payer-picker" id="pFromChoices" role="group" aria-label="Who paid"></div>
+              <div class="payer-add" id="pFromAdd" hidden>
+                <label for="pFromName">Find a person<input id="pFromName" type="search" maxlength="30" placeholder="Type a name to search"></label>
+                <div class="payer-results" id="pFromResults" role="listbox" aria-label="People in this group"></div>
+                <button class="btn primary" type="button" id="pFromAddButton">Add to group</button>
+                <p class="help">They’ll be added to the group so the payment is included in balances.</p>
+              </div>
+            </div>
+            <button type="button" class="swap-payment" id="swapPayment" aria-label="Swap who paid and paid to" title="Swap who paid and paid to"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M7 7h13l-3-3M20 7l-3 3M17 17H4l3 3M4 17l3-3"/></svg><span class="swap-label">Swap people</span></button>
+            <div class="payer-field"><span>Paid to</span>
+              <select id="pTo" class="payer-native" tabindex="-1" aria-hidden="true"></select>
+              <div class="payer-picker" id="pToChoices" role="group" aria-label="Paid to"></div>
+              <div class="payer-add" id="pToAdd" hidden>
+                <label for="pToName">Find a person<input id="pToName" type="search" maxlength="30" placeholder="Type a name to search"></label>
+                <div class="payer-results" id="pToResults" role="listbox" aria-label="People in this group"></div>
+                <button class="btn primary" type="button" id="pToAddButton">Add to group</button>
+                <p class="help">They’ll be added to the group so the payment is included in balances.</p>
+              </div>
+            </div>
           </div>
           <div class="row">
             <label class="fld" for="pAmt">Amount
@@ -601,18 +775,20 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
           <p id="pHint" class="hint"></p>
           <p id="pError" class="err" role="alert"></p>
           <div class="actions">
-            <button class="btn payment-action" type="submit" id="pSubmit"><span class="btn-icon" aria-hidden="true">↔</span>Save payment</button>
+            <button class="btn payment-action" type="submit" id="pSubmit"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H20v15H5a2 2 0 0 1-2-2V7.5zM3.5 8H20M15 12h6v5h-6a2.5 2.5 0 0 1 0-5z"/><circle cx="17.5" cy="14.5" r=".7"/></svg>Record payment</button>
             <button class="btn ghost" type="button" id="pCancel" hidden>Cancel</button>
             <button class="link" type="button" id="pUse" hidden>Use suggested amount</button>
             <span id="pStatus" class="status" role="status"></span>
           </div>
         </form>
-      </details>
+      </section>
     </section>
 
     <section class="sec sec-list" id="secList">
-      <h3 class="label" id="listLabel">Expenses</h3>
-      <ul id="expList" class="exps"></ul>
+      <details class="audit-history" id="auditHistory" open>
+        <summary class="label" id="listLabel"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 4v4h4M12 7v5l3 2"/></svg><span id="listLabelText">Transaction history</span></summary>
+        <ul id="expList" class="exps"></ul>
+      </details>
     </section>
 
     <section class="sec sec-report" id="secReport" hidden>
@@ -621,11 +797,14 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
           <h3 class="sec-title" id="rTitle">Expense report</h3>
           <p class="muted" id="rSub"></p>
         </div>
-        <div class="dl">
+        <details class="head-menu export-menu">
+          <summary class="btn ghost small"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v11m-4-4 4 4 4-4M4 17v3h16v-3"/></svg>Export ▾</summary>
+          <div class="head-menu-pop export-pop">
           <button class="btn export-excel" id="dlXlsx" type="button" disabled><span class="file-mark xlsx-mark" aria-hidden="true">X</span>Download Excel</button>
           <button class="btn export-pdf" id="dlPdf" type="button" disabled><span class="file-mark pdf-mark" aria-hidden="true">PDF</span>Download PDF</button>
-          <button class="btn ghost" id="dlCsv" type="button" disabled><span class="file-mark csv-mark" aria-hidden="true">CSV</span>Download CSV</button>
-        </div>
+          <button class="btn export-csv" id="dlCsv" type="button" disabled><span class="file-mark csv-mark" aria-hidden="true">CSV</span>Download CSV</button>
+          </div>
+        </details>
       </div>
       <p id="dlStatus" role="status"></p>
       <p class="fine">The PDF has the summary, insights and the full audit table. The Excel file has three sheets: Summary, Insights and Expense details. The CSV is the expense details table.</p>
@@ -663,6 +842,8 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
     <p class="tour-step" id="tourStep"></p>
     <h2 id="tourTitle"></h2>
     <p id="tourText"></p>
+    <div class="tour-timer"><span id="tourTimerLabel" aria-live="polite">Next in 10s</span><button class="btn ghost small" type="button" id="tourPause" aria-pressed="false">Pause</button></div>
+    <div class="tour-progress" aria-hidden="true"><span id="tourProgress"></span></div>
     <div class="tour-controls">
       <button class="btn ghost small" type="button" id="tourPrev">Back</button>
       <button class="btn ghost small" type="button" id="tourExit">Exit tour</button>
@@ -1509,6 +1690,110 @@ function buildReportPdf(rep, num) {
 
   function $(s, r) { return (r || document).querySelector(s); }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function closeHeadMenus(except) {
+    $$('details.head-menu[open]').forEach(function (menu) {
+      if (menu !== except) menu.open = false;
+    });
+  }
+  $$('details.head-menu > summary').forEach(function (summary) {
+    summary.addEventListener('click', function () {
+      var menu = summary.parentElement;
+      if (!menu.open) closeHeadMenus(menu);
+    }, true);
+  });
+  document.addEventListener('click', function (ev) {
+    // Tour navigation deliberately opens menus before this document handler runs.
+    // Treat tour controls as part of the walkthrough so the newly opened menu
+    // is not mistaken for a click-away and immediately closed.
+    if (ev.target.closest('#tourOverlay')) return;
+    var menuItem = ev.target.closest('.head-menu-pop button');
+    if (menuItem) {
+      var menu = menuItem.closest('details.head-menu');
+      if (menu && menu.id === 'settingsMenu' && menuItem.matches('[data-settings-toggle], [data-theme-choice], [data-theme-palette]')) return;
+      if (menu) menu.open = false;
+    } else if (!ev.target.closest('details.head-menu')) {
+      closeHeadMenus(null);
+    }
+  });
+  var THEME_KEY = 'even-steven:theme';
+  var LIGHT_PALETTE_KEY = 'even-steven:light-palette';
+  var DARK_PALETTE_KEY = 'even-steven:dark-palette';
+  var themePreference = 'system';
+  var lightPalette = 'warm-paper';
+  var darkPalette = 'warm-charcoal';
+  try {
+    themePreference = localStorage.getItem(THEME_KEY) || 'system';
+    lightPalette = localStorage.getItem(LIGHT_PALETTE_KEY) || lightPalette;
+    darkPalette = localStorage.getItem(DARK_PALETTE_KEY) || darkPalette;
+  } catch (e) {}
+  function syncThemeSettings() {
+    $$('[data-theme-choice]').forEach(function (button) {
+      button.setAttribute('aria-pressed', String(button.dataset.themeChoice === themePreference));
+    });
+    $$('[data-theme-palette="light"]').forEach(function (button) {
+      button.setAttribute('aria-pressed', String(button.dataset.paletteValue === lightPalette));
+    });
+    $$('[data-theme-palette="dark"]').forEach(function (button) {
+      button.setAttribute('aria-pressed', String(button.dataset.paletteValue === darkPalette));
+    });
+    $('#lightPaletteSet').hidden = themePreference !== 'light';
+    $('#darkPaletteSet').hidden = themePreference !== 'dark';
+    $('#themeModeNote').textContent = themePreference === 'system'
+      ? 'System follows your device appearance.'
+      : 'Choose a ' + themePreference + ' palette.';
+  }
+  function applyThemeChoice(choice, persist) {
+    if (['system', 'light', 'dark'].indexOf(choice) < 0) choice = 'system';
+    themePreference = choice;
+    if (choice === 'system') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', choice);
+    if (persist) {
+      try { localStorage.setItem(THEME_KEY, choice); } catch (e) {}
+    }
+    syncThemeSettings();
+  }
+  function applyThemePalette(mode, palette, persist) {
+    var allowed = mode === 'light'
+      ? ['warm-paper', 'soft-blue', 'clean-neutral']
+      : ['warm-charcoal', 'midnight-blue', 'plum-slate'];
+    if (allowed.indexOf(palette) < 0) return;
+    if (mode === 'light') {
+      lightPalette = palette;
+      document.documentElement.setAttribute('data-light-palette', palette);
+      if (persist) { try { localStorage.setItem(LIGHT_PALETTE_KEY, palette); } catch (e) {} }
+    } else {
+      darkPalette = palette;
+      document.documentElement.setAttribute('data-dark-palette', palette);
+      if (persist) { try { localStorage.setItem(DARK_PALETTE_KEY, palette); } catch (e) {} }
+    }
+    syncThemeSettings();
+  }
+  applyThemeChoice(themePreference, false);
+  $$('[data-theme-choice]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      applyThemeChoice(button.dataset.themeChoice, true);
+    });
+  });
+  $$('[data-theme-palette]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      applyThemeChoice(button.dataset.themePalette, true);
+      applyThemePalette(button.dataset.themePalette, button.dataset.paletteValue, true);
+    });
+  });
+  function toggleSettingsPanel(name) {
+    var load = name === 'load';
+    var panel = $(load ? '#settingsLoadPanel' : '#settingsThemePanel');
+    var button = $(load ? '#settingsLoadToggle' : '#settingsThemeToggle');
+    var otherPanel = $(load ? '#settingsThemePanel' : '#settingsLoadPanel');
+    var otherButton = $(load ? '#settingsThemeToggle' : '#settingsLoadToggle');
+    var open = panel.hidden;
+    panel.hidden = !open;
+    button.setAttribute('aria-expanded', String(open));
+    otherPanel.hidden = true;
+    otherButton.setAttribute('aria-expanded', 'false');
+  }
+  $('#settingsLoadToggle').addEventListener('click', function () { toggleSettingsPanel('load'); });
+  $('#settingsThemeToggle').addEventListener('click', function () { toggleSettingsPanel('theme'); });
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -1620,6 +1905,25 @@ function buildReportPdf(rep, num) {
 
   /* ---------- expense form state ---------- */
   var form = { groupId: null, type: 'equal', included: new Set(), values: {}, touched: false, editingId: null };
+  var entryMode = 'expense';
+
+  function setEntryMode(mode) {
+    var g = active();
+    entryMode = mode === 'payment' && g && g.members.length >= 2 ? 'payment' : 'expense';
+    $('#expForm').hidden = entryMode !== 'expense';
+    $('#fTitle').hidden = entryMode !== 'expense';
+    $('#fNeed').hidden = entryMode !== 'expense' || !g || g.members.length >= 2;
+    $('#payBox').hidden = entryMode !== 'payment' || !g || g.members.length < 2;
+    $$('[data-entry]').forEach(function (button) {
+      button.setAttribute('aria-pressed', String(button.dataset.entry === entryMode));
+      if (button.dataset.entry === 'payment') button.disabled = !g || g.members.length < 2;
+    });
+  }
+  $$('[data-entry]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      setEntryMode(button.dataset.entry);
+    });
+  });
 
   function includedIds(g) {
     return g.members.filter(function (m) { return form.included.has(m.id); }).map(function (m) { return m.id; });
@@ -1627,7 +1931,9 @@ function buildReportPdf(rep, num) {
   function syncChrome() {
     var editing = !!form.editingId;
     $('#fTitle').textContent = editing ? 'Edit expense' : 'Add an expense';
-    $('#fSubmit').innerHTML = '<span class="btn-icon" aria-hidden="true">' + (editing ? '✓' : '＋') + '</span>' + (editing ? 'Save changes' : 'Add expense');
+    $('#fSubmit').innerHTML = editing
+      ? '<span class="btn-icon" aria-hidden="true">✓</span>Save changes'
+      : '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM14 3v5h5M8 12h8M8 16h4"/><path d="M17.5 12.5v5M15 15h5"/></svg>Record expense';
     $('#fCancel').hidden = !editing;
     $$('#fType button').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.type === form.type)); });
   }
@@ -1668,14 +1974,13 @@ function buildReportPdf(rep, num) {
   function renderTabs() {
     var html = state.groups.map(function (g) {
       return '<button type="button" class="tab" data-id="' + g.id + '"' + (g.id === state.activeId ? ' aria-current="true"' : '') + '>' + esc(g.name) + '</button>';
-    }).join('');
+    }).join('') + '<button type="button" class="tab add" data-new-group aria-label="Create a group"><span class="view-icon" aria-hidden="true">＋</span>New group</button>';
     $('#tabs').innerHTML = html;
   }
   function renderHead(g) {
     $('#gName').textContent = g.name;
     $('#gCur').value = g.currency;
     $('#saveGroupMessage').textContent = 'Save a portable copy of “' + g.name + '” with its people and expenses. You can load it on another device later.';
-    $('#gDel').innerHTML = '<span class="btn-icon" aria-hidden="true">×</span>Delete group';
     $('#chips').innerHTML = g.members.map(function (m) {
       var rm = memberUsed(g, m.id) ? '' : '<button class="x" type="button" data-act="rm" data-id="' + m.id + '" aria-label="Remove ' + esc(m.name) + '">×</button>';
       return '<li class="chip">' + avatar(m) + '<span>' + esc(m.name) + '</span>' + rm + '</li>';
@@ -1689,6 +1994,109 @@ function buildReportPdf(rep, num) {
     var cur = prefer || sel.value;
     sel.innerHTML = g.members.map(function (m) { return '<option value="' + m.id + '">' + esc(m.name) + '</option>'; }).join('');
     if (g.members.some(function (m) { return m.id === cur; })) sel.value = cur;
+    else if (g.members.length) sel.value = g.members[0].id;
+    paintPayerChoices(g, 'fPayer', 'fPayerChoices', 'fPayerAdd');
+  }
+  bindPayerChoices('fPayerChoices', 'fPayer', 'fPayerAdd', 'fPayerName', 'fPayerResults', 'fPayerAddButton', false);
+  bindPayerChoices('pFromChoices', 'pFrom', 'pFromAdd', 'pFromName', 'pFromResults', 'pFromAddButton', true);
+  bindPayerChoices('pToChoices', 'pTo', 'pToAdd', 'pToName', 'pToResults', 'pToAddButton', true);
+  function paintPayerChoices(g, selectId, choicesId, addId) {
+    var selected = $('#' + selectId).value;
+    var isPaymentPicker = selectId === 'pFrom' || selectId === 'pTo';
+    var blocked = isPaymentPicker ? $('#' + (selectId === 'pFrom' ? 'pTo' : 'pFrom')).value : '';
+    var addOpen = !$('#' + addId).hidden;
+    var check = '<svg class="payer-check" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m4 10 4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var visible = g.members.filter(function (m) { return m.id !== selected && m.id !== blocked; }).slice(0, selected ? 3 : 4);
+    var selectedMember = g.members.find(function (m) { return m.id === selected && m.id !== blocked; });
+    if (selectedMember) visible.unshift(selectedMember);
+    $('#' + choicesId).innerHTML = visible.map(function (m) {
+      return '<button class="payer-choice" type="button" data-payer-member="' + m.id + '" aria-pressed="' + String(m.id === selected) + '">' + avatar(m) + '<span>' + esc(m.name) + '</span>' + check + '</button>';
+    }).join('') + '<button class="payer-choice other" type="button" data-payer-add="' + addId + '" aria-expanded="' + String(addOpen) + '" aria-pressed="false">＋ Someone else?</button>';
+  }
+  function paintPaymentPayers(g) {
+    paintPayerChoices(g, 'pFrom', 'pFromChoices', 'pFromAdd');
+    paintPayerChoices(g, 'pTo', 'pToChoices', 'pToAdd');
+    if (!$('#pFromAdd').hidden) renderPayerResults(g, 'pFromResults', $('#pFromName').value, 'pFrom');
+    if (!$('#pToAdd').hidden) renderPayerResults(g, 'pToResults', $('#pToName').value, 'pTo');
+  }
+  function closeOtherPaymentPanel(selectId) {
+    var panelId = selectId === 'pFrom' ? 'pToAdd' : 'pFromAdd';
+    var inputId = selectId === 'pFrom' ? 'pToName' : 'pFromName';
+    $('#' + panelId).hidden = true;
+    $('#' + inputId).value = '';
+  }
+  function renderPayerResults(g, resultsId, query, selectId) {
+    var q = String(query || '').trim().toLowerCase();
+    var isPaymentPicker = selectId === 'pFrom' || selectId === 'pTo';
+    var blocked = isPaymentPicker ? $('#' + (selectId === 'pFrom' ? 'pTo' : 'pFrom')).value : '';
+    var matches = g.members.filter(function (m) { return m.id !== blocked && (!q || m.name.toLowerCase().indexOf(q) >= 0); });
+    $('#' + resultsId).innerHTML = matches.map(function (m) {
+      return '<button class="payer-result" type="button" role="option" aria-selected="' + String(m.id === $('#' + selectId).value) + '" data-payer-result="' + m.id + '">' + avatar(m) + '<span>' + esc(m.name) + '</span></button>';
+    }).join('') || '<div class="payer-no-results">No match. Add this person to the group below.</div>';
+  }
+  function bindPayerChoices(choicesId, selectId, addId, inputId, resultsId, addButtonId, isPayment) {
+    $('#' + choicesId).addEventListener('click', function (ev) {
+      var memberButton = ev.target.closest('[data-payer-member]');
+      if (memberButton) {
+        $('#' + selectId).value = memberButton.dataset.payerMember;
+        $('#' + addId).hidden = true;
+        var g = active();
+        if (isPayment) { closeOtherPaymentPanel(selectId); paintPaymentPayers(g); }
+        else paintPayerChoices(g, selectId, choicesId, addId);
+        if (isPayment) updatePayHint();
+        return;
+      }
+      var addButton = ev.target.closest('[data-payer-add]');
+      if (addButton) {
+        var panel = $('#' + addButton.dataset.payerAdd);
+        $('#' + selectId).value = '';
+        if (isPayment) closeOtherPaymentPanel(selectId);
+        panel.hidden = !panel.hidden;
+        if (isPayment) paintPaymentPayers(active());
+        else paintPayerChoices(active(), selectId, choicesId, addId);
+        renderPayerResults(active(), resultsId, '', selectId);
+        if (isPayment) updatePayHint();
+        if (!panel.hidden) $('#' + inputId).focus();
+        return;
+      }
+    });
+    $('#' + resultsId).addEventListener('click', function (ev) {
+      var result = ev.target.closest('[data-payer-result]');
+      if (!result) return;
+      $('#' + selectId).value = result.dataset.payerResult;
+      $('#' + addId).hidden = true;
+      $('#' + inputId).value = '';
+      if (isPayment) { closeOtherPaymentPanel(selectId); paintPaymentPayers(active()); }
+      else paintPayerChoices(active(), selectId, choicesId, addId);
+      if (isPayment) updatePayHint();
+    });
+    $('#' + inputId).addEventListener('input', function () { renderPayerResults(active(), resultsId, this.value, selectId); });
+    $('#' + addButtonId).addEventListener('click', function () {
+      var g = active();
+      var name = $('#' + inputId).value.trim();
+      if (!g || !name) { $('#' + inputId).focus(); return; }
+      var existing = g.members.find(function (m) { return m.name.toLowerCase() === name.toLowerCase(); });
+      var member = existing;
+      if (!member) {
+        member = { id: uid(), name: name };
+        g.members.push(member);
+        // A newly added payer is not automatically part of this expense's split.
+        if (!isPayment && form.groupId === g.id) form.included.delete(member.id);
+      }
+      save();
+      $('#' + addId).hidden = true;
+      $('#' + inputId).value = '';
+      render();
+      if (isPayment) {
+        if (selectId === 'pTo') fillPaySelects(g, $('#pFrom').value, member.id);
+        else fillPaySelects(g, member.id, $('#pTo').value);
+        paintPaymentPayers(g);
+        updatePayHint();
+      } else {
+        renderPayer(g, member.id);
+        renderPeople();
+      }
+    });
   }
   function renderPeople() {
     var g = active();
@@ -1758,10 +2166,11 @@ function buildReportPdf(rep, num) {
     renderPayForm(g);
     $('#fSet').disabled = g.members.length < 2;
     $('#fNeed').hidden = g.members.length >= 2;
+    setEntryMode(entryMode);
   }
   function renderList(g) {
     var n = g.expenses.length;
-    $('#listLabel').textContent = 'Expenses' + (n ? ' · ' + n : '');
+    $('#listLabelText').textContent = 'Transaction history' + (n ? ' · ' + n : '');
     var ul = $('#expList');
     if (!n) { ul.innerHTML = '<li class="empty">No expenses yet. Add the first one above.</li>'; return; }
     ul.innerHTML = g.expenses.slice().sort(function (a, b) {
@@ -1882,7 +2291,6 @@ function buildReportPdf(rep, num) {
   }
   function renderGroupActions() {
     var g = active();
-    $('#managerGroupName').textContent = g ? g.name : 'None selected';
     $('#saveGroup').disabled = !g;
     $('#gDel').disabled = !g;
   }
@@ -1903,6 +2311,11 @@ function buildReportPdf(rep, num) {
   }
 
   $('#tabs').addEventListener('click', function (ev) {
+    if (ev.target.closest('button[data-new-group]')) {
+      $('#settingsMenu').open = false;
+      showNewGroup(true);
+      return;
+    }
     var b = ev.target.closest('button[data-id]');
     if (!b) return;
     state.activeId = b.dataset.id;
@@ -1926,6 +2339,7 @@ function buildReportPdf(rep, num) {
     $('#mName').focus();
   });
   $('#loadExample').addEventListener('click', function () {
+    $('#settingsMenu').open = false;
     var existing = state.groups.find(function (g) { return g.name === 'Cabin weekend (example)'; });
     if (existing) {
       state.activeId = existing.id;
@@ -1949,7 +2363,7 @@ function buildReportPdf(rep, num) {
   $('#gDel').addEventListener('click', function () {
     var g = active();
     if (!g) return;
-    $('#groupActionsDialog').close();
+    $('#gDel').closest('details').open = false;
     $('#deleteGroupName').textContent = g.name;
     $('#deleteDialog').showModal();
   });
@@ -2042,11 +2456,12 @@ function buildReportPdf(rep, num) {
     var err = $('#fError');
     err.textContent = '';
     var total = parseCents($('#fAmt').value);
+    var payer = $('#fPayer').value;
+    if (!payer) { err.textContent = 'Choose who paid, or add someone else.'; $('#fPayerChoices').scrollIntoView({ block: 'center' }); return; }
     var ids = includedIds(g);
     if (!(total > 0)) { err.textContent = 'Enter a total greater than zero, like 48.50.'; $('#fAmt').focus(); return; }
     var r = buildShares(form.type, total, ids, form.values);
     if (!r.shares) { err.textContent = messageFor(r, g.currency); return; }
-    var payer = $('#fPayer').value;
     var values = {};
     if (form.type !== 'equal') ids.forEach(function (id) { values[id] = form.values[id]; });
     var desc = $('#fDesc').value.trim() || 'Expense';
@@ -2354,9 +2769,9 @@ function buildReportPdf(rep, num) {
     var g = active();
     if (g) renderView(g);
   });
-  $('#dlXlsx').addEventListener('click', function () { doDownload('xlsx'); });
-  $('#dlPdf').addEventListener('click', function () { doDownload('pdf'); });
-  $('#dlCsv').addEventListener('click', function () { doDownload('csv'); });
+  $('#dlXlsx').addEventListener('click', function () { $('.export-menu').open = false; doDownload('xlsx'); });
+  $('#dlPdf').addEventListener('click', function () { $('.export-menu').open = false; doDownload('pdf'); });
+  $('#dlCsv').addEventListener('click', function () { $('.export-menu').open = false; doDownload('csv'); });
 
   var tip = $('#tip');
   function showTip(el, x, y) {
@@ -2395,6 +2810,7 @@ function buildReportPdf(rep, num) {
     $('#pFrom').value = ids.indexOf(from) >= 0 ? from : ids[0];
     var other = ids.filter(function (id) { return id !== $('#pFrom').value; })[0];
     $('#pTo').value = ids.indexOf(to) >= 0 && to !== $('#pFrom').value ? to : other;
+    paintPaymentPayers(g);
   }
   function suggestedAmount(g, from, to) {
     var rest = g.expenses.filter(function (e) { return e.id !== pay.editingId; });
@@ -2410,7 +2826,9 @@ function buildReportPdf(rep, num) {
     var typed = parseCents($('#pAmt').value);
     var sug = from !== to ? suggestedAmount(g, from, to) : 0;
     var msg = '', cls = 'hint';
-    if (from === to) { msg = 'Choose two different people.'; cls += ' warn'; }
+    if (!from) { msg = 'Choose who paid, or add someone else.'; cls += ' warn'; }
+    else if (!to) { msg = 'Choose who received the payment.'; cls += ' warn'; }
+    else if (from === to) { msg = 'Choose two different people.'; cls += ' warn'; }
     else if (sug > 0) {
       msg = nameOf(g, from) + ' owes ' + nameOf(g, to) + ' ' + money(sug, cur) + ' in the current plan.';
       if (typed > 0 && typed < sug) { msg += ' ' + money(sug - typed, cur) + ' would still be left to pay.'; cls += ' ok'; }
@@ -2427,12 +2845,13 @@ function buildReportPdf(rep, num) {
   function syncPayChrome() {
     var editing = !!pay.editingId;
     $('#pTitle').textContent = editing ? 'Edit payment' : 'Record a payment';
-    $('#pSubmit').innerHTML = '<span class="btn-icon" aria-hidden="true">↔</span>' + (editing ? 'Save changes' : 'Save payment');
+    $('#pSubmit').innerHTML = editing
+      ? '<span class="btn-icon" aria-hidden="true">✓</span>Save changes'
+      : '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H20v15H5a2 2 0 0 1-2-2V7.5zM3.5 8H20M15 12h6v5h-6a2.5 2.5 0 0 1 0-5z"/><circle cx="17.5" cy="14.5" r=".7"/></svg>Record payment';
     $('#pCancel').hidden = !editing;
   }
   function renderPayForm(g) {
-    $('#payBox').hidden = g.members.length < 2;
-    if (g.members.length < 2) return;
+    if (g.members.length < 2) { setEntryMode('expense'); return; }
     fillPaySelects(g, $('#pFrom').value, $('#pTo').value);
     if (!$('#pDate').value) $('#pDate').value = todayStr();
     syncPayChrome();
@@ -2455,7 +2874,7 @@ function buildReportPdf(rep, num) {
     $('#pDate').value = editing ? dateOf(editing) : todayStr();
     $('#pNotes').value = editing ? editing.notes || '' : '';
     $('#pError').textContent = '';
-    $('#payBox').open = true;
+    setEntryMode('payment');
     syncPayChrome();
     updatePayHint();
     $('#pTitle').scrollIntoView({ block: 'start' });
@@ -2465,6 +2884,14 @@ function buildReportPdf(rep, num) {
   var payFlash = null;
   $('#pFrom').addEventListener('change', updatePayHint);
   $('#pTo').addEventListener('change', updatePayHint);
+  $('#swapPayment').addEventListener('click', function () {
+    var g = active();
+    var from = $('#pFrom').value;
+    var to = $('#pTo').value;
+    if (!g || !from || !to || from === to) return;
+    fillPaySelects(g, to, from);
+    updatePayHint();
+  });
   $('#pAmt').addEventListener('input', updatePayHint);
   $('#pUse').addEventListener('click', function () {
     var g = active();
@@ -2478,6 +2905,8 @@ function buildReportPdf(rep, num) {
     var err = $('#pError');
     err.textContent = '';
     var from = $('#pFrom').value, to = $('#pTo').value;
+    if (!from) { err.textContent = 'Choose who paid, or add someone else.'; $('#pFromChoices').scrollIntoView({ block: 'center' }); return; }
+    if (!to) { err.textContent = 'Choose who received the payment.'; $('#pTo').focus(); return; }
     if (from === to) { err.textContent = 'Choose two different people.'; return; }
     var amt = parseCents($('#pAmt').value);
     if (!(amt > 0)) { err.textContent = 'Enter an amount greater than zero, like 25.00.'; $('#pAmt').focus(); return; }
@@ -2515,7 +2944,7 @@ function buildReportPdf(rep, num) {
     var g = active();
     if (!g) return;
     if (!dlApi) { setIo('Saving files is not available in this view. Open the artifact in claude.ai to save a group file.', 'err'); return; }
-    if ($('#groupActionsDialog').open) $('#groupActionsDialog').close();
+    $('#saveGroup').closest('details').open = false;
     $('#saveGroupDialog').showModal();
   });
   $('#confirmSaveGroup').addEventListener('click', function () {
@@ -2524,20 +2953,12 @@ function buildReportPdf(rep, num) {
     $('#saveGroupDialog').close();
     saveVia(fileBase(g) + '.json', groupJson(g), setIo);
   });
-  $('#openGroupActions').addEventListener('click', function () {
-    renderGroupActions();
-    $('#groupActionsDialog').showModal();
-  });
-  $('#manageCreate').addEventListener('click', function () {
-    $('#groupActionsDialog').close();
-    showNewGroup(true);
-  });
-  $('#manageLoad').addEventListener('click', function () {
-    $('#groupActionsDialog').close();
+  $('#openLoadGroup').addEventListener('click', function () {
+    $('#settingsMenu').open = false;
     $('#loadGroupDialog').showModal();
   });
   $('#chooseLoadFile').addEventListener('click', function () { $('#loadFile').click(); });
-  $('[data-close]').forEach(function (b) {
+  $$('[data-close]').forEach(function (b) {
     b.addEventListener('click', function (ev) {
       ev.preventDefault();
       var d = b.closest('dialog');
@@ -2647,25 +3068,88 @@ function buildReportPdf(rep, num) {
 
   /* ---------- guided tour ---------- */
   var tourSteps = [
-    { title: 'Welcome to Even Steven', text: 'This quick tour shows where to manage a group, record costs, and see how everyone settles up.' },
-    { selector: '#tabs', title: 'Switch between groups', text: 'Your groups appear here. Choose a group tab, or use + New group to start another one.' },
-    { selector: '#loadFile', title: 'Load a saved group', text: 'Import a group backup from a JSON file. Save group file creates that backup; your working data is also saved in this browser.' },
-    { selector: '#gCur', title: 'Choose a currency', text: 'Set the currency used to display amounts for this group.' },
-    { selector: '#mForm', title: 'Add people', text: 'Add the people who share costs. They appear in the split options below.' },
-    { selector: '#fDesc', title: 'Enter an expense', text: 'Describe the purchase and enter the total, date, and person who paid.' },
-    { selector: '#fType', title: 'Choose how to split it', text: 'Split equally, enter percentages, or enter each person’s exact share.' },
-    { selector: '#fSubmit', title: 'Save the expense', text: 'Choose who shares the cost, then add it. The balances and payment suggestions update automatically.' },
-    { selector: '#pTitle', title: 'Record a payment', text: 'Open this section to record a full or partial payment between two people.' },
-    { selector: '#smartSw', title: 'Simplify the settlement', text: 'Turn on Smart split to combine debts across the group and reduce the number of payments.' },
-    { selector: '#listLabel', title: 'Review expense history', text: 'The list shows expenses and recorded payments. You can edit or remove individual entries here.' },
-    { selector: '#viewTabs', title: 'Open the report', text: 'Switch to Report for summaries and an expense audit, with Excel, PDF, and CSV downloads.' },
-    { selector: '#saveGroup', title: 'Back up your group', text: 'Download a JSON backup that you can load later or on another browser.' },
-    { selector: '#gDel', title: 'Delete a group', text: 'This removes the active group and its saved data from this browser.' },
-    { title: 'That’s the tour', text: 'You’re ready to split a cost. You can start this tour again any time from the button at the top.' }
+    { title: 'Welcome to Even Steven', text: 'We’ll take a look around using a ready-made cabin weekend group. Nothing will be recorded while you follow the tour.' },
+    { selector: '#gName', title: 'Your example group', text: 'This example has people, expenses, balances, and a payment so you can see how the app works.' },
+    { selector: '#settingsMenu .settings-pop', title: 'Settings', text: 'The Settings menu is open. Load groups, choose the look of the app, and start this tour here.', panel: 'settings' },
+    { selector: '#settingsMenu .settings-pop', title: 'Load group', text: 'The Load group section is open with options to load a saved file or open the example group.', panel: 'load' },
+    { selector: '#settingsMenu .settings-pop', title: 'Theme mode', text: 'The Theme section is open. System follows your device; Light and Dark each offer three palettes.', panel: 'theme' },
+    { selector: '#settingsMenu .settings-pop', title: 'Light palettes', text: 'The Light palette choices are open: Warm paper, Soft blue, and Clean neutral.', panel: 'light' },
+    { selector: '#settingsMenu .settings-pop', title: 'Dark palettes', text: 'The Dark palette choices are open: Warm charcoal, Midnight blue, and Plum slate.', panel: 'dark' },
+    { selector: '#gCur', title: 'Choose a currency', text: 'Each group can use its own currency for expenses and balances.' },
+    { selector: '#mForm', title: 'Add people', text: 'Add the people sharing costs. They become available in the payer and split controls.' },
+    { selector: '#fDesc', title: 'Record an expense', text: 'Enter what the expense was for, its amount, and date.' },
+    { selector: '#fPayerChoices', title: 'Choose who paid', text: 'Choose a quick person chip, or open Someone else? to search the whole group.' },
+    { selector: '#fType', title: 'Choose a split', text: 'Split evenly, by percentage, or by exact amount. The share preview updates as you edit.' },
+    { selector: '#fSubmit', title: 'Record the expense', text: 'The example form is only being shown. The tour will not submit a new expense.' },
+    { selector: '[data-entry="payment"]', title: 'Switch to payment', text: 'Use Payment to record money that one person sends to another.', entry: 'payment' },
+    { selector: '#pFromChoices', title: 'Choose who paid', text: 'Pick the person sending the money. Their name is removed from the Paid to options.', entry: 'payment' },
+    { selector: '#pToChoices', title: 'Choose who received it', text: 'Pick the recipient. The selected payer is excluded from this list.', entry: 'payment' },
+    { selector: '#swapPayment', title: 'Reverse the direction', text: 'Swap the payer and recipient with one tap.', entry: 'payment' },
+    { selector: '#smartSw', title: 'Settle up', text: 'The settlement view shows balances and suggested payments. Smart split combines debts to reduce the number of payments.', view: 'settle' },
+    { selector: '#listLabel', title: 'Transaction history', text: 'Review, edit, or remove expenses and payments here.', view: 'ledger', entry: 'expense', history: true },
+    { selector: '#rTitle', title: 'Reports', text: 'The report summarizes spending, balances, and the transaction audit.', view: 'report' },
+    { selector: '.export-menu .export-pop', title: 'Export', text: 'The Export menu is open with Excel, PDF, and CSV download options.', view: 'report', panel: 'export' },
+    { selector: '#groupActionsMenu .head-menu-pop', title: 'Save a group', text: 'Group actions is open. Choose Save group to keep a portable backup of this group.', view: 'ledger', panel: 'group-actions' },
+    { selector: '#groupActionsMenu .head-menu-pop', title: 'Delete a group', text: 'Group actions is open. Delete asks for confirmation before removing the group.', view: 'ledger', panel: 'group-actions' },
+    { title: 'That’s the tour', text: 'You’re ready to split a cost. You can start this walkthrough again from Settings.' }
   ];
   var tourRunSteps = [];
   var tourIndex = 0;
   var tourTarget = null;
+  var tourThemeRestore = null;
+  var tourRemainingMs = 10000;
+  var tourLastTick = 0;
+  var tourPointer = { x: -1, y: -1 };
+  var tourUserPaused = false;
+
+  function tourPointerOver(rect) {
+    return tourPointer.x >= rect.left && tourPointer.x <= rect.right && tourPointer.y >= rect.top && tourPointer.y <= rect.bottom;
+  }
+  function updateTourTimer(now) {
+    if ($('#tourOverlay').hidden) { tourLastTick = now; return; }
+    var card = $('#tourCard').getBoundingClientRect();
+    var hovered = tourPointerOver(card) || (tourTarget && tourPointerOver(tourTarget.getBoundingClientRect()));
+    var paused = tourUserPaused || hovered;
+    if (tourLastTick && !paused) tourRemainingMs = Math.max(0, tourRemainingMs - (now - tourLastTick));
+    tourLastTick = now;
+    $('#tourPause').textContent = tourUserPaused ? 'Resume' : 'Pause';
+    $('#tourPause').setAttribute('aria-pressed', String(tourUserPaused));
+    var seconds = Math.ceil(tourRemainingMs / 1000);
+    $('#tourTimerLabel').textContent = paused ? 'Paused · ' + seconds + 's' : 'Next in ' + seconds + 's';
+    $('#tourProgress').style.transform = 'scaleX(' + (tourRemainingMs / 10000) + ')';
+    if (!tourRemainingMs) $('#tourNext').click();
+  }
+
+  function closeTourMenus() {
+    $$('details.head-menu').forEach(function (menu) { menu.open = false; });
+  }
+  function prepareTourStep(step) {
+    closeTourMenus();
+    var g = active();
+    if (step.view && step.view !== view) {
+      view = step.view;
+      if (g) renderView(g);
+    } else if (!step.view && view !== 'ledger') {
+      view = 'ledger';
+      if (g) renderView(g);
+    }
+    if (step.entry) setEntryMode(step.entry);
+    if (step.history) $('#auditHistory').open = true;
+    if (step.panel === 'settings' || step.panel === 'load' || step.panel === 'theme' || step.panel === 'light' || step.panel === 'dark') {
+      $('#settingsMenu').open = true;
+      var showLoad = step.panel === 'load';
+      var showTheme = step.panel === 'theme' || step.panel === 'light' || step.panel === 'dark';
+      $('#settingsLoadPanel').hidden = !showLoad;
+      $('#settingsThemePanel').hidden = !showLoad && !showTheme;
+      $('#settingsLoadToggle').setAttribute('aria-expanded', String(showLoad));
+      $('#settingsThemeToggle').setAttribute('aria-expanded', String(showTheme));
+      if (step.panel === 'light') applyThemeChoice('light', false);
+      if (step.panel === 'dark') applyThemeChoice('dark', false);
+      if (step.panel === 'theme' && tourThemeRestore) applyThemeChoice(tourThemeRestore.mode, false);
+    }
+    if (step.panel === 'group-actions') $('#groupActionsMenu').open = true;
+    if (step.panel === 'export') $('.export-menu').open = true;
+  }
 
   function placeTour() {
     var overlay = $('#tourOverlay');
@@ -2699,6 +3183,7 @@ function buildReportPdf(rep, num) {
     if (tourIndex < 0) tourIndex = 0;
     if (tourIndex >= tourRunSteps.length) { endTour(); return; }
     var step = tourRunSteps[tourIndex];
+    prepareTourStep(step);
     tourTarget = step.selector ? $(step.selector) : null;
     $('#tourOverlay').dataset.intro = tourTarget ? 'false' : 'true';
     $('#tourStep').textContent = 'Step ' + (tourIndex + 1) + ' of ' + tourRunSteps.length;
@@ -2706,6 +3191,10 @@ function buildReportPdf(rep, num) {
     $('#tourText').textContent = step.text;
     $('#tourPrev').disabled = tourIndex === 0;
     $('#tourNext').textContent = tourIndex === tourRunSteps.length - 1 ? 'Finish' : 'Next';
+    tourRemainingMs = 10000;
+    tourLastTick = performance.now();
+    $('#tourProgress').style.transform = 'scaleX(1)';
+    $('#tourTimerLabel').textContent = tourUserPaused ? 'Paused · 10s' : 'Next in 10s';
     if (tourTarget) tourTarget.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
     requestAnimationFrame(placeTour);
   }
@@ -2713,16 +3202,34 @@ function buildReportPdf(rep, num) {
   function endTour() {
     $('#tourOverlay').hidden = true;
     tourTarget = null;
-    $('#startTour').focus();
+    if (tourThemeRestore) {
+      applyThemePalette('light', tourThemeRestore.light, false);
+      applyThemePalette('dark', tourThemeRestore.dark, false);
+      applyThemeChoice(tourThemeRestore.mode, false);
+      tourThemeRestore = null;
+    }
+    view = 'ledger';
+    setEntryMode('expense');
+    var g = active();
+    if (g) renderView(g);
+    closeTourMenus();
+    $('#settingsMenu > summary').focus();
   }
 
   $('#startTour').addEventListener('click', function () {
+    $('#settingsMenu').open = false;
+    tourThemeRestore = { mode: themePreference, light: lightPalette, dark: darkPalette };
+    $('#loadExample').click();
+    view = 'ledger';
+    setEntryMode('expense');
+    var example = active();
+    if (example) renderView(example);
     tourRunSteps = tourSteps.filter(function (step) {
       if (!step.selector) return true;
-      var el = $(step.selector);
-      return !!el && !el.closest('[hidden]') && el.getClientRects().length > 0;
+      return !!$(step.selector);
     });
     tourIndex = 0;
+    tourUserPaused = false;
     $('#tourOverlay').hidden = false;
     showTourStep();
     $('#tourNext').focus();
@@ -2733,6 +3240,16 @@ function buildReportPdf(rep, num) {
   });
   $('#tourPrev').addEventListener('click', function () { if (tourIndex > 0) { tourIndex--; showTourStep(); } });
   $('#tourExit').addEventListener('click', endTour);
+  $('#tourPause').addEventListener('click', function () {
+    tourUserPaused = !tourUserPaused;
+    tourLastTick = performance.now();
+    updateTourTimer(tourLastTick);
+  });
+  $('#tourOverlay').addEventListener('pointermove', function (ev) {
+    tourPointer.x = ev.clientX;
+    tourPointer.y = ev.clientY;
+  });
+  window.setInterval(function () { updateTourTimer(performance.now()); }, 100);
   document.addEventListener('keydown', function (ev) {
     if ($('#tourOverlay').hidden) return;
     if (ev.key === 'Escape') { ev.preventDefault(); endTour(); }
