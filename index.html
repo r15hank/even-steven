@@ -489,7 +489,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
   <section id="welcome" class="welcome" hidden>
     <h2>No groups yet</h2>
     <p class="muted">Create a group, add the people in it, then log each expense with who paid and how it splits. Balances and payments appear beside it.</p>
-    <div class="actions"><button type="button" class="btn ghost" id="loadExample">Load an example group</button></div>
+    <div class="actions"><button type="button" class="btn ghost" id="loadExample"><span class="btn-icon" aria-hidden="true">✦</span>Load an example group</button></div>
   </section>
 
   <div id="layout" class="layout" hidden>
@@ -506,7 +506,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
           <button type="button" class="btn ghost small" id="saveGroup"><span class="btn-icon" aria-hidden="true">↓</span>Save group</button>
           <details class="g-more">
             <summary class="btn ghost small">More</summary>
-            <div class="g-menu"><button type="button" class="link danger" id="gDel">Delete group</button></div>
+            <div class="g-menu"><button type="button" class="link danger" id="gDel"><span class="btn-icon" aria-hidden="true">×</span>Delete group</button></div>
           </details>
         </div>
       </div>
@@ -514,14 +514,14 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
       <ul id="chips" class="chips"></ul>
       <form id="mForm" class="inline" autocomplete="off">
         <input id="mName" type="text" maxlength="30" placeholder="Add a person" aria-label="Name of person to add">
-        <button class="btn" type="submit">Add</button>
+        <button class="btn primary" type="submit"><span class="btn-icon" aria-hidden="true">＋</span>Add person</button>
       </form>
       <p id="mErr" role="alert"></p>
       <p id="mHint"></p>
       <div class="viewtabs" id="viewTabs">
-        <button type="button" class="tab" data-view="ledger" aria-current="true">Expenses</button>
-        <button type="button" class="tab" data-view="settle">Settle</button>
-        <button type="button" class="tab" data-view="report">Report</button>
+        <button type="button" class="tab" data-view="ledger" aria-current="true"><span class="view-icon" aria-hidden="true">▤</span>Expenses</button>
+        <button type="button" class="tab" data-view="settle"><span class="view-icon" aria-hidden="true">↔</span>Settle</button>
+        <button type="button" class="tab" data-view="report"><span class="view-icon" aria-hidden="true">▥</span>Report</button>
       </div>
     </section>
 
@@ -561,7 +561,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
           </label>
           <p id="fError" class="err" role="alert"></p>
           <div class="actions">
-            <button class="btn" type="submit" id="fSubmit">Add expense</button>
+            <button class="btn primary" type="submit" id="fSubmit"><span class="btn-icon" aria-hidden="true">＋</span>Add expense</button>
             <button class="btn ghost" type="button" id="fCancel" hidden>Cancel</button>
             <span id="fStatus" class="status" role="status"></span>
           </div>
@@ -593,7 +593,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
           <p id="pHint" class="hint"></p>
           <p id="pError" class="err" role="alert"></p>
           <div class="actions">
-            <button class="btn" type="submit" id="pSubmit">Save payment</button>
+            <button class="btn payment-action" type="submit" id="pSubmit"><span class="btn-icon" aria-hidden="true">↔</span>Save payment</button>
             <button class="btn ghost" type="button" id="pCancel" hidden>Cancel</button>
             <button class="link" type="button" id="pUse" hidden>Use suggested amount</button>
             <span id="pStatus" class="status" role="status"></span>
@@ -1661,7 +1661,7 @@ function buildReportPdf(rep, num) {
     var html = state.groups.map(function (g) {
       return '<button type="button" class="tab" data-id="' + g.id + '"' + (g.id === state.activeId ? ' aria-current="true"' : '') + '>' + esc(g.name) + '</button>';
     }).join('');
-    html += '<button type="button" class="tab add" id="addGroupBtn">+ New group</button>';
+    html += '<button type="button" class="tab add" id="addGroupBtn"><span class="view-icon" aria-hidden="true">＋</span>New group</button>';
     $('#tabs').innerHTML = html;
   }
   function renderHead(g) {
