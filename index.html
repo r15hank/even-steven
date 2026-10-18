@@ -505,7 +505,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
           </label>
           <button type="button" class="btn ghost small" id="saveGroup"><span class="btn-icon" aria-hidden="true">↓</span>Save group</button>
           <details class="g-more">
-            <summary class="btn ghost small">More</summary>
+            <summary class="btn ghost small"><span class="btn-icon" aria-hidden="true">···</span>More</summary>
             <div class="g-menu"><button type="button" class="link danger" id="gDel"><span class="btn-icon" aria-hidden="true">×</span>Delete group</button></div>
           </details>
         </div>
@@ -644,8 +644,8 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
   <h2 id="deleteTitle">Delete this group?</h2>
   <p id="deleteMessage">This will permanently remove <strong id="deleteGroupName"></strong> and its expenses from this browser.</p>
   <div class="confirm-actions">
-    <button type="button" class="btn ghost" onclick="document.getElementById('deleteDialog').close()">Keep group</button>
-    <button type="button" class="btn delete-btn" id="confirmDelete">Delete group</button>
+    <button type="button" class="btn ghost" onclick="document.getElementById('deleteDialog').close()"><span class="btn-icon" aria-hidden="true">×</span>Keep group</button>
+    <button type="button" class="btn delete-btn" id="confirmDelete"><span class="btn-icon" aria-hidden="true">×</span>Delete group</button>
   </div>
 </dialog>
 
@@ -1619,7 +1619,7 @@ function buildReportPdf(rep, num) {
   function syncChrome() {
     var editing = !!form.editingId;
     $('#fTitle').textContent = editing ? 'Edit expense' : 'Add an expense';
-    $('#fSubmit').textContent = editing ? 'Save changes' : 'Add expense';
+    $('#fSubmit').innerHTML = '<span class="btn-icon" aria-hidden="true">' + (editing ? '✓' : '＋') + '</span>' + (editing ? 'Save changes' : 'Add expense');
     $('#fCancel').hidden = !editing;
     $$('#fType button').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.type === form.type)); });
   }
@@ -1669,7 +1669,7 @@ function buildReportPdf(rep, num) {
     $('#gCur').value = g.currency;
     $('#saveGroupMessage').textContent = 'Save a portable copy of “' + g.name + '” with its people and expenses. You can load it on another device later.';
     $('#saveGroupMessage').textContent = 'Save a portable copy of “' + g.name + '” with its people and expenses. You can load it on another device later.';
-    $('#gDel').textContent = 'Delete group';
+    $('#gDel').innerHTML = '<span class="btn-icon" aria-hidden="true">×</span>Delete group';
     $('#chips').innerHTML = g.members.map(function (m) {
       var rm = memberUsed(g, m.id) ? '' : '<button class="x" type="button" data-act="rm" data-id="' + m.id + '" aria-label="Remove ' + esc(m.name) + '">×</button>';
       return '<li class="chip">' + avatar(m) + '<span>' + esc(m.name) + '</span>' + rm + '</li>';
@@ -2404,7 +2404,7 @@ function buildReportPdf(rep, num) {
   function syncPayChrome() {
     var editing = !!pay.editingId;
     $('#pTitle').textContent = editing ? 'Edit payment' : 'Record a payment';
-    $('#pSubmit').textContent = editing ? 'Save changes' : 'Save payment';
+    $('#pSubmit').innerHTML = '<span class="btn-icon" aria-hidden="true">↔</span>' + (editing ? 'Save changes' : 'Save payment');
     $('#pCancel').hidden = !editing;
   }
   function renderPayForm(g) {
