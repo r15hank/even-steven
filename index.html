@@ -135,6 +135,51 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .btn:hover { filter: brightness(1.08); }
 .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
 .btn.ghost:hover { background: var(--surface-2); filter: none; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn-icon { display: inline-grid; place-items: center; min-width: 18px; font-weight: 800; line-height: 1; }
+.file-mark { display: inline-grid; place-items: center; width: 22px; height: 24px; border-radius: 4px; font: 800 11px/1 var(--f-body); }
+.xlsx-mark { background: #1A7B49; color: #fff; }
+.pdf-mark { background: #BC3D29; color: #fff; font-size: 8px; }
+.csv-mark { background: #E8EDF0; color: #40514B; font-size: 8px; }
+.export-excel { background: #EAF5ED; border-color: #B9DCC2; color: #176B39; }
+.export-pdf { background: #FFF0EC; border-color: #F0C6BA; color: #A63C27; }
+.payment-action { background: #E8F5F2; border-color: #BFDFD9; color: #12665D; }
+.btn { transition: transform .14s ease, filter .14s ease; }
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+#saveGroup { color: var(--accent); }
+#saveGroup:hover { background: var(--accent-soft); }
+#openLoadGroup { color: var(--accent); border-color: var(--accent-soft); }
+#tabs .tab.add { color: var(--accent); font-weight: 700; }
+#tabs .tab.add .view-icon { font-size: 18px; }
+#viewTabs .view-icon { display: inline-block; margin-right: 6px; font-size: 15px; }
+#mForm .btn { background: var(--pos); color: #fff; }
+.exp .acts [data-act="edit"]::before, .exp .acts [data-act="editpay"]::before { content: "✎"; margin-right: 6px; font-size: 15px; }
+.exp .acts [data-act="del"]::before { content: "×"; margin-right: 6px; font-size: 16px; }
+.paybtns [data-act="settle"] { color: var(--pos); }
+.paybtns [data-act="settle"]::before { content: "✓"; margin-right: 6px; }
+.paybtns [data-act="part"] { color: var(--accent); }
+.paybtns [data-act="part"]::before { content: "↔"; margin-right: 6px; }
+#fCancel::before, #pCancel::before { content: "×"; margin-right: 6px; font-weight: 800; }
+.paybox > summary::before { content: "↔"; color: var(--accent); margin-right: 8px; font-weight: 800; }
+.group-dialog, .confirm-dialog { width: min(480px, calc(100vw - 32px)); padding: 24px; border: 1px solid var(--line); border-top: 4px solid var(--accent); border-radius: 14px; background: var(--surface); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.24); }
+.group-dialog::backdrop, .confirm-dialog::backdrop { background: rgba(10,18,14,.58); }
+.group-dialog h2 { font: 800 24px/1.15 var(--f-display); margin: 8px 0; }
+.group-dialog p { color: var(--muted); margin: 0; }
+.dialog-mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; background: var(--accent-soft); color: var(--accent); font-size: 22px; font-weight: 800; }
+.dialog-mark.save-mark { color: var(--pos); background: color-mix(in srgb, var(--pos) 13%, transparent); }
+.dialog-form { display: grid; gap: 14px; margin-top: 18px; }
+.dialog-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+#loadPanel { max-width: 520px; }
+#loadPanel h2 { font: 800 22px/1.15 var(--f-display); margin: 0 0 8px; }
+#loadPanel p { color: var(--muted); margin: 0; }
+#loadPanel .actions { margin-top: 18px; }
+#loadPanel [data-mode="replace"] { background: var(--accent); color: var(--accent-ink); }
+#loadPanel [data-mode="copy"] { color: var(--pos); }
+@media (max-width: 560px) {
+  .group-dialog, .confirm-dialog { width: 100%; max-width: none; margin: auto 0 0; border-radius: 16px 16px 0 0; padding: 22px 18px max(22px, env(safe-area-inset-bottom, 0px)); }
+  .dialog-actions .btn { flex: 1 1 130px; }
+}
 .btn.small { min-height: 34px; padding: 5px 12px; font-size: 14px; }
 .link { appearance: none; background: none; border: 0; padding: 0; cursor: pointer; color: var(--accent); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
 .link.danger { color: var(--neg); }
@@ -569,9 +614,9 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
           <p class="muted" id="rSub"></p>
         </div>
         <div class="dl">
-          <button class="btn" id="dlXlsx" type="button" disabled>Download Excel</button>
-          <button class="btn ghost" id="dlPdf" type="button" disabled>Download PDF</button>
-          <button class="btn ghost" id="dlCsv" type="button" disabled>Download CSV</button>
+          <button class="btn export-excel" id="dlXlsx" type="button" disabled><span class="file-mark xlsx-mark" aria-hidden="true">X</span>Download Excel</button>
+          <button class="btn export-pdf" id="dlPdf" type="button" disabled><span class="file-mark pdf-mark" aria-hidden="true">PDF</span>Download PDF</button>
+          <button class="btn ghost" id="dlCsv" type="button" disabled><span class="file-mark csv-mark" aria-hidden="true">CSV</span>Download CSV</button>
         </div>
       </div>
       <p id="dlStatus" role="status"></p>
