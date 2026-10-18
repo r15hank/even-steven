@@ -224,6 +224,13 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 
 /* settlement slip */
 .slip { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--ink); padding: 20px 20px 22px; }
+/* Keep the settlement panel scrollable while its scrollbar stays out of view until needed. */
+.slip { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+.slip:hover, .slip:focus-within { scrollbar-color: var(--line) transparent; }
+.slip::-webkit-scrollbar { width: 8px; }
+.slip::-webkit-scrollbar-track { background: transparent; }
+.slip::-webkit-scrollbar-thumb { background: transparent; border-radius: 8px; }
+.slip:hover::-webkit-scrollbar-thumb, .slip:focus-within::-webkit-scrollbar-thumb { background: var(--line); }
 .slip h2 { font: 800 24px/1.1 var(--f-display); letter-spacing: -0.01em; margin-bottom: 14px; }
 .sw { display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 12px; cursor: pointer; margin-bottom: 18px; }
 .sw b { display: block; font-weight: 600; }
