@@ -1827,8 +1827,14 @@ function buildReportPdf(rep, num) {
     }
   }
   function showNewGroup(on) {
-    $('#ngForm').hidden = !on;
-    if (on) { $('#ngName').value = ''; $('#ngName').focus(); }
+    var dialog = $('#createGroupDialog');
+    if (on) {
+      $('#ngName').value = '';
+      if (!dialog.open) dialog.showModal();
+      $('#ngName').focus();
+    } else if (dialog.open) {
+      dialog.close();
+    }
   }
   function backToCleanForm(g, payer) {
     resetForm(g);
@@ -1842,12 +1848,12 @@ function buildReportPdf(rep, num) {
     if (b.id === 'addGroupBtn') { showNewGroup(true); return; }
     if (b.dataset.id) { state.activeId = b.dataset.id; armed = null; showNewGroup(false); save(); render(); }
   });
-  $('#ngCancel').addEventListener('click', function () { if (state.groups.length) showNewGroup(false); });
+  $('#ngCancel').addEventListener('click', function () { showNewGroup(false); });
   $('#ngForm').addEventListener('submit', function (ev) {
     ev.preventDefault();
     var name = $('#ngName').value.trim();
     if (!name) { $('#ngName').focus(); return; }
-    var g = { id: uid(), name: name, currency: 'USD', smart: false, members: [], expenses: [] };
+    var g = { id: uid(), name: name, currency: $('#ngCurrency').value || 'USD', smart: false, members: [], expenses: [] };
     state.groups.push(g);
     state.activeId = g.id;
     armed = null;
