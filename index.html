@@ -415,15 +415,31 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
   </header>
   <nav id="tabs" class="tabs" aria-label="Groups"></nav>
   <div class="iobar">
-    <label class="link" for="loadFile">Load group from file<input class="vh" type="file" id="loadFile" accept=".json,application/json"></label>
+    <button type="button" class="btn ghost small" id="openLoadGroup"><span class="btn-icon" aria-hidden="true">↑</span>Load group</button>
+    <input class="vh" type="file" id="loadFile" accept=".json,application/json">
     <span id="ioStatus" role="status"></span>
   </div>
-  <div id="loadPanel" class="loadpanel" hidden></div>
-  <form id="ngForm" class="inline" hidden autocomplete="off">
-    <input id="ngName" type="text" maxlength="40" placeholder="Group name, like Ski weekend" aria-label="New group name">
-    <button class="btn" type="submit">Create</button>
-    <button class="btn ghost" type="button" id="ngCancel">Cancel</button>
-  </form>
+  <dialog class="group-dialog" id="loadGroupDialog" aria-labelledby="loadGroupTitle">
+    <div class="dialog-mark load-mark" aria-hidden="true">↑</div>
+    <h2 id="loadGroupTitle">Load a group</h2>
+    <p>Choose a saved group file. We’ll check it and ask before replacing matching groups.</p>
+    <div class="dialog-actions"><button type="button" class="btn ghost" data-close="loadGroupDialog">Cancel</button><button type="button" class="btn primary" id="chooseLoadFile"><span class="btn-icon" aria-hidden="true">↑</span>Choose file</button></div>
+  </dialog>
+  <dialog class="group-dialog" id="createGroupDialog" aria-labelledby="createGroupTitle">
+    <div class="dialog-mark" aria-hidden="true">＋</div><h2 id="createGroupTitle">Create a group</h2>
+    <p>Give your group a name and choose its currency. You can add people and expenses next.</p>
+    <form id="ngForm" class="dialog-form" autocomplete="off">
+      <label class="fld" for="ngName">Group name<input id="ngName" type="text" maxlength="40" placeholder="Cabin weekend" aria-label="New group name"></label>
+      <label class="fld" for="ngCurrency">Currency<select id="ngCurrency"><option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option><option value="INR">INR ₹</option><option value="CAD">CAD $</option><option value="AUD">AUD $</option></select></label>
+      <div class="dialog-actions"><button class="btn ghost" type="button" id="ngCancel"><span class="btn-icon" aria-hidden="true">×</span>Cancel</button><button class="btn primary" type="submit"><span class="btn-icon" aria-hidden="true">＋</span>Create group</button></div>
+    </form>
+  </dialog>
+  <dialog class="group-dialog" id="saveGroupDialog" aria-labelledby="saveGroupTitle">
+    <div class="dialog-mark save-mark" aria-hidden="true">↓</div><h2 id="saveGroupTitle">Save a group file</h2>
+    <p id="saveGroupMessage">Save a portable copy of this group’s people and expenses. You can load it on another device later.</p>
+    <div class="dialog-actions"><button type="button" class="btn ghost" data-close="saveGroupDialog">Cancel</button><button type="button" class="btn primary" id="confirmSaveGroup"><span class="btn-icon" aria-hidden="true">↓</span>Save file</button></div>
+  </dialog>
+  <dialog class="confirm-dialog" id="loadPanel" aria-labelledby="importDialogTitle"></dialog>
 
   <section id="welcome" class="welcome" hidden>
     <h2>No groups yet</h2>
