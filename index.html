@@ -2485,7 +2485,7 @@ function buildReportPdf(rep, num) {
     form.groupId = null;
     armed = null;
     pendingImport = null;
-    $('#loadPanel').hidden = true;
+    if ($('#loadPanel').open) $('#loadPanel').close();
     showNewGroup(false);
     save();
     render();
@@ -2507,18 +2507,18 @@ function buildReportPdf(rep, num) {
     if (!clash.length) { commitImport(good, 'add'); return; }
     pendingImport = good;
     var names = clash.map(function (ng) { return esc(ng.name); }).join(', ');
-    $('#loadPanel').innerHTML = '<p>You already have ' + (clash.length === 1 ? 'a group that matches' : 'groups that match') + ' <b>' + names +
+    $('#loadPanel').innerHTML = '<h2 id="importDialogTitle">Groups already exist</h2><p>You already have ' + (clash.length === 1 ? 'a group that matches' : 'groups that match') + ' <b>' + names +
       '</b>. Replace ' + (clash.length === 1 ? 'it' : 'them') + ' with the file’s version, or add the file as separate ' + (clash.length === 1 ? 'a copy' : 'copies') + '?</p>' +
       '<div class="actions"><button type="button" class="btn" data-mode="replace">Replace</button>' +
       '<button type="button" class="btn ghost" data-mode="copy">Add as a copy</button>' +
       '<button type="button" class="btn ghost" data-mode="cancel">Cancel</button></div>';
-    $('#loadPanel').hidden = false;
+    $('#loadPanel').showModal();
     setIo('');
   }
   $('#loadPanel').addEventListener('click', function (ev) {
     var b = ev.target.closest('button[data-mode]');
     if (!b || !pendingImport) return;
-    if (b.dataset.mode === 'cancel') { pendingImport = null; $('#loadPanel').hidden = true; setIo('Load cancelled.'); return; }
+    if (b.dataset.mode === 'cancel') { pendingImport = null; $('#loadPanel').close(); setIo('Load cancelled.'); return; }
     commitImport(pendingImport, b.dataset.mode);
   });
   $('#loadFile').addEventListener('change', function (ev) {
