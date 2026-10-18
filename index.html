@@ -163,6 +163,12 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .gtools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
 .gtools select { width: auto; min-height: 36px; padding: 5px 8px; font-size: 14px; }
 
+/* group actions */
+.g-more { position: relative; }
+.g-more > summary { list-style: none; cursor: pointer; }
+.g-more > summary::-webkit-details-marker { display: none; }
+.g-menu { position: absolute; z-index: 5; right: 0; top: calc(100% + 6px); min-width: 150px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); }
+.g-menu .link { min-height: 36px; }
 /* people */
 .chips { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .chip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
@@ -338,14 +344,55 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .stack { margin-bottom: 14px; }
 @media (max-width: 560px) { .insights li { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 880px) {
-  .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "form" "slip" "list"; }
+  .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "form" "slip" "list"; row-gap: 24px; }
   .slip { position: static; max-height: none; overflow: visible; }
+  #viewTabs button[data-view="settle"] { display: block; }
+  .layout[data-view="ledger"] .slip, .layout[data-view="ledger"] .sec-report,
+  .layout[data-view="settle"] .sec-form, .layout[data-view="settle"] .sec-list, .layout[data-view="settle"] .sec-report,
+  .layout[data-view="report"] .sec-form, .layout[data-view="report"] .sec-list, .layout[data-view="report"] .slip { display: none; }
+  .layout[data-view="report"] .sec-report { display: block; }
 }
-@media (max-width: 460px) {
-  .row.amt { grid-template-columns: minmax(0, 1fr) minmax(0, 120px); }
+@media (max-width: 560px) {
+  body { padding-block: 16px 36px; }
+  .brand { font-size: 27px; }
+  .top { align-items: center; gap: 8px 12px; }
+  .tag-line { flex: 1 1 100%; order: 3; }
+  .tour-trigger { margin-left: auto; }
+  .layout { margin-top: 20px; row-gap: 20px; }
+  .ghead { align-items: flex-start; flex-direction: column; margin-bottom: 18px; }
+  .ghead h2 { font-size: 25px; }
+  .gtools { width: 100%; gap: 8px 12px; }
+  .gtools .fld { flex: 1 1 100%; }
+  .gtools select { width: 100%; min-height: 42px; }
+  .viewtabs { margin-top: 20px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .viewtabs .tab { padding-inline: 8px; }
+  .row, .row.amt { grid-template-columns: minmax(0, 1fr); }
+  .actions .btn, .dl .btn { flex: 1 1 auto; }
+  .slip { padding: 16px; }
+  .insights li { grid-template-columns: minmax(0, 1fr); }
+  .rhead { align-items: stretch; }
+  .dl { width: 100%; }
+  .dl .btn { min-width: 0; }
   .person { grid-template-columns: minmax(0, 1fr) auto; }
   .person:has(.field) .calc { grid-column: 1 / -1; text-align: left; min-width: 0; }
   .person .calc:empty { display: none; }
+  .exp { gap: 4px 10px; }
+}
+#viewTabs button[data-view="settle"] { display: none; }
+@media (max-width: 380px) {
+  .viewtabs .tab { font-size: 13px; padding-inline: 5px; }
+  .chips { gap: 6px; }
+}
+.confirm-dialog { width: min(440px, calc(100vw - 32px)); padding: 24px; border: 1px solid var(--line); border-top: 4px solid var(--neg); border-radius: 12px; background: var(--surface); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.28); }
+.confirm-dialog::backdrop { background: rgba(10,18,14,.58); }
+.confirm-dialog h2 { font: 800 24px/1.15 var(--f-display); margin: 8px 0; }
+.confirm-dialog p { color: var(--muted); overflow-wrap: anywhere; }
+.confirm-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: color-mix(in srgb, var(--neg) 14%, transparent); color: var(--neg); font-weight: 800; }
+.confirm-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.delete-btn { background: var(--neg); }
+@media (max-width: 560px) {
+  .confirm-dialog { width: 100%; max-width: none; margin: auto 0 0; border-radius: 16px 16px 0 0; padding: 22px 18px max(22px, env(safe-area-inset-bottom, 0px)); }
+  .confirm-actions .btn { flex: 1 1 140px; }
 }
 @media (prefers-reduced-motion: reduce) { .track, .track::after { transition: none; } }
 </style>
@@ -386,7 +433,10 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
             </select>
           </label>
           <button type="button" class="link" id="saveGroup">Save group file</button>
-          <button type="button" class="link danger" id="gDel">Delete group</button>
+          <details class="g-more">
+            <summary class="btn ghost small">More</summary>
+            <div class="g-menu"><button type="button" class="link danger" id="gDel">Delete group</button></div>
+          </details>
         </div>
       </div>
       <h3 class="label">People</h3>
@@ -399,6 +449,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
       <p id="mHint"></p>
       <div class="viewtabs" id="viewTabs">
         <button type="button" class="tab" data-view="ledger" aria-current="true">Expenses</button>
+        <button type="button" class="tab" data-view="settle">Settle</button>
         <button type="button" class="tab" data-view="report">Report</button>
       </div>
     </section>
@@ -516,6 +567,16 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
   <p id="storeNote" hidden>This browser is not saving data, so changes will be lost when you close the page.</p>
   <footer class="site-credit">Created by <a href="https://github.com/r15hank">Rishank Karkera</a></footer>
 </div>
+
+<dialog class="confirm-dialog" id="deleteDialog" aria-labelledby="deleteTitle" aria-describedby="deleteMessage">
+  <div class="confirm-icon" aria-hidden="true">!</div>
+  <h2 id="deleteTitle">Delete this group?</h2>
+  <p id="deleteMessage">This will permanently remove <strong id="deleteGroupName"></strong> and its expenses from this browser.</p>
+  <div class="confirm-actions">
+    <button type="button" class="btn ghost" onclick="document.getElementById('deleteDialog').close()">Keep group</button>
+    <button type="button" class="btn delete-btn" id="confirmDelete">Delete group</button>
+  </div>
+</dialog>
 
 <div class="tour-overlay" id="tourOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="tourTitle">
   <div class="tour-spotlight" id="tourSpotlight" aria-hidden="true"></div>
@@ -1535,9 +1596,7 @@ function buildReportPdf(rep, num) {
   function renderHead(g) {
     $('#gName').textContent = g.name;
     $('#gCur').value = g.currency;
-    var gd = $('#gDel');
-    gd.textContent = armed === 'group' ? 'Click again to delete' : 'Delete group';
-    gd.classList.toggle('armed', armed === 'group');
+    $('#gDel').textContent = 'Delete group';
     $('#chips').innerHTML = g.members.map(function (m) {
       var rm = memberUsed(g, m.id) ? '' : '<button class="x" type="button" data-act="rm" data-id="' + m.id + '" aria-label="Remove ' + esc(m.name) + '">×</button>';
       return '<li class="chip">' + avatar(m) + '<span>' + esc(m.name) + '</span>' + rm + '</li>';
@@ -1787,17 +1846,20 @@ function buildReportPdf(rep, num) {
   });
   $('#gDel').addEventListener('click', function () {
     var g = active();
-    if (armed === 'group') {
-      armed = null;
-      state.groups = state.groups.filter(function (x) { return x.id !== g.id; });
-      state.activeId = state.groups.length ? state.groups[0].id : null;
-      form.groupId = null;
-      save();
-      render();
-    } else {
-      arm('group');
-      renderHead(g);
-    }
+    if (!g) return;
+    $('#deleteGroupName').textContent = g.name;
+    $('#deleteDialog').showModal();
+    $('#gDel').closest('details').open = false;
+  });
+  $('#confirmDelete').addEventListener('click', function () {
+    var g = active();
+    if (!g) return;
+    $('#deleteDialog').close();
+    state.groups = state.groups.filter(function (x) { return x.id !== g.id; });
+    state.activeId = state.groups.length ? state.groups[0].id : null;
+    form.groupId = null;
+    save();
+    render();
   });
   $('#smartSw').addEventListener('click', function () {
     var g = active();
@@ -1978,8 +2040,9 @@ function buildReportPdf(rep, num) {
       if (b.dataset.view === view) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
     });
     var isReport = view === 'report';
-    $('#secForm').hidden = isReport;
-    $('#secList').hidden = isReport;
+    $('#layout').dataset.view = view;
+    $('#secForm').hidden = isReport || view === 'settle';
+    $('#secList').hidden = isReport || view === 'settle';
     $('#secReport').hidden = !isReport;
     if (isReport) renderReport(g);
   }
