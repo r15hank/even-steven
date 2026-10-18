@@ -296,6 +296,15 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 /* group header */
 .ghead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-bottom: 22px; }
 .ghead h2 { font: 800 28px/1.1 var(--f-display); letter-spacing: -0.015em; overflow-wrap: anywhere; }
+.group-name-editor { display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
+.group-name-editor h2 { min-width: 0; }
+.group-name-editor [hidden] { display: none !important; }
+.group-name-edit { display: inline-grid; place-items: center; flex: none; width: 34px; height: 34px; padding: 0; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
+.group-name-edit:hover { color: var(--accent); border-color: var(--line); background: var(--surface); }
+.group-name-form { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; width: min(100%, 460px); }
+.group-name-form input { flex: 1 1 180px; min-width: 0; }
+.group-name-form button { display: inline-grid; place-items: center; width: 38px; height: 38px; padding: 0; }
+.group-name-error { flex-basis: 100%; min-height: 1em; color: var(--neg); font-size: 12px; }
 .gtools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
 .gtools select { width: auto; min-height: 36px; padding: 5px 8px; font-size: 14px; }
 
@@ -630,7 +639,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
     <p>Give your group a name and choose its currency. You can add people and expenses next.</p>
     <form id="ngForm" class="dialog-form" autocomplete="off">
       <label class="fld" for="ngName">Group name<input id="ngName" type="text" maxlength="40" placeholder="Cabin weekend" aria-label="New group name"></label>
-      <label class="fld" for="ngCurrency">Currency<select id="ngCurrency"><option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option><option value="INR">INR ₹</option><option value="CAD">CAD $</option><option value="AUD">AUD $</option></select></label>
+      <label class="fld" for="ngCurrency">Currency<select id="ngCurrency"><option value="USD">🇺🇸 USD $</option><option value="EUR">🇪🇺 EUR €</option><option value="GBP">🇬🇧 GBP £</option><option value="INR">🇮🇳 INR ₹</option><option value="CAD">🇨🇦 CAD $</option><option value="AUD">🇦🇺 AUD $</option></select></label>
       <div class="dialog-actions"><button class="btn ghost" type="button" id="ngCancel"><span class="btn-icon" aria-hidden="true">×</span>Cancel</button><button class="btn primary" type="submit"><span class="btn-icon" aria-hidden="true">＋</span>Create group</button></div>
     </form>
   </dialog>
@@ -649,7 +658,16 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
   <div id="layout" class="layout" hidden>
     <section class="sec-head">
       <div class="ghead">
-        <h2 id="gName"></h2>
+        <div class="group-name-editor">
+          <h2 id="gName"></h2>
+          <button type="button" class="group-name-edit" id="editGroupName" aria-label="Edit group name" title="Edit group name"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m14 5 5 5M4 20l4.5-1 10.8-10.8a2.1 2.1 0 0 0-3-3L5.5 16 4 20z"/></svg></button>
+          <form class="group-name-form" id="groupNameForm" hidden>
+            <input id="groupNameInput" type="text" maxlength="40" aria-label="Group name" autocomplete="off">
+            <button type="submit" class="btn primary small" aria-label="Save group name" title="Save"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button>
+            <button type="button" class="btn ghost small" id="cancelGroupName" aria-label="Cancel editing group name" title="Cancel"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+            <span class="group-name-error" id="groupNameError" role="status"></span>
+          </form>
+        </div>
         <div class="gtools">
           <details class="head-menu" id="groupActionsMenu">
             <summary class="btn ghost small"><span class="btn-icon" aria-hidden="true">⚙</span>Group actions ▾</summary>
@@ -660,8 +678,8 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
           </details>
           <label class="fld" style="flex-direction:row;align-items:center;gap:8px">Currency
             <select id="gCur" aria-label="Currency">
-              <option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option>
-              <option value="INR">INR ₹</option><option value="CAD">CAD $</option><option value="AUD">AUD $</option>
+              <option value="USD">🇺🇸 USD $</option><option value="EUR">🇪🇺 EUR €</option><option value="GBP">🇬🇧 GBP £</option>
+              <option value="INR">🇮🇳 INR ₹</option><option value="CAD">🇨🇦 CAD $</option><option value="AUD">🇦🇺 AUD $</option>
             </select>
           </label>
           
@@ -1012,6 +1030,7 @@ function simplify(net) {
 /* ---- report: summary, insights, audit rows (pure) ---- */
 function pad2(n) { return (n < 10 ? '0' : '') + n; }
 function dateKey(ts) { const d = new Date(ts); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function timestampKey(ts) { const d = new Date(ts); return dateKey(ts) + '-' + pad2(d.getHours()) + pad2(d.getMinutes()) + pad2(d.getSeconds()); }
 function stampText(ts) { const d = new Date(ts); return dateKey(ts) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
 function dateOf(e) { return e.date || dateKey(e.ts); }
 function pctText(str) {
@@ -2308,6 +2327,47 @@ function buildReportPdf(rep, num) {
     $('#saveGroup').disabled = !g;
     $('#gDel').disabled = !g;
   }
+  function setGroupNameEditing(editing) {
+    var g = active();
+    if (!g) return;
+    $('#gName').hidden = editing;
+    $('#editGroupName').hidden = editing;
+    $('#groupNameForm').hidden = !editing;
+    $('#groupNameError').textContent = '';
+    if (editing) {
+      $('#groupNameInput').value = g.name;
+      $('#groupNameInput').focus();
+      $('#groupNameInput').select();
+    } else {
+      $('#editGroupName').focus();
+    }
+  }
+  $('#editGroupName').addEventListener('click', function () { setGroupNameEditing(true); });
+  $('#cancelGroupName').addEventListener('click', function () { setGroupNameEditing(false); });
+  $('#groupNameForm').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var g = active();
+    var name = $('#groupNameInput').value.trim();
+    if (!name) {
+      $('#groupNameError').textContent = 'Enter a group name.';
+      $('#groupNameInput').focus();
+      return;
+    }
+    if (g && state.groups.some(function (other) { return other.id !== g.id && other.name.toLowerCase() === name.toLowerCase(); })) {
+      $('#groupNameError').textContent = 'A group with that name already exists.';
+      $('#groupNameInput').focus();
+      return;
+    }
+    if (g && name !== g.name) {
+      g.name = name;
+      save();
+      render();
+    }
+    setGroupNameEditing(false);
+  });
+  $('#groupNameInput').addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') { ev.preventDefault(); setGroupNameEditing(false); }
+  });
   function showNewGroup(on) {
     var dialog = $('#createGroupDialog');
     if (on) {
@@ -2729,7 +2789,7 @@ function buildReportPdf(rep, num) {
   }
   function fileBase(g) {
     var slug = g.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'group';
-    return 'even-steven-' + slug + '-' + dateKey(Date.now());
+    return 'even-steven-' + slug + '-' + timestampKey(Date.now());
   }
   function pdfMoney(c, cur) {
     return cur === 'INR' ? 'Rs ' + (c / 100).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : money(c, cur);
