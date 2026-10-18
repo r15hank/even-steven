@@ -1669,13 +1669,11 @@ function buildReportPdf(rep, num) {
     var html = state.groups.map(function (g) {
       return '<button type="button" class="tab" data-id="' + g.id + '"' + (g.id === state.activeId ? ' aria-current="true"' : '') + '>' + esc(g.name) + '</button>';
     }).join('');
-    html += '<button type="button" class="tab add" id="addGroupBtn"><span class="view-icon" aria-hidden="true">＋</span>New group</button>';
     $('#tabs').innerHTML = html;
   }
   function renderHead(g) {
     $('#gName').textContent = g.name;
     $('#gCur').value = g.currency;
-    $('#saveGroupMessage').textContent = 'Save a portable copy of “' + g.name + '” with its people and expenses. You can load it on another device later.';
     $('#saveGroupMessage').textContent = 'Save a portable copy of “' + g.name + '” with its people and expenses. You can load it on another device later.';
     $('#gDel').innerHTML = '<span class="btn-icon" aria-hidden="true">×</span>Delete group';
     $('#chips').innerHTML = g.members.map(function (m) {
@@ -1851,10 +1849,11 @@ function buildReportPdf(rep, num) {
   function render() {
     var g = active();
     renderTabs();
+    renderGroupActions();
     $('#welcome').hidden = !!g;
     $('#layout').hidden = !g;
     $('#storeNote').hidden = canSave;
-    if (!g) { $('#ngForm').hidden = false; return; }
+    if (!g) return;
     if (form.groupId !== g.id) { resetForm(g); resetPayFields(); }
     renderHead(g);
     renderForm(g);
@@ -1881,6 +1880,12 @@ function buildReportPdf(rep, num) {
       default: return 'Check the split and try again.';
     }
   }
+  function renderGroupActions() {
+    var g = active();
+    $('#managerGroupName').textContent = g ? g.name : 'None selected';
+    $('#saveGroup').disabled = !g;
+    $('#gDel').disabled = !g;
+  }
   function showNewGroup(on) {
     var dialog = $('#createGroupDialog');
     if (on) {
@@ -1898,10 +1903,13 @@ function buildReportPdf(rep, num) {
   }
 
   $('#tabs').addEventListener('click', function (ev) {
-    var b = ev.target.closest('button');
+    var b = ev.target.closest('button[data-id]');
     if (!b) return;
-    if (b.id === 'addGroupBtn') { showNewGroup(true); return; }
-    if (b.dataset.id) { state.activeId = b.dataset.id; armed = null; showNewGroup(false); save(); render(); }
+    state.activeId = b.dataset.id;
+    armed = null;
+    showNewGroup(false);
+    save();
+    render();
   });
   $('#ngCancel').addEventListener('click', function () { showNewGroup(false); });
   $('#ngForm').addEventListener('submit', function (ev) {
@@ -1918,6 +1926,13 @@ function buildReportPdf(rep, num) {
     $('#mName').focus();
   });
   $('#loadExample').addEventListener('click', function () {
+    var existing = state.groups.find(function (g) { return g.name === 'Cabin weekend (example)'; });
+    if (existing) {
+      state.activeId = existing.id;
+      save();
+      render();
+      return;
+    }
     var g = exampleGroup();
     state.groups.push(g);
     state.activeId = g.id;
@@ -1934,9 +1949,9 @@ function buildReportPdf(rep, num) {
   $('#gDel').addEventListener('click', function () {
     var g = active();
     if (!g) return;
+    $('#groupActionsDialog').close();
     $('#deleteGroupName').textContent = g.name;
     $('#deleteDialog').showModal();
-    $('#gDel').closest('details').open = false;
   });
   $('#confirmDelete').addEventListener('click', function () {
     var g = active();
@@ -2500,6 +2515,7 @@ function buildReportPdf(rep, num) {
     var g = active();
     if (!g) return;
     if (!dlApi) { setIo('Saving files is not available in this view. Open the artifact in claude.ai to save a group file.', 'err'); return; }
+    if ($('#groupActionsDialog').open) $('#groupActionsDialog').close();
     $('#saveGroupDialog').showModal();
   });
   $('#confirmSaveGroup').addEventListener('click', function () {
@@ -2508,11 +2524,23 @@ function buildReportPdf(rep, num) {
     $('#saveGroupDialog').close();
     saveVia(fileBase(g) + '.json', groupJson(g), setIo);
   });
-  $('#openLoadGroup').addEventListener('click', function () { $('#loadGroupDialog').showModal(); });
+  $('#openGroupActions').addEventListener('click', function () {
+    renderGroupActions();
+    $('#groupActionsDialog').showModal();
+  });
+  $('#manageCreate').addEventListener('click', function () {
+    $('#groupActionsDialog').close();
+    showNewGroup(true);
+  });
+  $('#manageLoad').addEventListener('click', function () {
+    $('#groupActionsDialog').close();
+    $('#loadGroupDialog').showModal();
+  });
   $('#chooseLoadFile').addEventListener('click', function () { $('#loadFile').click(); });
   $('[data-close]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      var d = $('#' + b.dataset.close);
+    b.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      var d = b.closest('dialog');
       if (d && d.open) d.close();
     });
   });
