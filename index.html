@@ -1668,6 +1668,7 @@ function buildReportPdf(rep, num) {
     $('#gName').textContent = g.name;
     $('#gCur').value = g.currency;
     $('#saveGroupMessage').textContent = 'Save a portable copy of “' + g.name + '” with its people and expenses. You can load it on another device later.';
+    $('#saveGroupMessage').textContent = 'Save a portable copy of “' + g.name + '” with its people and expenses. You can load it on another device later.';
     $('#gDel').textContent = 'Delete group';
     $('#chips').innerHTML = g.members.map(function (m) {
       var rm = memberUsed(g, m.id) ? '' : '<button class="x" type="button" data-act="rm" data-id="' + m.id + '" aria-label="Remove ' + esc(m.name) + '">×</button>';
@@ -2554,9 +2555,9 @@ function buildReportPdf(rep, num) {
     var names = clash.map(function (ng) { return esc(ng.name); }).join(', ');
     $('#loadPanel').innerHTML = '<h2 id="importDialogTitle">Groups already exist</h2><p>You already have ' + (clash.length === 1 ? 'a group that matches' : 'groups that match') + ' <b>' + names +
       '</b>. Replace ' + (clash.length === 1 ? 'it' : 'them') + ' with the file’s version, or add the file as separate ' + (clash.length === 1 ? 'a copy' : 'copies') + '?</p>' +
-      '<div class="actions"><button type="button" class="btn" data-mode="replace">Replace</button>' +
-      '<button type="button" class="btn ghost" data-mode="copy">Add as a copy</button>' +
-      '<button type="button" class="btn ghost" data-mode="cancel">Cancel</button></div>';
+      '<div class="actions"><button type="button" class="btn" data-mode="replace"><span class="btn-icon" aria-hidden="true">✓</span>Replace</button>' +
+      '<button type="button" class="btn ghost" data-mode="copy"><span class="btn-icon" aria-hidden="true">＋</span>Add as a copy</button>' +
+      '<button type="button" class="btn ghost" data-mode="cancel"><span class="btn-icon" aria-hidden="true">×</span>Cancel</button></div>';
     $('#loadPanel').showModal();
     setIo('');
   }
