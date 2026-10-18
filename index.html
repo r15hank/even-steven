@@ -432,8 +432,12 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .welcome .actions { margin-top: 4px; }
 #ngForm { margin-top: 14px; max-width: 460px; }
 #storeNote { margin-top: 28px; font-size: 13px; color: var(--warn); }
-.site-credit { margin-top: 28px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; text-align: center; }
+.site-credit { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 28px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; text-align: center; }
 .site-credit a { color: var(--accent); text-underline-offset: 3px; }
+.site-social { display: inline-flex; align-items: center; gap: 8px; }
+.site-social a { display: inline-grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); transition: color .16s, background .16s, border-color .16s, transform .16s; }
+.site-social a:hover { color: var(--accent); background: var(--accent-soft); border-color: var(--accent); transform: translateY(-1px); }
+.site-social svg { width: 17px; height: 17px; fill: currentColor; }
 
 
 /* view tabs + report */
@@ -823,7 +827,17 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 
   <div id="tip" role="tooltip"></div>
   <p id="storeNote" hidden>This browser is not saving data, so changes will be lost when you close the page.</p>
-  <footer class="site-credit">Created by <a href="https://github.com/r15hank">Rishank Karkera</a></footer>
+  <footer class="site-credit">
+    <span class="site-credit-byline">Made with care by <strong>Rishank Karkera</strong></span>
+    <nav class="site-social" aria-label="Rishank’s social profiles">
+      <a href="https://github.com/r15hank" target="_blank" rel="noopener noreferrer" aria-label="Rishank Karkera on GitHub" title="GitHub">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.53v-2.04c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.23-1.62-1.23-1.62-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 .1.76 2.13 3.8 1.51.1-.71.39-1.2.7-1.48-2.48-.28-5.09-1.24-5.09-5.52 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.1-2.96 0 0 .94-.3 3.05 1.14a10.6 10.6 0 0 1 5.55 0c2.11-1.44 3.05-1.14 3.05-1.14.6 1.54.22 2.68.11 2.96.71.78 1.14 1.78 1.14 3 0 4.3-2.61 5.23-5.1 5.5.4.34.75 1 .75 2.02V22c0 .29.2.63.76.52A11.1 11.1 0 0 0 12 .9z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/rishankk" target="_blank" rel="noopener noreferrer" aria-label="Rishank Karkera on LinkedIn" title="LinkedIn">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5.2 3.5a2.2 2.2 0 1 1-4.4 0 2.2 2.2 0 0 1 4.4 0ZM1.2 8h3.7v14H1.2zM8.1 8h3.5v1.9h.1A3.9 3.9 0 0 1 15.2 7.7c4 0 4.8 2.6 4.8 6V22h-3.7v-7.4c0-1.8 0-4.1-2.5-4.1s-2.9 1.9-2.9 4V22H7.2V8z" transform="translate(1 0)"/></svg>
+      </a>
+    </nav>
+  </footer>
 </div>
 
 <dialog class="confirm-dialog" id="deleteDialog" aria-labelledby="deleteTitle" aria-describedby="deleteMessage">
