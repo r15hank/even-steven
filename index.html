@@ -676,6 +676,25 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
   .brand { font-size: 30px; }
   .sec, .slip, .welcome { padding: 16px; }
 }
+
+/* swipe-to-delete rows */
+.exp-wrap { position: relative; overflow: hidden; list-style: none; }
+.exp-wrap .exp { position: relative; z-index: 1; background: var(--surface); touch-action: pan-y; }
+.swipe-del { position: absolute; top: 0; right: 0; bottom: 0; width: 88px; border: 0; background: var(--neg); color: #fff; font: 600 15px var(--f-body); cursor: pointer; }
+@media (hover: hover) and (pointer: fine) { .swipe-del { display: none; } }
+
+/* bottom tab bar on phones */
+@media (max-width: 720px) {
+  body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+  #viewTabs {
+    position: fixed; z-index: 30; left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom, 0px));
+    margin: 0; padding: 4px; border-radius: 22px; background: var(--material);
+    -webkit-backdrop-filter: saturate(180%) blur(24px); backdrop-filter: saturate(180%) blur(24px);
+    border: .5px solid var(--line); box-shadow: var(--shadow); display: flex;
+  }
+  #viewTabs .tab { flex: 1; display: flex; align-items: center; flex-direction: column; justify-content: center; gap: 2px; min-height: 54px; font-size: 11px; border-radius: 18px; }
+  #viewTabs .tab .view-icon { font-size: 20px; margin-right: 0; }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
@@ -2329,11 +2348,12 @@ function buildReportPdf(rep, num) {
       var key = 'exp:' + e.id;
       var acts = '<button type="button" class="link" data-act="' + (e.payment ? 'editpay' : 'edit') + '" data-id="' + e.id + '">Edit</button>' +
         '<button type="button" class="link danger' + (armed === key ? ' armed' : '') + '" data-act="del" data-id="' + e.id + '">' + (armed === key ? 'Click again to delete' : 'Delete') + '</button>';
-      return '<li class="exp"><div><span class="t">' + title + '</span>' + tag + '<div class="meta">' + meta + '</div>' +
+      return '<li class="exp-wrap"><div class="exp"><div><span class="t">' + title + '</span>' + tag + '<div class="meta">' + meta + '</div>' +
         (e.notes ? '<div class="notes">' + esc(e.notes) + '</div>' : '') + '</div>' +
         '<div class="amt">' + money(e.amount, cur) + '</div>' +
         (e.payment ? '' : '<details><summary>Who owes their share</summary><ul class="shares">' + shares + '</ul></details>') +
-        '<div class="acts">' + acts + '</div></li>';
+        '<div class="acts">' + acts + '</div></div>' +
+        '<button type="button" class="swipe-del" data-act="swipedel" data-id="' + e.id + '" tabindex="-1" aria-hidden="true">Delete</button></li>';
     }).join('');
   }
   function renderSlip(g) {
@@ -2658,14 +2678,48 @@ function buildReportPdf(rep, num) {
     $('#fDesc').focus();
   });
 
+
+  /* iOS-style swipe left on a row (touch) to reveal Delete; swipe right or tap elsewhere to close */
+  (function () {
+    var list = $('#expList'), row = null, x0 = 0, y0 = 0, dx = 0, dragging = false, open = null, W = 88;
+    function setX(r, x, anim) { var c = r.querySelector('.exp'); c.style.transition = anim ? 'transform .25s ease' : 'none'; c.style.transform = x ? 'translateX(' + x + 'px)' : ''; }
+    function close() { if (open) { setX(open, 0, true); open = null; } }
+    list.addEventListener('pointerdown', function (ev) {
+      if (ev.pointerType === 'mouse' || ev.target.closest('button, summary, a')) return;
+      var r = ev.target.closest('.exp-wrap');
+      if (open && open !== r) close();
+      if (!r) return;
+      row = r; x0 = ev.clientX; y0 = ev.clientY; dx = 0; dragging = false;
+    });
+    list.addEventListener('pointermove', function (ev) {
+      if (!row) return;
+      var mx = ev.clientX - x0, my = ev.clientY - y0;
+      if (!dragging) { if (Math.abs(my) > 10 && Math.abs(my) > Math.abs(mx)) { row = null; return; } if (Math.abs(mx) < 8) return; dragging = true; }
+      var base = open === row ? -W : 0;
+      dx = Math.max(-W * 1.4, Math.min(0, base + mx));
+      setX(row, dx, false);
+    });
+    function end() {
+      if (!row) return;
+      if (dragging) {
+        if (dx < -W / 2) { if (open && open !== row) close(); open = row; row.querySelector('.swipe-del').tabIndex = 0; row.querySelector('.swipe-del').removeAttribute('aria-hidden'); setX(row, -W, true); }
+        else { setX(row, 0, true); if (open === row) open = null; }
+      } else if (open === row) close();
+      row = null; dragging = false;
+    }
+    list.addEventListener('pointerup', end);
+    list.addEventListener('pointercancel', end);
+    document.addEventListener('pointerdown', function (ev) { if (open && !ev.target.closest('#expList')) close(); });
+  })();
+
   $('#expList').addEventListener('click', function (ev) {
     var b = ev.target.closest('button[data-act]');
     if (!b) return;
     var g = active();
     var id = b.dataset.id;
-    if (b.dataset.act === 'del') {
+    if (b.dataset.act === 'del' || b.dataset.act === 'swipedel') {
       var key = 'exp:' + id;
-      if (armed === key) {
+      if (armed === key || b.dataset.act === 'swipedel') {
         armed = null;
         g.expenses = g.expenses.filter(function (e) { return e.id !== id; });
         if (form.editingId === id) backToCleanForm(g, $('#fPayer').value);
