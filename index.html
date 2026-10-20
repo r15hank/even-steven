@@ -228,13 +228,13 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 #tabs .tab.add .view-icon { font-size: 18px; }
 #viewTabs .view-icon { display: inline-block; margin-right: 6px; font-size: 15px; }
 #mForm .btn { background: var(--pos); color: #fff; }
-.exp .acts [data-act="edit"]::before, .exp .acts [data-act="editpay"]::before { content: "✎"; margin-right: 6px; font-size: 15px; }
-.exp .acts [data-act="del"]::before { content: "×"; margin-right: 6px; font-size: 16px; }
+.exp .acts [data-act="edit"]::before, .exp .acts [data-act="editpay"]::before { content: ""; display: inline-block; width: 15px; height: 15px; margin-right: 6px; vertical-align: -3px; background: currentColor; -webkit-mask: var(--gi-pencil) center/contain no-repeat; mask: var(--gi-pencil) center/contain no-repeat; }
+.exp .acts [data-act="del"]::before { content: ""; display: inline-block; width: 15px; height: 15px; margin-right: 6px; vertical-align: -3px; background: currentColor; -webkit-mask: var(--gi-x) center/contain no-repeat; mask: var(--gi-x) center/contain no-repeat; }
 .paybtns [data-act="settle"] { color: var(--pos); }
-.paybtns [data-act="settle"]::before { content: "✓"; margin-right: 6px; }
+.paybtns [data-act="settle"]::before { content: ""; display: inline-block; width: 15px; height: 15px; margin-right: 6px; vertical-align: -3px; background: currentColor; -webkit-mask: var(--gi-check) center/contain no-repeat; mask: var(--gi-check) center/contain no-repeat; }
 .paybtns [data-act="part"] { color: var(--accent); }
-.paybtns [data-act="part"]::before { content: "↔"; margin-right: 6px; }
-#fCancel::before, #pCancel::before { content: "×"; margin-right: 6px; font-weight: 800; }
+.paybtns [data-act="part"]::before { content: ""; display: inline-block; width: 15px; height: 15px; margin-right: 6px; vertical-align: -3px; background: currentColor; -webkit-mask: var(--gi-swap) center/contain no-repeat; mask: var(--gi-swap) center/contain no-repeat; }
+#fCancel::before, #pCancel::before { content: ""; display: inline-block; width: 15px; height: 15px; margin-right: 6px; vertical-align: -3px; background: currentColor; -webkit-mask: var(--gi-x) center/contain no-repeat; mask: var(--gi-x) center/contain no-repeat; }
 .record-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 18px; }
 .entry-switch { display: inline-flex; gap: 3px; padding: 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
 .entry-label { color: var(--muted); font: 700 12px/1 var(--f-body); letter-spacing: .09em; text-transform: uppercase; }
@@ -287,8 +287,8 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .audit-history > summary { display: flex; align-items: center; list-style: none; cursor: pointer; }
 .audit-history > summary::-webkit-details-marker { display: none; }
 .audit-history > summary .icon { margin-right: 8px; color: var(--accent); }
-.audit-history > summary::after { content: "⌄"; margin-left: auto; font-size: 18px; color: var(--muted); }
-.audit-history:not([open]) > summary::after { content: "›"; }
+.audit-history > summary::after { content: ""; margin-left: auto; width: 18px; height: 18px; background: var(--muted); -webkit-mask: var(--gi-downc) center/contain no-repeat; mask: var(--gi-downc) center/contain no-repeat; }
+.audit-history:not([open]) > summary::after { -webkit-mask-image: var(--gi-right); mask-image: var(--gi-right); }
 
 /* group header */
 .ghead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-bottom: 22px; }
@@ -585,6 +585,26 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 }
 @media (prefers-reduced-motion: reduce) { .track, .track::after { transition: none; } }
 
+:root { --gi-plus: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M12%205v14M5%2012h14'/%3E%3C/svg%3E"); --gi-x: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%206l12%2012M18%206%206%2018'/%3E%3C/svg%3E"); --gi-check: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M5%2012.5l4.5%204.5L19%207.5'/%3E%3C/svg%3E"); --gi-up: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M12%2019V5m-6%206%206-6%206%206'/%3E%3C/svg%3E"); --gi-down: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M12%205v14m-6-6%206%206%206-6'/%3E%3C/svg%3E"); --gi-swap: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M4%208h14m-4-4%204%204-4%204M20%2016H6m4-4-4%204%204%204'/%3E%3C/svg%3E"); --gi-sliders: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M4%207h10M18%207h2M4%2017h2M10%2017h10M14%204v6M6%2014v6'/%3E%3C/svg%3E"); --gi-spark: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M12%203l1.8%205.2L19%2010l-5.2%201.8L12%2017l-1.8-5.2L5%2010l5.2-1.8zM19%2016v4m-2-2h4'/%3E%3C/svg%3E"); --gi-theme: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M12%203a9%209%200%201%200%200%2018%209%209%200%200%200%200-18zM12%203v18'/%3E%3C/svg%3E"); --gi-right: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M9%206l6%206-6%206'/%3E%3C/svg%3E"); --gi-downc: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%209l6%206%206-6'/%3E%3C/svg%3E"); --gi-pencil: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M4%2020h4L19%209l-4-4L4%2016zM13.5%206.5l4%204'/%3E%3C/svg%3E"); }
+.gi { display: inline-block; flex: none; width: 1em; height: 1em; background: currentColor; -webkit-mask: var(--g) center/contain no-repeat; mask: var(--g) center/contain no-repeat; vertical-align: -0.15em; }
+.gi-plus { --g: var(--gi-plus); }
+.gi-x { --g: var(--gi-x); }
+.gi-check { --g: var(--gi-check); }
+.gi-up { --g: var(--gi-up); }
+.gi-down { --g: var(--gi-down); }
+.gi-swap { --g: var(--gi-swap); }
+.gi-sliders { --g: var(--gi-sliders); }
+.gi-spark { --g: var(--gi-spark); }
+.gi-theme { --g: var(--gi-theme); }
+.gi-right { --g: var(--gi-right); }
+.gi-downc { --g: var(--gi-downc); }
+.gi-pencil { --g: var(--gi-pencil); }
+.btn-icon.gi { width: 16px; height: 16px; min-width: 16px; }
+.view-icon.gi { width: 18px; height: 18px; }
+.settings-icon.gi { width: 20px; height: 20px; }
+.settings-arrow.gi { width: 16px; height: 16px; }
+.dialog-mark .gi { width: 24px; height: 24px; }
+.chip .x .gi, .payer-choice .gi, summary .gi { width: 14px; height: 14px; margin-right: 4px; vertical-align: -2px; }
 /* ===== Apple Human Interface layer: clarity, deference, depth =====
    System type (SF Pro on Apple devices), system colours, grouped inset surfaces,
    segmented controls, translucent materials, 44pt targets, large title, reduced motion. */
@@ -714,15 +734,15 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
       <p class="tag-line">Split costs with your group, then settle with fewer payments.</p>
     </div>
     <div class="top-actions">
-      <details class="head-menu settings-menu" id="settingsMenu"><summary class="btn ghost small"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 1.7-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.1h-2.4v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L8 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H6.7v-2.4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L8 8.6 9.7 7l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6v-.1h2.4v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.7 1.7-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.1v2.4H21a1.7 1.7 0 0 0-1.6 1z"/></svg>Settings ▾</summary>
+      <details class="head-menu settings-menu" id="settingsMenu"><summary class="btn ghost small"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 1.7-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.1h-2.4v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L8 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H6.7v-2.4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L8 8.6 9.7 7l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6v-.1h2.4v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.7 1.7-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.1v2.4H21a1.7 1.7 0 0 0-1.6 1z"/></svg>Settings <i class="gi gi-downc"></i></summary>
         <div class="head-menu-pop settings-pop">
-          <button class="settings-row" type="button" id="settingsLoadToggle" data-settings-toggle="load" aria-expanded="false"><svg class="icon settings-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v2H5a2 2 0 0 0-2 2z"/><path d="m3 13 2 6h14l2-10H5a2 2 0 0 0-2 4z"/></svg>Load group<span class="settings-arrow" aria-hidden="true">›</span></button>
+          <button class="settings-row" type="button" id="settingsLoadToggle" data-settings-toggle="load" aria-expanded="false"><svg class="icon settings-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v2H5a2 2 0 0 0-2 2z"/><path d="m3 13 2 6h14l2-10H5a2 2 0 0 0-2 4z"/></svg>Load group<span class="settings-arrow gi gi-right" aria-hidden="true"></span></button>
           <div class="settings-subpanel" id="settingsLoadPanel" hidden>
             <button class="settings-row" type="button" id="openLoadGroup"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7.5h7l2 2h8.5v9H4zM8 7.5V5h8l2 2.5M12 12v5m-2-2 2 2 2-2"/></svg>Load from file…</button>
-            <button class="settings-row" type="button" id="loadExample"><span class="settings-icon" aria-hidden="true">✦</span>Example group</button>
+            <button class="settings-row" type="button" id="loadExample"><span class="settings-icon gi gi-spark" aria-hidden="true"></span>Example group</button>
           </div>
           <div class="settings-divider"></div>
-          <button class="settings-row" type="button" id="settingsThemeToggle" data-settings-toggle="theme" aria-expanded="true"><span class="settings-icon" aria-hidden="true">◐</span>Theme<span class="settings-arrow" aria-hidden="true">⌄</span></button>
+          <button class="settings-row" type="button" id="settingsThemeToggle" data-settings-toggle="theme" aria-expanded="true"><span class="settings-icon gi gi-theme" aria-hidden="true"></span>Theme<span class="settings-arrow gi gi-downc" aria-hidden="true"></span></button>
           <div class="settings-subpanel" id="settingsThemePanel" role="group" aria-label="Theme preferences">
             <div class="theme-modes" id="themeModes" role="group" aria-label="Theme mode"><button type="button" data-theme-choice="system" aria-pressed="true">System</button><button type="button" data-theme-choice="light" aria-pressed="false">Light</button><button type="button" data-theme-choice="dark" aria-pressed="false">Dark</button></div>
             <p class="theme-mode-note" id="themeModeNote">System follows your device appearance.</p>
@@ -738,7 +758,7 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
             </div>
           </div>
           <div class="settings-divider"></div>
-          <button type="button" class="settings-row tour-trigger" id="startTour"><span class="settings-icon" aria-hidden="true">✦</span>Take a tour<span class="settings-arrow" aria-hidden="true">›</span></button>
+          <button type="button" class="settings-row tour-trigger" id="startTour"><span class="settings-icon gi gi-spark" aria-hidden="true"></span>Take a tour<span class="settings-arrow gi gi-right" aria-hidden="true"></span></button>
         </div>
       </details>
     </div>
@@ -747,24 +767,24 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
   <nav id="tabs" class="tabs" aria-label="Groups"></nav>
   <input class="vh" type="file" id="loadFile" accept=".json,application/json">
   <dialog class="group-dialog" id="loadGroupDialog" aria-labelledby="loadGroupTitle">
-    <div class="dialog-mark load-mark" aria-hidden="true">↑</div>
+    <div class="dialog-mark load-mark" aria-hidden="true"><i class="gi gi-up"></i></div>
     <h2 id="loadGroupTitle">Load a group</h2>
     <p>Choose a saved group file. We’ll check it and ask before replacing matching groups.</p>
-    <div class="dialog-actions"><button type="button" class="btn ghost" data-close="loadGroupDialog">Cancel</button><button type="button" class="btn primary" id="chooseLoadFile"><span class="btn-icon" aria-hidden="true">↑</span>Choose file</button></div>
+    <div class="dialog-actions"><button type="button" class="btn ghost" data-close="loadGroupDialog">Cancel</button><button type="button" class="btn primary" id="chooseLoadFile"><span class="btn-icon gi gi-up" aria-hidden="true"></span>Choose file</button></div>
   </dialog>
   <dialog class="group-dialog" id="createGroupDialog" aria-labelledby="createGroupTitle">
-    <div class="dialog-mark" aria-hidden="true">＋</div><h2 id="createGroupTitle">Create a group</h2>
+    <div class="dialog-mark" aria-hidden="true"><i class="gi gi-plus"></i></div><h2 id="createGroupTitle">Create a group</h2>
     <p>Give your group a name and choose its currency. You can add people and expenses next.</p>
     <form id="ngForm" class="dialog-form" autocomplete="off">
       <label class="fld" for="ngName">Group name<input id="ngName" type="text" maxlength="40" placeholder="Cabin weekend" aria-label="New group name"></label>
-      <label class="fld" for="ngCurrency">Currency<select id="ngCurrency"><option value="USD">🇺🇸 USD $</option><option value="EUR">🇪🇺 EUR €</option><option value="GBP">🇬🇧 GBP £</option><option value="INR">🇮🇳 INR ₹</option><option value="CAD">🇨🇦 CAD $</option><option value="AUD">🇦🇺 AUD $</option></select></label>
-      <div class="dialog-actions"><button class="btn ghost" type="button" id="ngCancel"><span class="btn-icon" aria-hidden="true">×</span>Cancel</button><button class="btn primary" type="submit"><span class="btn-icon" aria-hidden="true">＋</span>Create group</button></div>
+      <label class="fld" for="ngCurrency">Currency<select id="ngCurrency"><option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option><option value="INR">INR ₹</option><option value="CAD">CAD $</option><option value="AUD">AUD $</option></select></label>
+      <div class="dialog-actions"><button class="btn ghost" type="button" id="ngCancel"><span class="btn-icon gi gi-x" aria-hidden="true"></span>Cancel</button><button class="btn primary" type="submit"><span class="btn-icon gi gi-plus" aria-hidden="true"></span>Create group</button></div>
     </form>
   </dialog>
   <dialog class="group-dialog" id="saveGroupDialog" aria-labelledby="saveGroupTitle">
-    <div class="dialog-mark save-mark" aria-hidden="true">↓</div><h2 id="saveGroupTitle">Save a group file</h2>
+    <div class="dialog-mark save-mark" aria-hidden="true"><i class="gi gi-down"></i></div><h2 id="saveGroupTitle">Save a group file</h2>
     <p id="saveGroupMessage">Save a portable copy of this group’s people and expenses. You can load it on another device later.</p>
-    <div class="dialog-actions"><button type="button" class="btn ghost" data-close="saveGroupDialog">Cancel</button><button type="button" class="btn primary" id="confirmSaveGroup"><span class="btn-icon" aria-hidden="true">↓</span>Save file</button></div>
+    <div class="dialog-actions"><button type="button" class="btn ghost" data-close="saveGroupDialog">Cancel</button><button type="button" class="btn primary" id="confirmSaveGroup"><span class="btn-icon gi gi-down" aria-hidden="true"></span>Save file</button></div>
   </dialog>
   <dialog class="confirm-dialog" id="loadPanel" aria-labelledby="importDialogTitle"></dialog>
 
@@ -788,7 +808,7 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
         </div>
         <div class="gtools">
           <details class="head-menu" id="groupActionsMenu">
-            <summary class="btn ghost small"><span class="btn-icon" aria-hidden="true">⚙</span>Group actions ▾</summary>
+            <summary class="btn ghost small"><span class="btn-icon gi gi-sliders" aria-hidden="true"></span>Group actions <i class="gi gi-downc"></i></summary>
             <div class="head-menu-pop">
               <button type="button" class="btn ghost small" id="saveGroup" title="Save a backup of this group"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 3h12l4 4v14H3V5a2 2 0 0 1 2-2zM7 3v6h10V4M7 21v-7h10v7"/><path d="M14 5v3"/></svg>Save group</button>
               <button type="button" class="btn ghost small menu-danger" id="gDel"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg>Delete group</button>
@@ -796,8 +816,8 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
           </details>
           <label class="fld" style="flex-direction:row;align-items:center;gap:8px">Currency
             <select id="gCur" aria-label="Currency">
-              <option value="USD">🇺🇸 USD $</option><option value="EUR">🇪🇺 EUR €</option><option value="GBP">🇬🇧 GBP £</option>
-              <option value="INR">🇮🇳 INR ₹</option><option value="CAD">🇨🇦 CAD $</option><option value="AUD">🇦🇺 AUD $</option>
+              <option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option>
+              <option value="INR">INR ₹</option><option value="CAD">CAD $</option><option value="AUD">AUD $</option>
             </select>
           </label>
           
@@ -807,13 +827,13 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
       <ul id="chips" class="chips"></ul>
       <form id="mForm" class="inline" autocomplete="off">
         <input id="mName" type="text" maxlength="30" placeholder="Add a person" aria-label="Name of person to add">
-        <button class="btn primary" type="submit"><span class="btn-icon" aria-hidden="true">＋</span>Add person</button>
+        <button class="btn primary" type="submit"><span class="btn-icon gi gi-plus" aria-hidden="true"></span>Add person</button>
       </form>
       <p id="mErr" role="alert"></p>
       <p id="mHint"></p>
       <div class="viewtabs" id="viewTabs">
         <button type="button" class="tab" data-view="ledger" aria-current="true"><svg class="icon view-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>Transactions</button>
-        <button type="button" class="tab" data-view="settle"><span class="view-icon" aria-hidden="true">↔</span>Settle</button>
+        <button type="button" class="tab" data-view="settle"><span class="view-icon gi gi-swap" aria-hidden="true"></span>Settle</button>
         <button type="button" class="tab" data-view="report"><svg class="icon view-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM14 3v5h5M8 16v-3m4 3V9m4 7v-5"/></svg>Report</button>
       </div>
     </section>
@@ -938,7 +958,7 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
           <p class="muted" id="rSub"></p>
         </div>
         <details class="head-menu export-menu">
-          <summary class="btn ghost small"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v11m-4-4 4 4 4-4M4 17v3h16v-3"/></svg>Export ▾</summary>
+          <summary class="btn ghost small"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v11m-4-4 4 4 4-4M4 17v3h16v-3"/></svg>Export <i class="gi gi-downc"></i></summary>
           <div class="head-menu-pop export-pop">
           <button class="btn export-excel" id="dlXlsx" type="button" disabled><span class="file-mark xlsx-mark" aria-hidden="true">X</span>Download Excel</button>
           <button class="btn export-pdf" id="dlPdf" type="button" disabled><span class="file-mark pdf-mark" aria-hidden="true">PDF</span>Download PDF</button>
@@ -981,8 +1001,8 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
   <h2 id="deleteTitle">Delete this group?</h2>
   <p id="deleteMessage">This will permanently remove <strong id="deleteGroupName"></strong> and its expenses from this browser.</p>
   <div class="confirm-actions">
-    <button type="button" class="btn ghost" onclick="document.getElementById('deleteDialog').close()"><span class="btn-icon" aria-hidden="true">×</span>Keep group</button>
-    <button type="button" class="btn delete-btn" id="confirmDelete"><span class="btn-icon" aria-hidden="true">×</span>Delete group</button>
+    <button type="button" class="btn ghost" onclick="document.getElementById('deleteDialog').close()"><span class="btn-icon gi gi-x" aria-hidden="true"></span>Keep group</button>
+    <button type="button" class="btn delete-btn" id="confirmDelete"><span class="btn-icon gi gi-x" aria-hidden="true"></span>Delete group</button>
   </div>
 </dialog>
 
@@ -2083,7 +2103,7 @@ function buildReportPdf(rep, num) {
     var editing = !!form.editingId;
     $('#fTitle').textContent = editing ? 'Edit expense' : 'Add an expense';
     $('#fSubmit').innerHTML = editing
-      ? '<span class="btn-icon" aria-hidden="true">✓</span>Save changes'
+      ? '<span class="btn-icon gi gi-check" aria-hidden="true"></span>Save changes'
       : '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM14 3v5h5M8 12h8M8 16h4"/><path d="M17.5 12.5v5M15 15h5"/></svg>Record expense';
     $('#fCancel').hidden = !editing;
     $$('#fType button').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.type === form.type)); });
@@ -2125,7 +2145,7 @@ function buildReportPdf(rep, num) {
   function renderTabs() {
     var html = state.groups.map(function (g) {
       return '<button type="button" class="tab" data-id="' + g.id + '"' + (g.id === state.activeId ? ' aria-current="true"' : '') + '>' + esc(g.name) + '</button>';
-    }).join('') + '<button type="button" class="tab add" data-new-group aria-label="Create a group"><span class="view-icon" aria-hidden="true">＋</span>New group</button>';
+    }).join('') + '<button type="button" class="tab add" data-new-group aria-label="Create a group"><span class="view-icon gi gi-plus" aria-hidden="true"></span>New group</button>';
     $('#tabs').innerHTML = html;
   }
   function renderHead(g) {
@@ -2133,7 +2153,7 @@ function buildReportPdf(rep, num) {
     $('#gCur').value = g.currency;
     $('#saveGroupMessage').textContent = 'Save a portable copy of “' + g.name + '” with its people and expenses. You can load it on another device later.';
     $('#chips').innerHTML = g.members.map(function (m) {
-      var rm = memberUsed(g, m.id) ? '' : '<button class="x" type="button" data-act="rm" data-id="' + m.id + '" aria-label="Remove ' + esc(m.name) + '">×</button>';
+      var rm = memberUsed(g, m.id) ? '' : '<button class="x" type="button" data-act="rm" data-id="' + m.id + '" aria-label="Remove ' + esc(m.name) + '"><i class="gi gi-x"></i></button>';
       return '<li class="chip">' + avatar(m) + '<span>' + esc(m.name) + '</span>' + rm + '</li>';
     }).join('') || '<li class="muted">No one yet.</li>';
     $('#mHint').textContent = g.members.length < 2
@@ -2162,7 +2182,7 @@ function buildReportPdf(rep, num) {
     if (selectedMember) visible.unshift(selectedMember);
     $('#' + choicesId).innerHTML = visible.map(function (m) {
       return '<button class="payer-choice" type="button" data-payer-member="' + m.id + '" aria-pressed="' + String(m.id === selected) + '">' + avatar(m) + '<span>' + esc(m.name) + '</span>' + check + '</button>';
-    }).join('') + '<button class="payer-choice other" type="button" data-payer-add="' + addId + '" aria-expanded="' + String(addOpen) + '" aria-pressed="false">＋ Someone else?</button>';
+    }).join('') + '<button class="payer-choice other" type="button" data-payer-add="' + addId + '" aria-expanded="' + String(addOpen) + '" aria-pressed="false"><i class="gi gi-plus"></i>Someone else?</button>';
   }
   function paintPaymentPayers(g) {
     paintPayerChoices(g, 'pFrom', 'pFromChoices', 'pFromAdd');
@@ -3073,7 +3093,7 @@ function buildReportPdf(rep, num) {
     var editing = !!pay.editingId;
     $('#pTitle').textContent = editing ? 'Edit payment' : 'Record a payment';
     $('#pSubmit').innerHTML = editing
-      ? '<span class="btn-icon" aria-hidden="true">✓</span>Save changes'
+      ? '<span class="btn-icon gi gi-check" aria-hidden="true"></span>Save changes'
       : '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H20v15H5a2 2 0 0 1-2-2V7.5zM3.5 8H20M15 12h6v5h-6a2.5 2.5 0 0 1 0-5z"/><circle cx="17.5" cy="14.5" r=".7"/></svg>Record payment';
     $('#pCancel').hidden = !editing;
   }
@@ -3239,9 +3259,9 @@ function buildReportPdf(rep, num) {
     var names = clash.map(function (ng) { return esc(ng.name); }).join(', ');
     $('#loadPanel').innerHTML = '<h2 id="importDialogTitle">Groups already exist</h2><p>You already have ' + (clash.length === 1 ? 'a group that matches' : 'groups that match') + ' <b>' + names +
       '</b>. Replace ' + (clash.length === 1 ? 'it' : 'them') + ' with the file’s version, or add the file as separate ' + (clash.length === 1 ? 'a copy' : 'copies') + '?</p>' +
-      '<div class="actions"><button type="button" class="btn" data-mode="replace"><span class="btn-icon" aria-hidden="true">✓</span>Replace</button>' +
-      '<button type="button" class="btn ghost" data-mode="copy"><span class="btn-icon" aria-hidden="true">＋</span>Add as a copy</button>' +
-      '<button type="button" class="btn ghost" data-mode="cancel"><span class="btn-icon" aria-hidden="true">×</span>Cancel</button></div>';
+      '<div class="actions"><button type="button" class="btn" data-mode="replace"><span class="btn-icon gi gi-check" aria-hidden="true"></span>Replace</button>' +
+      '<button type="button" class="btn ghost" data-mode="copy"><span class="btn-icon gi gi-plus" aria-hidden="true"></span>Add as a copy</button>' +
+      '<button type="button" class="btn ghost" data-mode="cancel"><span class="btn-icon gi gi-x" aria-hidden="true"></span>Cancel</button></div>';
     $('#loadPanel').showModal();
     setIo('');
   }
