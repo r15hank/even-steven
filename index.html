@@ -1009,7 +1009,7 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
         </details>
       </div>
       <p id="dlStatus" role="status"></p>
-      <p class="fine">The PDF has the summary, insights, spending by category and by day, and the full audit table. The Excel file has three sheets: Summary, Insights (with category, day and paid vs. share tables) and Expense details. The CSV is the expense details table.</p>
+      <p class="fine">The PDF has the summary, insights, charts for spending by category, by day and paid vs. share, and the full audit table. The Excel file has three sheets: Summary, Insights (with category, day and paid vs. share tables) and Expense details. The CSV is the expense details table.</p>
       <div id="reportBody"></div>
     </section>
 
@@ -1850,22 +1850,39 @@ function buildReportPdf(rep, num) {
   }
 
   if (rep.cats.length) {
-    doc.ensure(70);
+    doc.ensure(50 + 22 * Math.min(rep.cats.length, 3));
     heading('Spending by category');
-    doc.table({
-      cols: [{ wrap: true }, { align: 'right' }, { align: 'right' }, { align: 'right' }],
-      head: ['Category', 'Spent', 'Share', 'Expenses'],
-      rows: rep.cats.map(function (c) { return [c.label, num(c.amount), c.pct + '%', String(c.count)]; }), size: 9
+    const cNameW = 100, cValW = 96;
+    const cbx = L + cNameW, cbw = CW - cNameW - cValW - 6;
+    const cmax = rep.cats[0].amount || 1;
+    rep.cats.forEach(function (c) {
+      doc.ensure(22);
+      doc.text(wrapText(c.label, cNameW - 8, 9, false)[0], L, doc.y + 12, { size: 9 });
+      doc.rect(cbx, doc.y + 3, Math.max(1.5, cbw * c.amount / cmax), 10, S1);
+      doc.text(num(c.amount) + '  (' + c.pct + '%)', L + CW, doc.y + 12, { size: 8, color: MUTED, align: 'right' });
+      doc.y += 22;
     });
+    doc.y += 6;
   }
   if (rep.days.length) {
-    doc.ensure(70);
+    const shown = rep.days.slice(-14);
+    const H = 90;
+    doc.ensure(H + 60);
     heading('Spending by day');
-    doc.table({
-      cols: [{}, { align: 'right' }, { align: 'right' }],
-      head: ['Date', 'Spent', 'Expenses'],
-      rows: rep.days.map(function (d) { return [d.label, num(d.amount), String(d.count)]; }), size: 9
+    doc.text(rep.days.length > shown.length ? 'Last ' + shown.length + ' days with spending. Expenses only, not payments.' : 'Expenses only, not payments.', L, doc.y + 8, { size: 8, color: MUTED });
+    doc.y += 22;
+    const dmax = Math.max.apply(null, shown.map(function (d) { return d.amount; })) || 1;
+    const slot = CW / shown.length, bwid = Math.min(26, slot * 0.6);
+    const top = doc.y + 12, base = top + H;
+    doc.line(L, base, L + CW, base, LINE, 0.6);
+    shown.forEach(function (d, i) {
+      const cx = L + slot * i + slot / 2;
+      const h = Math.max(2, H * d.amount / dmax);
+      doc.rect(cx - bwid / 2, base - h, bwid, h, S1);
+      doc.text(num(d.amount), cx, base - h - 3, { size: 7, color: MUTED, align: 'center' });
+      doc.text(d.label, cx, base + 11, { size: 7, color: MUTED, align: 'center' });
     });
+    doc.y = base + 26;
   }
 
   if (t.expenseCount) {
