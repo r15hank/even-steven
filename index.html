@@ -11,9 +11,6 @@
     if (savedDarkPalette) document.documentElement.setAttribute('data-dark-palette', savedDarkPalette);
   } catch (e) {}
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* Layout concept: a two-column ledger. Left: people, new expense, expense history.
    Right: a sticky settlement slip (balances + who pays whom). Stacks on phones with the slip after the form. */
@@ -587,6 +584,108 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
   .confirm-actions .btn { flex: 1 1 140px; }
 }
 @media (prefers-reduced-motion: reduce) { .track, .track::after { transition: none; } }
+
+/* ===== Apple Human Interface layer: clarity, deference, depth =====
+   System type (SF Pro on Apple devices), system colours, grouped inset surfaces,
+   segmented controls, translucent materials, 44pt targets, large title, reduced motion. */
+:root {
+  --f-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+  --f-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  --f-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --bg: #F2F2F7; --surface: #FFFFFF; --surface-2: #F2F2F7; --ink: #1C1C1E; --muted: #6C6C70; --line: #E5E5EA;
+  --accent: #007AFF; --accent-ink: #FFFFFF; --accent-soft: #E5F1FF; --pos: #248A3D; --neg: #D70015; --warn: #9A5B00;
+  --radius: 14px; --radius-sm: 10px; --material: rgba(255,255,255,.72); --shadow: 0 8px 30px rgba(0,0,0,.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --surface: #1C1C1E; --surface-2: #2C2C2E; --ink: #F2F2F7; --muted: #98989F; --line: #38383A;
+    --accent: #0A84FF; --accent-ink: #FFFFFF; --accent-soft: #0A2A4D; --pos: #30D158; --neg: #FF453A; --warn: #FFD60A;
+    --material: rgba(44,44,46,.72); --shadow: 0 8px 30px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000; --surface: #1C1C1E; --surface-2: #2C2C2E; --ink: #F2F2F7; --muted: #98989F; --line: #38383A;
+  --accent: #0A84FF; --accent-ink: #FFFFFF; --accent-soft: #0A2A4D; --pos: #30D158; --neg: #FF453A; --warn: #FFD60A;
+  --material: rgba(44,44,46,.72); --shadow: 0 8px 30px rgba(0,0,0,.5);
+}
+html { -webkit-text-size-adjust: 100%; }
+body { font: 400 17px/1.4 var(--f-body); letter-spacing: -0.012em; -webkit-font-smoothing: antialiased; }
+.brand { font: 700 34px/1.1 var(--f-display); letter-spacing: -0.03em; }
+.tag-line { font-size: 15px; }
+h2, h3, .sec-title, .ghead h2 { font-family: var(--f-display); font-weight: 700; letter-spacing: -0.022em; }
+.label { font: 600 13px/1.2 var(--f-body); text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+
+/* grouped inset surfaces */
+.sec, .slip, .welcome, .tablewrap, .chart, .rsec, .paybox, .plan li, .insights li {
+  background: var(--surface); border: 0; border-radius: var(--radius); box-shadow: none;
+}
+.sec, .slip, .welcome { padding: 20px; }
+.exps, .bals, .pays { border-radius: var(--radius-sm); overflow: hidden; }
+.exp, .bal, .pay, .tbl th, .tbl td { border-color: var(--line); }
+
+/* controls: 44pt targets, filled primary, tinted secondary */
+.btn, .tab, .seg button, .entry-switch button, .payer-choice, .settings-row, .head-menu-pop button, .chip, .link, summary.btn {
+  min-height: 44px;
+}
+.btn { border-radius: 12px; font-weight: 600; letter-spacing: -0.01em; padding-inline: 18px; transition: opacity .15s, background-color .15s, transform .1s; }
+.btn.small { min-height: 36px; border-radius: 10px; }
+.btn.primary, .btn:not(.ghost):not(.delete-btn) { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn.ghost { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); border-color: transparent; }
+.btn:active { transform: scale(.97); opacity: .85; }
+.delete-btn { background: var(--neg); color: #fff; border-color: transparent; }
+input[type="text"], input[type="date"], textarea, select {
+  min-height: 44px; border-radius: 12px; border: 1px solid transparent; background: var(--surface-2); font: inherit; font-size: 17px; padding-inline: 14px;
+}
+input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 0; background: var(--surface); }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent); outline-offset: 2px; }
+
+/* segmented controls */
+.seg, .theme-modes, .entry-switch, .viewtabs, .tabs {
+  background: color-mix(in srgb, var(--muted) 16%, transparent); border: 0; border-radius: 12px; padding: 3px; gap: 2px;
+}
+.tabs { overflow-x: auto; margin-top: 16px; }
+.seg button, .theme-modes button, .entry-switch button, .viewtabs .tab, .tabs .tab {
+  border: 0 !important; border-radius: 9px; background: transparent; color: var(--ink); font-weight: 500;
+}
+.seg button[aria-checked="true"], .theme-modes button[aria-pressed="true"], .entry-switch button[aria-pressed="true"],
+.viewtabs .tab[aria-current="true"], .tabs .tab[aria-current="true"] {
+  background: var(--surface) !important; color: var(--ink) !important; box-shadow: 0 1px 3px rgba(0,0,0,.18), 0 0 0 .5px rgba(0,0,0,.04); font-weight: 600;
+}
+
+/* translucent materials for menus, dialogs, tour */
+.head-menu-pop, .export-pop, .tour-card, .group-dialog, .confirm-dialog {
+  background: var(--material); -webkit-backdrop-filter: saturate(180%) blur(24px); backdrop-filter: saturate(180%) blur(24px);
+  border: .5px solid var(--line); border-top-width: .5px; border-radius: 18px; box-shadow: var(--shadow);
+}
+.group-dialog::backdrop, .confirm-dialog::backdrop { background: rgba(0,0,0,.35); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .head-menu-pop, .export-pop, .tour-card, .group-dialog, .confirm-dialog { background: var(--surface); }
+}
+.head-menu-pop button, .settings-menu .settings-row { border-radius: 10px; }
+
+#mForm .btn, .btn.primary { background: var(--accent) !important; color: var(--accent-ink) !important; }
+.chip { color: var(--ink) !important; background: var(--surface-2) !important; }
+/* sticky summary reads as a card, big numbers stay legible */
+.num, .exp .amt, .bal .num { font-variant-numeric: tabular-nums; }
+.tbl th { text-transform: none; letter-spacing: 0; font-size: 13px; }
+.kv dt { text-transform: none; letter-spacing: 0; font-size: 13px; }
+.chip { border: 0; border-radius: 999px; }
+
+@media (max-width: 720px) {
+  body { font-size: 16px; }
+  .brand { font-size: 30px; }
+  .sec, .slip, .welcome { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .head-menu-pop, .export-pop, .tour-card, .group-dialog, .confirm-dialog { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  :root { --line: #8E8E93; --muted: #3A3A3C; }
+  .btn.ghost { border: 1px solid currentColor; }
+}
 </style>
 
 <div class="wrap">
@@ -874,7 +973,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
     <p class="tour-step" id="tourStep"></p>
     <h2 id="tourTitle"></h2>
     <p id="tourText"></p>
-    <div class="tour-timer"><span id="tourTimerLabel" aria-live="polite">Next in 10s</span><button class="btn ghost small" type="button" id="tourPause" aria-pressed="false">Pause</button></div>
+    <div class="tour-timer"><span id="tourTimerLabel" aria-live="polite">Next in 20s</span><button class="btn ghost small" type="button" id="tourPause" aria-pressed="false">Pause</button></div>
     <div class="tour-progress" aria-hidden="true"><span id="tourProgress"></span></div>
     <div class="tour-controls">
       <button class="btn ghost small" type="button" id="tourPrev">Back</button>
@@ -3171,7 +3270,7 @@ function buildReportPdf(rep, num) {
   var tourIndex = 0;
   var tourTarget = null;
   var tourThemeRestore = null;
-  var tourRemainingMs = 10000;
+  var tourRemainingMs = 20000;
   var tourLastTick = 0;
   var tourPointer = { x: -1, y: -1 };
   var tourUserPaused = false;
@@ -3190,7 +3289,7 @@ function buildReportPdf(rep, num) {
     $('#tourPause').setAttribute('aria-pressed', String(tourUserPaused));
     var seconds = Math.ceil(tourRemainingMs / 1000);
     $('#tourTimerLabel').textContent = paused ? 'Paused · ' + seconds + 's' : 'Next in ' + seconds + 's';
-    $('#tourProgress').style.transform = 'scaleX(' + (tourRemainingMs / 10000) + ')';
+    $('#tourProgress').style.transform = 'scaleX(' + (tourRemainingMs / 20000) + ')';
     if (!tourRemainingMs) $('#tourNext').click();
   }
 
@@ -3265,10 +3364,10 @@ function buildReportPdf(rep, num) {
     $('#tourText').textContent = step.text;
     $('#tourPrev').disabled = tourIndex === 0;
     $('#tourNext').textContent = tourIndex === tourRunSteps.length - 1 ? 'Finish' : 'Next';
-    tourRemainingMs = 10000;
+    tourRemainingMs = 20000;
     tourLastTick = performance.now();
     $('#tourProgress').style.transform = 'scaleX(1)';
-    $('#tourTimerLabel').textContent = tourUserPaused ? 'Paused · 10s' : 'Next in 10s';
+    $('#tourTimerLabel').textContent = tourUserPaused ? 'Paused · 10s' : 'Next in 20s';
     if (tourTarget) tourTarget.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
     requestAnimationFrame(placeTour);
   }
