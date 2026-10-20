@@ -742,7 +742,7 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
         <div class="head-menu-pop settings-pop">
           <button class="settings-row" type="button" id="settingsLoadToggle" data-settings-toggle="load" aria-expanded="false"><svg class="icon settings-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v2H5a2 2 0 0 0-2 2z"/><path d="m3 13 2 6h14l2-10H5a2 2 0 0 0-2 4z"/></svg>Load group<span class="settings-arrow gi gi-right" aria-hidden="true"></span></button>
           <div class="settings-subpanel" id="settingsLoadPanel" hidden>
-            <button class="settings-row" type="button" id="openLoadGroup"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7.5h7l2 2h8.5v9H4zM8 7.5V5h8l2 2.5M12 12v5m-2-2 2 2 2-2"/></svg>Load from file…</button>
+            <button class="settings-row" type="button" id="openLoadGroup"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7.5h7l2 2h8.5v9H4zM8 7.5V5h8l2 2.5M12 12v5m-2-2 2 2 2-2"/></svg>Load from file&#8230;</button>
             <button class="settings-row" type="button" id="loadExample"><span class="settings-icon gi gi-spark" aria-hidden="true"></span>Example group</button>
           </div>
           <div class="settings-divider"></div>
@@ -773,7 +773,7 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
   <dialog class="group-dialog" id="loadGroupDialog" aria-labelledby="loadGroupTitle">
     <div class="dialog-mark load-mark" aria-hidden="true"><i class="gi gi-up"></i></div>
     <h2 id="loadGroupTitle">Load a group</h2>
-    <p>Choose a saved group file. We’ll check it and ask before replacing matching groups.</p>
+    <p>Choose a saved group file. We&#8217;ll check it and ask before replacing matching groups.</p>
     <div class="dialog-actions"><button type="button" class="btn ghost" data-close="loadGroupDialog">Cancel</button><button type="button" class="btn primary" id="chooseLoadFile"><span class="btn-icon gi gi-up" aria-hidden="true"></span>Choose file</button></div>
   </dialog>
   <dialog class="group-dialog" id="createGroupDialog" aria-labelledby="createGroupTitle">
@@ -781,13 +781,13 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
     <p>Give your group a name and choose its currency. You can add people and expenses next.</p>
     <form id="ngForm" class="dialog-form" autocomplete="off">
       <label class="fld" for="ngName">Group name<input id="ngName" type="text" maxlength="40" placeholder="Cabin weekend" aria-label="New group name"></label>
-      <label class="fld" for="ngCurrency">Currency<select id="ngCurrency"><option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option><option value="INR">INR ₹</option><option value="CAD">CAD $</option><option value="AUD">AUD $</option></select></label>
+      <label class="fld" for="ngCurrency">Currency<select id="ngCurrency"><option value="USD">USD $</option><option value="EUR">EUR &#8364;</option><option value="GBP">GBP &#163;</option><option value="INR">INR &#8377;</option><option value="CAD">CAD $</option><option value="AUD">AUD $</option></select></label>
       <div class="dialog-actions"><button class="btn ghost" type="button" id="ngCancel"><span class="btn-icon gi gi-x" aria-hidden="true"></span>Cancel</button><button class="btn primary" type="submit"><span class="btn-icon gi gi-plus" aria-hidden="true"></span>Create group</button></div>
     </form>
   </dialog>
   <dialog class="group-dialog" id="saveGroupDialog" aria-labelledby="saveGroupTitle">
     <div class="dialog-mark save-mark" aria-hidden="true"><i class="gi gi-down"></i></div><h2 id="saveGroupTitle">Save a group file</h2>
-    <p id="saveGroupMessage">Save a portable copy of this group’s people and expenses. You can load it on another device later.</p>
+    <p id="saveGroupMessage">Save a portable copy of this group&#8217;s people and expenses. You can load it on another device later.</p>
     <div class="dialog-actions"><button type="button" class="btn ghost" data-close="saveGroupDialog">Cancel</button><button type="button" class="btn primary" id="confirmSaveGroup"><span class="btn-icon gi gi-down" aria-hidden="true"></span>Save file</button></div>
   </dialog>
   <dialog class="confirm-dialog" id="loadPanel" aria-labelledby="importDialogTitle"></dialog>
@@ -820,8 +820,8 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
           </details>
           <label class="fld" style="flex-direction:row;align-items:center;gap:8px">Currency
             <select id="gCur" aria-label="Currency">
-              <option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option>
-              <option value="INR">INR ₹</option><option value="CAD">CAD $</option><option value="AUD">AUD $</option>
+              <option value="USD">USD $</option><option value="EUR">EUR &#8364;</option><option value="GBP">GBP &#163;</option>
+              <option value="INR">INR &#8377;</option><option value="CAD">CAD $</option><option value="AUD">AUD $</option>
             </select>
           </label>
           
@@ -873,7 +873,7 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
                 <label for="fPayerName">Find a person<input id="fPayerName" type="search" maxlength="30" placeholder="Type a name to search"></label>
                 <div class="payer-results" id="fPayerResults" role="listbox" aria-label="People in this group"></div>
                 <button class="btn primary" type="button" id="fPayerAddButton">Add to group</button>
-                <p class="help">They’ll be added to this group. You can leave them out of the expense split below.</p>
+                <p class="help">They&#8217;ll be added to this group. You can leave them out of the expense split below.</p>
               </div>
             </div>
           </div>
@@ -910,7 +910,7 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
                 <label for="pFromName">Find a person<input id="pFromName" type="search" maxlength="30" placeholder="Type a name to search"></label>
                 <div class="payer-results" id="pFromResults" role="listbox" aria-label="People in this group"></div>
                 <button class="btn primary" type="button" id="pFromAddButton">Add to group</button>
-                <p class="help">They’ll be added to the group so the payment is included in balances.</p>
+                <p class="help">They&#8217;ll be added to the group so the payment is included in balances.</p>
               </div>
             </div>
             <button type="button" class="swap-payment" id="swapPayment" aria-label="Swap who paid and paid to" title="Swap who paid and paid to"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M7 7h13l-3-3M20 7l-3 3M17 17H4l3 3M4 17l3-3"/></svg><span class="swap-label">Swap people</span></button>
@@ -921,7 +921,7 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
                 <label for="pToName">Find a person<input id="pToName" type="search" maxlength="30" placeholder="Type a name to search"></label>
                 <div class="payer-results" id="pToResults" role="listbox" aria-label="People in this group"></div>
                 <button class="btn primary" type="button" id="pToAddButton">Add to group</button>
-                <p class="help">They’ll be added to the group so the payment is included in balances.</p>
+                <p class="help">They&#8217;ll be added to the group so the payment is included in balances.</p>
               </div>
             </div>
           </div>
@@ -989,7 +989,7 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
   <p id="storeNote" hidden>This browser is not saving data, so changes will be lost when you close the page.</p>
   <footer class="site-credit">
     <span class="site-credit-byline">Made with care by <strong>Rishank Karkera</strong></span>
-    <nav class="site-social" aria-label="Rishank’s social profiles">
+    <nav class="site-social" aria-label="Rishank&#8217;s social profiles">
       <a href="https://github.com/r15hank" target="_blank" rel="noopener noreferrer" aria-label="Rishank Karkera on GitHub" title="GitHub">
         <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.53v-2.04c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.23-1.62-1.23-1.62-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 .1.76 2.13 3.8 1.51.1-.71.39-1.2.7-1.48-2.48-.28-5.09-1.24-5.09-5.52 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.1-2.96 0 0 .94-.3 3.05 1.14a10.6 10.6 0 0 1 5.55 0c2.11-1.44 3.05-1.14 3.05-1.14.6 1.54.22 2.68.11 2.96.71.78 1.14 1.78 1.14 3 0 4.3-2.61 5.23-5.1 5.5.4.34.75 1 .75 2.02V22c0 .29.2.63.76.52A11.1 11.1 0 0 0 12 .9z"/></svg>
       </a>
@@ -1489,10 +1489,10 @@ const W_BOLD = [278, 333, 474, 556, 556, 889, 722, 238, 333, 333, 389, 584, 278,
 // Reduce text to what the standard PDF font can show (Latin-1 plus the euro sign).
 function pdfSafe(s) {
   return String(s == null ? '' : s)
-    .replace(/[‘’′]/g, "'").replace(/[“”]/g, '"')
-    .replace(/[–—−]/g, '-').replace(/→/g, '>').replace(/…/g, '...')
+    .replace(/[\u2018\u2019\u2032]/g, "'").replace(/[\u201c\u201d]/g, '"')
+    .replace(/[\u2013\u2014\u2212]/g, '-').replace(/\u2192/g, '>').replace(/\u2026/g, '...')
     .replace(/\r/g, '').replace(/\t/g, ' ')
-    .replace(/[^\n\x20-\x7E -ÿ€]/g, '?');
+    .replace(/[^\n\x20-\x7E\u00a0-\u00ff\u20ac]/g, '?');
 }
 function glyphWidth(ch, bold) {
   const t = bold ? W_BOLD : W_REG;
@@ -2155,14 +2155,14 @@ function buildReportPdf(rep, num) {
   function renderHead(g) {
     $('#gName').textContent = g.name;
     $('#gCur').value = g.currency;
-    $('#saveGroupMessage').textContent = 'Save a portable copy of “' + g.name + '” with its people and expenses. You can load it on another device later.';
+    $('#saveGroupMessage').textContent = 'Save a portable copy of \u201c' + g.name + '\u201d with its people and expenses. You can load it on another device later.';
     $('#chips').innerHTML = g.members.map(function (m) {
       var rm = memberUsed(g, m.id) ? '' : '<button class="x" type="button" data-act="rm" data-id="' + m.id + '" aria-label="Remove ' + esc(m.name) + '"><i class="gi gi-x"></i></button>';
       return '<li class="chip">' + avatar(m) + '<span>' + esc(m.name) + '</span>' + rm + '</li>';
     }).join('') || '<li class="muted">No one yet.</li>';
     $('#mHint').textContent = g.members.length < 2
       ? 'Add at least two people to start splitting expenses.'
-      : 'People who appear in an expense can’t be removed.';
+      : 'People who appear in an expense can\u2019t be removed.';
   }
   function renderPayer(g, prefer) {
     var sel = $('#fPayer');
@@ -2345,7 +2345,7 @@ function buildReportPdf(rep, num) {
   }
   function renderList(g) {
     var n = g.expenses.length;
-    $('#listLabelText').textContent = 'Transaction history' + (n ? ' · ' + n : '');
+    $('#listLabelText').textContent = 'Transaction history' + (n ? ' \u00b7 ' + n : '');
     var ul = $('#expList');
     if (!n) { ul.innerHTML = '<li class="empty">No expenses yet. Add the first one above.</li>'; return; }
     ul.innerHTML = g.expenses.slice().sort(function (a, b) {
@@ -2362,9 +2362,9 @@ function buildReportPdf(rep, num) {
         meta = fmtDay(dateOf(e));
       } else {
         title = esc(e.desc);
-        var label = e.type === 'equal' ? 'Equal · ' + Object.keys(e.shares).length : e.type === 'percent' ? 'By %' : 'Exact';
+        var label = e.type === 'equal' ? 'Equal \u00b7 ' + Object.keys(e.shares).length : e.type === 'percent' ? 'By %' : 'Exact';
         tag = '<span class="chip-tag">' + label + '</span>';
-        meta = esc(payer) + ' paid · ' + fmtDay(dateOf(e));
+        meta = esc(payer) + ' paid \u00b7 ' + fmtDay(dateOf(e));
       }
       var shares = Object.keys(e.shares).map(function (id) {
         return '<li>' + esc(nameOf(g, id)) + '<span class="mono">' + money(e.shares[id], cur) + '</span></li>';
@@ -2422,7 +2422,7 @@ function buildReportPdf(rep, num) {
       html += '<p class="done">Everyone is settled up.</p>';
     } else {
       html += '<ul class="pays">' + debts.map(function (d) {
-        return '<li class="pay"><span class="line"><b>' + esc(nameOf(g, d.from)) + '</b><span class="arrow" aria-label="pays">→</span><b>' + esc(nameOf(g, d.to)) + '</b></span>' +
+        return '<li class="pay"><span class="line"><b>' + esc(nameOf(g, d.from)) + '</b><span class="arrow" aria-label="pays">\u2192</span><b>' + esc(nameOf(g, d.to)) + '</b></span>' +
           '<span class="num">' + money(d.amount, cur) + '</span>' +
           '<span class="paybtns"><button type="button" class="btn ghost small" data-act="settle" data-from="' + d.from + '" data-to="' + d.to + '" data-amt="' + d.amount + '">Paid in full</button>' +
           '<button type="button" class="btn ghost small" data-act="part" data-from="' + d.from + '" data-to="' + d.to + '" data-amt="' + d.amount + '">Part payment</button></span></li>';
@@ -2698,7 +2698,7 @@ function buildReportPdf(rep, num) {
     save();
     renderSide(g);
     backToCleanForm(g, payer);
-    flash((editing ? 'Saved ' : 'Added ') + desc + ' · ' + money(total, g.currency));
+    flash((editing ? 'Saved ' : 'Added ') + desc + ' \u00b7 ' + money(total, g.currency));
     $('#fDesc').focus();
   });
 
@@ -2800,7 +2800,7 @@ function buildReportPdf(rep, num) {
   function reportFor(g) {
     return buildReport(g, function (c) { return money(c, g.currency); }, fmtDay, Date.now());
   }
-  function signed(c, cur) { return c === 0 ? money(0, cur) : (c > 0 ? '+' : '−') + money(Math.abs(c), cur); }
+  function signed(c, cur) { return c === 0 ? money(0, cur) : (c > 0 ? '+' : '\u2212') + money(Math.abs(c), cur); }
   function kv(k, v) { return '<div><dt>' + esc(k) + '</dt><dd>' + esc(v) + '</dd></div>'; }
 
   function renderView(g) {
@@ -2820,14 +2820,14 @@ function buildReportPdf(rep, num) {
     var M = function (c) { return money(c, cur); };
     var rep = reportFor(g);
     var t = rep.totals;
-    $('#rSub').textContent = g.name + ' · generated ' + rep.generated;
+    $('#rSub').textContent = g.name + ' \u00b7 generated ' + rep.generated;
     var h = '';
 
     h += '<div class="rsec"><h4 class="label">Summary</h4><dl class="kv">' +
       kv('Total spent', M(t.spent)) + kv('Expenses', String(t.expenseCount)) + kv('Average expense', M(t.avgExpense)) +
       kv('Per person', M(t.avgPerPerson)) +
       kv('Period', t.first ? (t.first === t.last ? t.first : t.first + ' to ' + t.last) : 'None yet') +
-      kv('Payments made', t.paymentCount ? t.paymentCount + ' · ' + M(t.paymentTotal) : 'None') +
+      kv('Payments made', t.paymentCount ? t.paymentCount + ' \u00b7 ' + M(t.paymentTotal) : 'None') +
       kv('Still outstanding', M(t.outstanding)) + '</dl>';
 
     h += '<div class="tablewrap"><table class="tbl"><thead><tr><th>Person</th><th class="n">Paid</th><th class="n">Share</th>' +
@@ -2844,10 +2844,10 @@ function buildReportPdf(rep, num) {
     h += '<p class="fine">Net is paid minus share, adjusted for payments already marked as paid. Positive means the person is owed money.</p>';
 
     var plan = g.smart ? rep.plans.smart : rep.plans.direct;
-    h += '<h4 class="label sub">Settle-up plan · ' + (g.smart ? 'smart split' : 'direct debts') + '</h4>';
+    h += '<h4 class="label sub">Settle-up plan \u00b7 ' + (g.smart ? 'smart split' : 'direct debts') + '</h4>';
     if (plan.length) {
       h += '<ul class="plan">' + plan.map(function (d) {
-        return '<li><span><b>' + esc(nameOf(g, d.from)) + '</b><span class="arrow">→</span><b>' + esc(nameOf(g, d.to)) + '</b></span><span class="mono">' + M(d.amount) + '</span></li>';
+        return '<li><span><b>' + esc(nameOf(g, d.from)) + '</b><span class="arrow">\u2192</span><b>' + esc(nameOf(g, d.to)) + '</b></span><span class="mono">' + M(d.amount) + '</span></li>';
       }).join('') + '</ul>';
     } else {
       h += '<p class="muted">' + (t.expenseCount ? 'Everyone is settled up.' : 'Nothing to settle yet.') + '</p>';
@@ -2868,7 +2868,7 @@ function buildReportPdf(rep, num) {
       rep.people.forEach(function (p) { max = Math.max(max, p.paid, p.share); });
       var line = function (slot, val, label, name) {
         var w = val > 0 ? Math.max(1, Math.round(val / max * 100)) : 0;
-        return '<div class="bar-line"><span class="bw"><i class="tipc" tabindex="0" data-tip="' + esc(name + ' · ' + label + ' ' + M(val)) +
+        return '<div class="bar-line"><span class="bw"><i class="tipc" tabindex="0" data-tip="' + esc(name + ' \u00b7 ' + label + ' ' + M(val)) +
           '" style="width:' + w + '%;background:var(--' + slot + ')"></i></span><span class="bv">' + M(val) + '</span></div>';
       };
       h += '<div class="charts"><div class="chart"><h5>Paid vs. share</h5><p class="sub">What each person fronted compared with what they owe for.</p>' +
@@ -2883,7 +2883,7 @@ function buildReportPdf(rep, num) {
         h += '<div class="chart"><h5>Spending by day</h5><p class="sub">Expenses only, not payments.</p><div class="cols">' + shown.map(function (d) {
           var pct = Math.max(2, Math.round(d.amount / dmax * 78));
           return '<div class="col"><div class="col-plot">' + (d.amount === dmax ? '<span class="cap">' + M(d.amount) + '</span>' : '') +
-            '<i class="tipc" tabindex="0" data-tip="' + esc(d.label + ' · ' + M(d.amount) + ' across ' + d.count + (d.count === 1 ? ' expense' : ' expenses')) +
+            '<i class="tipc" tabindex="0" data-tip="' + esc(d.label + ' \u00b7 ' + M(d.amount) + ' across ' + d.count + (d.count === 1 ? ' expense' : ' expenses')) +
             '" style="height:' + pct + '%"></i></div><span class="col-lab">' + esc(d.label) + '</span></div>';
         }).join('') + '</div></div>';
       }
@@ -2914,7 +2914,7 @@ function buildReportPdf(rep, num) {
         rep.members.map(function (m) { return '<td class="n">' + M(memTot[m.id] || 0) + '</td>'; }).join('') + '<td></td></tr></tfoot></table></div>';
       var ok = rep.checks.sharesMatch && rep.checks.balancesZero;
       h += '<p class="checks ' + (ok ? 'ok' : 'bad') + '">' + (ok
-        ? 'Checks passed. Every expense’s shares add up to its total, and all balances add up to zero.'
+        ? 'Checks passed. Every expense\u2019s shares add up to its total, and all balances add up to zero.'
         : 'Check failed. Some shares do not add up to their expense total.') + '</p>';
     }
     h += '</div>';
@@ -2979,7 +2979,7 @@ function buildReportPdf(rep, num) {
     return buildReportPdf(rep, function (c) { return pdfNum(c, g.currency); });
   }
   async function saveVia(filename, data, say) {
-    say(dlApi === browserDl ? 'Saving ' + filename + '…' : 'Confirm the download to save ' + filename + '.');
+    say(dlApi === browserDl ? 'Saving ' + filename + '\u2026' : 'Confirm the download to save ' + filename + '.');
     try {
       await dlApi.save({ filename: filename, data: data });
       say('Saved ' + filename, 'ok');
@@ -3003,7 +3003,7 @@ function buildReportPdf(rep, num) {
         data = makePdf(g);
         filename = fileBase(g) + '.pdf';
       } else {
-        data = '﻿' + toCsv(reportSheets(rep).details);
+        data = '\ufeff' + toCsv(reportSheets(rep).details);
         filename = fileBase(g) + '-details.csv';
       }
     } catch (e) {
@@ -3247,7 +3247,7 @@ function buildReportPdf(rep, num) {
   }
   function importText(text) {
     var data;
-    try { data = JSON.parse(text.replace(/^﻿/, '')); }
+    try { data = JSON.parse(text.replace(/^\ufeff/, '')); }
     catch (e) { setIo('That file is not valid JSON, so nothing was loaded.', 'err'); return; }
     var raws = data && Array.isArray(data.groups) ? data.groups : data && data.group ? [data.group] : [data];
     if (!raws.length || raws.length > 50) { setIo('That file does not contain a group.', 'err'); return; }
@@ -3262,7 +3262,7 @@ function buildReportPdf(rep, num) {
     pendingImport = good;
     var names = clash.map(function (ng) { return esc(ng.name); }).join(', ');
     $('#loadPanel').innerHTML = '<h2 id="importDialogTitle">Groups already exist</h2><p>You already have ' + (clash.length === 1 ? 'a group that matches' : 'groups that match') + ' <b>' + names +
-      '</b>. Replace ' + (clash.length === 1 ? 'it' : 'them') + ' with the file’s version, or add the file as separate ' + (clash.length === 1 ? 'a copy' : 'copies') + '?</p>' +
+      '</b>. Replace ' + (clash.length === 1 ? 'it' : 'them') + ' with the file\u2019s version, or add the file as separate ' + (clash.length === 1 ? 'a copy' : 'copies') + '?</p>' +
       '<div class="actions"><button type="button" class="btn" data-mode="replace"><span class="btn-icon gi gi-check" aria-hidden="true"></span>Replace</button>' +
       '<button type="button" class="btn ghost" data-mode="copy"><span class="btn-icon gi gi-plus" aria-hidden="true"></span>Add as a copy</button>' +
       '<button type="button" class="btn ghost" data-mode="cancel"><span class="btn-icon gi gi-x" aria-hidden="true"></span>Cancel</button></div>';
@@ -3319,7 +3319,7 @@ function buildReportPdf(rep, num) {
 
   /* ---------- guided tour ---------- */
   var tourSteps = [
-    { title: 'Welcome to Even Steven', text: 'We’ll take a look around using a ready-made cabin weekend group. Nothing will be recorded while you follow the tour.' },
+    { title: 'Welcome to Even Steven', text: 'We\u2019ll take a look around using a ready-made cabin weekend group. Nothing will be recorded while you follow the tour.' },
     { selector: '#gName', title: 'Your example group', text: 'This example has people, expenses, balances, and a payment so you can see how the app works.' },
     { selector: '#settingsMenu .settings-pop', title: 'Settings', text: 'The Settings menu is open. Load groups, choose the look of the app, and start this tour here.', panel: 'settings' },
     { selector: '#settingsMenu .settings-pop', title: 'Load group', text: 'The Load group section is open with options to load a saved file or open the example group.', panel: 'load' },
@@ -3342,7 +3342,7 @@ function buildReportPdf(rep, num) {
     { selector: '.export-menu .export-pop', title: 'Export', text: 'The Export menu is open with Excel, PDF, and CSV download options.', view: 'report', panel: 'export' },
     { selector: '#groupActionsMenu .head-menu-pop', title: 'Save a group', text: 'Group actions is open. Choose Save group to keep a portable backup of this group.', view: 'ledger', panel: 'group-actions' },
     { selector: '#groupActionsMenu .head-menu-pop', title: 'Delete a group', text: 'Group actions is open. Delete asks for confirmation before removing the group.', view: 'ledger', panel: 'group-actions' },
-    { title: 'That’s the tour', text: 'You’re ready to split a cost. You can start this walkthrough again from Settings.' }
+    { title: 'That\u2019s the tour', text: 'You\u2019re ready to split a cost. You can start this walkthrough again from Settings.' }
   ];
   var tourRunSteps = [];
   var tourIndex = 0;
@@ -3366,7 +3366,7 @@ function buildReportPdf(rep, num) {
     $('#tourPause').textContent = tourUserPaused ? 'Resume' : 'Pause';
     $('#tourPause').setAttribute('aria-pressed', String(tourUserPaused));
     var seconds = Math.ceil(tourRemainingMs / 1000);
-    $('#tourTimerLabel').textContent = paused ? 'Paused · ' + seconds + 's' : 'Next in ' + seconds + 's';
+    $('#tourTimerLabel').textContent = paused ? 'Paused \u00b7 ' + seconds + 's' : 'Next in ' + seconds + 's';
     $('#tourProgress').style.transform = 'scaleX(' + (tourRemainingMs / 20000) + ')';
     if (!tourRemainingMs) $('#tourNext').click();
   }
@@ -3445,7 +3445,7 @@ function buildReportPdf(rep, num) {
     tourRemainingMs = 20000;
     tourLastTick = performance.now();
     $('#tourProgress').style.transform = 'scaleX(1)';
-    $('#tourTimerLabel').textContent = tourUserPaused ? 'Paused · 10s' : 'Next in 20s';
+    $('#tourTimerLabel').textContent = tourUserPaused ? 'Paused \u00b7 10s' : 'Next in 20s';
     if (tourTarget) tourTarget.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
     requestAnimationFrame(placeTour);
   }
