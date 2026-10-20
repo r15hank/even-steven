@@ -1000,7 +1000,7 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
         </details>
       </div>
       <p id="dlStatus" role="status"></p>
-      <p class="fine">The PDF has the summary, insights and the full audit table. The Excel file has three sheets: Summary, Insights and Expense details. The CSV is the expense details table.</p>
+      <p class="fine">The PDF has the summary, insights, spending by category and by day, and the full audit table. The Excel file has three sheets: Summary, Insights (with category, day and paid vs. share tables) and Expense details. The CSV is the expense details table.</p>
       <div id="reportBody"></div>
     </section>
 
@@ -1244,6 +1244,16 @@ function buildReport(g, fmt, shortDate, now) {
     dayMap[k].amount += e.amount;
     dayMap[k].count += 1;
   });
+  const catMap = {};
+  const cats = [];
+  spend.forEach(function (e) {
+    const k = catLabel(e.category);
+    if (!catMap[k]) { catMap[k] = { label: k, amount: 0, count: 0 }; cats.push(catMap[k]); }
+    catMap[k].amount += e.amount;
+    catMap[k].count += 1;
+  });
+  cats.sort(function (a, b) { return b.amount - a.amount; });
+  cats.forEach(function (c) { c.pct = spent > 0 ? Math.round(c.amount * 100 / spent) : 0; });
   const mix = { equal: 0, percent: 0, exact: 0 };
   spend.forEach(function (e) { mix[e.type] = (mix[e.type] || 0) + 1; });
 
@@ -1266,6 +1276,10 @@ function buildReport(g, fmt, shortDate, now) {
     if (days.length > 1) {
       const bd = days.reduce(function (a, b) { return b.amount > a.amount ? b : a; });
       insights.push({ label: 'Busiest day', text: bd.label + ' had the most spending at ' + fmt(bd.amount) + ' across ' + plural(bd.count, 'expense', 'expenses') + '.' });
+    }
+    if (cats.length > 1 || (cats.length === 1 && cats[0].label !== 'Other')) {
+      insights.push({ label: 'Top category', text: cats[0].label + ' leads at ' + fmt(cats[0].amount) + ', ' + cats[0].pct + '% of spending across ' + plural(cats[0].count, 'expense', 'expenses') + '.' });
+      if (cats.length > 1) insights.push({ label: 'Category mix', text: cats.slice(0, 4).map(function (c) { return c.label + ' ' + c.pct + '%'; }).join(', ') + (cats.length > 4 ? ', and ' + (cats.length - 4) + ' more.' : '.') });
     }
     const parts = [];
     if (mix.equal) parts.push(mix.equal + ' equal');
@@ -1324,7 +1338,7 @@ function buildReport(g, fmt, shortDate, now) {
       first: spend.length ? shortDate(dateOf(spend[0])) : '', last: spend.length ? shortDate(dateOf(spend[spend.length - 1])) : '',
       outstanding: outstanding
     },
-    people: people, days: days, mix: mix, insights: insights, audit: audit,
+    people: people, days: days, cats: cats, mix: mix, insights: insights, audit: audit,
     plans: { direct: direct, smart: smart },
     checks: {
       sharesMatch: audit.every(function (r) { return r.diff === 0; }),
@@ -1388,6 +1402,15 @@ function reportSheets(rep) {
   insights.push(['Date', 'Spent', 'Expenses']);
   rep.days.forEach(function (d) { insights.push([d.key, M(d.amount), d.count]); });
   if (!rep.days.length) insights.push(['No expenses yet']);
+  insights.push([]);
+  insights.push(['Spending by category']);
+  insights.push(['Category', 'Spent', 'Share of spending', 'Expenses']);
+  rep.cats.forEach(function (c) { insights.push([c.label, M(c.amount), c.pct + '%', c.count]); });
+  if (!rep.cats.length) insights.push(['No expenses yet']);
+  insights.push([]);
+  insights.push(['Paid vs. share']);
+  insights.push(['Person', 'Paid', 'Share']);
+  rep.people.forEach(function (p) { insights.push([p.name, M(p.paid), M(p.share)]); });
 
   const head = ['#', 'Date', 'Entered at', 'Type', 'Category', 'Description', 'Notes', 'Paid by', 'Total', 'Split method', 'Split detail']
     .concat(rep.members.map(function (m) { return m.name + ' share'; })).concat(['Shares total', 'Difference']);
@@ -1815,6 +1838,25 @@ function buildReportPdf(rep, num) {
     doc.y += 12;
     doc.text('Add an expense to see insights.', L, doc.y, { size: 9.5, color: MUTED });
     doc.y += 8;
+  }
+
+  if (rep.cats.length) {
+    doc.ensure(70);
+    heading('Spending by category');
+    doc.table({
+      cols: [{ wrap: true }, { align: 'right' }, { align: 'right' }, { align: 'right' }],
+      head: ['Category', 'Spent', 'Share', 'Expenses'],
+      rows: rep.cats.map(function (c) { return [c.label, num(c.amount), c.pct + '%', String(c.count)]; }), size: 9
+    });
+  }
+  if (rep.days.length) {
+    doc.ensure(70);
+    heading('Spending by day');
+    doc.table({
+      cols: [{}, { align: 'right' }, { align: 'right' }],
+      head: ['Date', 'Spent', 'Expenses'],
+      rows: rep.days.map(function (d) { return [d.label, num(d.amount), String(d.count)]; }), size: 9
+    });
   }
 
   if (t.expenseCount) {
@@ -3053,9 +3095,7 @@ function buildReportPdf(rep, num) {
             '" style="height:' + pct + '%"></i></div><span class="col-lab">' + esc(d.label) + '</span></div>';
         }).join('') + '</div></div>';
       }
-      var byCat = {};
-      rep.audit.forEach(function (r) { if (r.kind === 'Expense') byCat[r.category] = (byCat[r.category] || 0) + r.total; });
-      var catRows = Object.keys(byCat).map(function (k) { return { label: k, amount: byCat[k] }; }).sort(function (a, b) { return b.amount - a.amount; });
+      var catRows = rep.cats;
       var cmax = catRows.length ? catRows[0].amount : 1;
       if (catRows.length > 1 || (catRows.length === 1 && catRows[0].label !== 'Other')) {
         h += '<div class="chart"><h5>Spending by category</h5><p class="sub">Expenses only, not payments.</p><div class="hb">' + catRows.map(function (c) {
