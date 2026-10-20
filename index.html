@@ -609,6 +609,33 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .settings-arrow.gi { width: 16px; height: 16px; }
 .dialog-mark .gi { width: 24px; height: 24px; }
 .chip .x .gi, .payer-choice .gi, summary .gi { width: 14px; height: 14px; margin-right: 4px; vertical-align: -2px; }
+
+/* category + currency pickers, flags */
+.flag { display: inline-block; flex: none; width: 24px; height: 16px; border-radius: 3px; box-shadow: 0 0 0 .5px rgba(0,0,0,.25); vertical-align: -3px; }
+.picker { position: relative; display: inline-block; max-width: 100%; }
+.stack .picker, .dialog-form .picker { display: block; }
+.picker-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 12px; background: var(--surface-2); color: var(--ink); font: 500 15px var(--f-body); cursor: pointer; }
+.stack .picker-btn, .dialog-form .picker-btn { width: 100%; }
+.picker-btn .pb-chev { margin-left: auto; width: 14px; height: 14px; color: var(--muted); }
+.picker-pop { position: absolute; z-index: 60; top: calc(100% + 6px); left: 0; min-width: 100%; max-height: 300px; overflow: auto; padding: 6px; border-radius: 14px; background: var(--surface); border: .5px solid var(--line); box-shadow: var(--shadow); }
+.picker-pop[hidden] { display: none; }
+.picker.right .picker-pop { left: auto; right: 0; }
+.picker-opt { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 6px 10px; border: 0; border-radius: 10px; background: transparent; color: var(--ink); text-align: left; cursor: pointer; font: 500 15px var(--f-body); }
+.picker-opt:hover, .picker-opt:focus-visible { background: var(--surface-2); }
+.picker-opt[aria-selected="true"] { background: var(--accent-soft); color: var(--accent); }
+.po-text { display: grid; line-height: 1.2; }
+.po-text small { color: var(--muted); font-weight: 400; font-size: 12px; }
+.picker.grid .picker-pop:not([hidden]) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; width: max(100%, 300px); }
+.picker.grid .picker-opt { flex-direction: column; justify-content: center; gap: 4px; padding: 10px 4px; text-align: center; min-height: 64px; }
+.picker.grid .picker-opt .icon { width: 22px; height: 22px; }
+.picker.grid .po-text b { font-size: 12px; font-weight: 500; }
+.cat-ico { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-right: 8px; border-radius: 8px; background: var(--surface-2); color: var(--accent); vertical-align: middle; }
+.cat-ico .icon { width: 15px; height: 15px; vertical-align: 0; }
+@media (max-width: 720px) { .picker.grid .picker-pop:not([hidden]) { width: min(300px, calc(100vw - 56px)); } }
+
+.picker.right .picker-pop { min-width: 220px; }
+.po-text small { white-space: nowrap; }
+.picker.grid .picker-pop:not([hidden]) { width: min(100%, 360px); }
 /* ===== Apple Human Interface layer: clarity, deference, depth =====
    System type (SF Pro on Apple devices), system colours, grouped inset surfaces,
    segmented controls, translucent materials, 44pt targets, large title, reduced motion. */
@@ -863,6 +890,7 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus
               <input id="fAmt" type="text" inputmode="decimal" placeholder="0.00" style="font-family:var(--f-mono)">
             </label>
           </div>
+          <div class="fld stack"><span>Category</span><select id="fCat" aria-label="Category"></select></div>
           <div class="row date-payer">
             <label class="fld" for="fDate">Date
               <input id="fDate" type="date">
@@ -1280,7 +1308,7 @@ function buildReport(g, fmt, shortDate, now) {
       method = 'Equal'; desc = e.desc;
       detail = 'Between ' + ids.length + ': ' + ids.map(nm).join(', ');
     }
-    return { n: i + 1, date: dateOf(e), shortDate: shortDate(dateOf(e)), notes: e.notes || '', entered: stampText(e.ts), kind: e.payment ? 'Payment' : 'Expense',
+    return { n: i + 1, date: dateOf(e), shortDate: shortDate(dateOf(e)), notes: e.notes || '', category: e.payment ? '' : catLabel(e.category), entered: stampText(e.ts), kind: e.payment ? 'Payment' : 'Expense',
       desc: desc, payer: nm(e.payer), total: e.amount, method: method, detail: detail, count: ids.length, shares: e.shares, sharesTotal: total, diff: total - e.amount };
   });
 
@@ -1361,11 +1389,11 @@ function reportSheets(rep) {
   rep.days.forEach(function (d) { insights.push([d.key, M(d.amount), d.count]); });
   if (!rep.days.length) insights.push(['No expenses yet']);
 
-  const head = ['#', 'Date', 'Entered at', 'Type', 'Description', 'Notes', 'Paid by', 'Total', 'Split method', 'Split detail']
+  const head = ['#', 'Date', 'Entered at', 'Type', 'Category', 'Description', 'Notes', 'Paid by', 'Total', 'Split method', 'Split detail']
     .concat(rep.members.map(function (m) { return m.name + ' share'; })).concat(['Shares total', 'Difference']);
   const details = [head];
   rep.audit.forEach(function (r) {
-    details.push([r.n, r.date, r.entered, r.kind, r.desc, r.notes, r.payer, M(r.total), r.method, r.detail]
+    details.push([r.n, r.date, r.entered, r.kind, r.category, r.desc, r.notes, r.payer, M(r.total), r.method, r.detail]
       .concat(rep.members.map(function (m) { return r.shares[m.id] != null ? M(r.shares[m.id]) : null; }))
       .concat([M(r.sharesTotal), M(r.diff)]));
   });
@@ -1398,6 +1426,13 @@ function validDateStr(s) {
 }
 
 // Returns {group} with fresh internal ids, or {error}. newId() makes ids for people and expenses.
+const CATS = [
+  { id: 'food', label: 'Food' }, { id: 'groceries', label: 'Groceries' }, { id: 'transport', label: 'Transport' },
+  { id: 'stay', label: 'Stay' }, { id: 'fun', label: 'Fun' }, { id: 'shopping', label: 'Shopping' },
+  { id: 'bills', label: 'Bills' }, { id: 'travel', label: 'Travel' }, { id: 'health', label: 'Health' }, { id: 'other', label: 'Other' }
+];
+function catId(id) { return CATS.some(function (c) { return c.id === id; }) ? id : 'other'; }
+function catLabel(id) { return CATS.filter(function (c) { return c.id === catId(id); })[0].label; }
 function validateGroup(raw, newId) {
   const CURS = ['USD', 'EUR', 'GBP', 'INR', 'CAD', 'AUD'];
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { error: 'This file does not contain a group.' };
@@ -1462,6 +1497,7 @@ function validateGroup(raw, newId) {
       id: newId(),
       desc: typeof e.desc === 'string' && e.desc.trim() ? e.desc.trim().slice(0, 60) : (payment ? 'Payment' : 'Expense'),
       notes: typeof e.notes === 'string' ? e.notes.slice(0, 500) : '',
+      category: payment ? '' : catId(e.category),
       amount: e.amount, payer: payer, type: type, values: type === 'equal' ? {} : values, shares: shares,
       ts: ts, date: validDateStr(e.date) ? e.date : dateKey(ts), payment: payment
     });
@@ -1824,7 +1860,7 @@ function buildReportPdf(rep, num) {
       const split = r.method === 'Equal'
         ? (r.count === rep.members.length ? 'Equal, everyone' : 'Equal: ' + Object.keys(r.shares).map(function (id) { return nm[id]; }).join(', '))
         : r.method + ': ' + r.detail;
-      return [c(String(r.n)), c(r.shortDate), c(r.desc), c(r.notes), c(r.payer), c(num(r.total)), c(split)]
+      return [c(String(r.n)), c(r.shortDate), c(r.category ? r.desc + ' (' + r.category + ')' : r.desc), c(r.notes), c(r.payer), c(num(r.total)), c(split)]
         .concat(rep.members.map(function (m) { return c(r.shares[m.id] != null ? num(r.shares[m.id]) : ''); }))
         .concat([r.diff === 0 ? { t: 'Matches', color: POS } : { t: 'Off by ' + num(Math.abs(r.diff)), color: NEG }]);
     });
@@ -2003,7 +2039,7 @@ function buildReportPdf(rep, num) {
     var r = buildShares(o.type, o.amount, o.ids, o.values || {});
     var ts = Date.now() - (o.daysAgo || 0) * DAY;
     return {
-      id: uid(), desc: o.desc, notes: o.notes || '', amount: o.amount, payer: o.payer, type: o.type,
+      id: uid(), desc: o.desc, notes: o.notes || '', category: o.category || 'other', amount: o.amount, payer: o.payer, type: o.type,
       values: o.type === 'equal' ? {} : Object.assign({}, o.values), shares: r.shares,
       ts: ts, date: dateKey(ts), payment: false
     };
@@ -2011,7 +2047,7 @@ function buildReportPdf(rep, num) {
   function paymentObj(from, to, amount, date, notes, id, ts) {
     var sh = {}; sh[to] = amount;
     var vals = {}; vals[to] = (amount / 100).toFixed(2);
-    return { id: id || uid(), desc: 'Payment', notes: notes || '', amount: amount, payer: from, type: 'exact', values: vals, shares: sh,
+    return { id: id || uid(), desc: 'Payment', notes: notes || '', category: '', amount: amount, payer: from, type: 'exact', values: vals, shares: sh,
       ts: ts || Date.now(), date: date || todayStr(), payment: true };
   }
   function exampleGroup() {
@@ -2024,10 +2060,10 @@ function buildReportPdf(rep, num) {
     return {
       id: uid(), name: 'Cabin weekend (example)', currency: 'USD', smart: false, members: members,
       expenses: [
-        makeExpense({ desc: 'Cabin rental', amount: 48000, payer: ana, type: 'equal', ids: all, daysAgo: 6, notes: 'Deposit included. The balance was paid on arrival.' }),
-        makeExpense({ desc: 'Groceries', amount: 9640, payer: ben, type: 'equal', ids: all, daysAgo: 5 }),
-        makeExpense({ desc: 'Gas', amount: 6200, payer: chloe, type: 'equal', ids: [ana, chloe, dev], daysAgo: 5, notes: 'Ben took the train, so he is not in this one.' }),
-        makeExpense({ desc: 'Dinner out', amount: 13800, payer: dev, type: 'percent', ids: all, values: pct, daysAgo: 4, notes: 'Birthday dinner, Ana and Dev had the larger orders.' }),
+        makeExpense({ category: 'stay', desc: 'Cabin rental', amount: 48000, payer: ana, type: 'equal', ids: all, daysAgo: 6, notes: 'Deposit included. The balance was paid on arrival.' }),
+        makeExpense({ category: 'groceries', desc: 'Groceries', amount: 9640, payer: ben, type: 'equal', ids: all, daysAgo: 5 }),
+        makeExpense({ category: 'transport', desc: 'Gas', amount: 6200, payer: chloe, type: 'equal', ids: [ana, chloe, dev], daysAgo: 5, notes: 'Ben took the train, so he is not in this one.' }),
+        makeExpense({ category: 'food', desc: 'Dinner out', amount: 13800, payer: dev, type: 'percent', ids: all, values: pct, daysAgo: 4, notes: 'Birthday dinner, Ana and Dev had the larger orders.' }),
         paymentObj(ben, ana, 5000, dateKey(yesterday), 'Part payment by bank transfer', null, yesterday)
       ]
     };
@@ -2042,6 +2078,7 @@ function buildReportPdf(rep, num) {
             (g.expenses || []).forEach(function (e) {
               if (!validDateStr(e.date)) e.date = dateKey(e.ts || Date.now());
               if (typeof e.notes !== 'string') e.notes = '';
+              e.category = e.payment ? '' : catId(e.category);
             });
           });
           return s;
@@ -2124,6 +2161,7 @@ function buildReportPdf(rep, num) {
     $('#fAmt').value = '';
     $('#fDate').value = todayStr();
     $('#fNotes').value = '';
+    $('#fCat').value = 'other';
     $('#fError').textContent = '';
     syncChrome();
   }
@@ -2153,6 +2191,132 @@ function buildReportPdf(rep, num) {
     }).join('') + '<button type="button" class="tab add" data-new-group aria-label="Create a group"><span class="view-icon gi gi-plus" aria-hidden="true"></span>New group</button>';
     $('#tabs').innerHTML = html;
   }
+
+  /* ---------- category icons, flags, custom pickers ---------- */
+  var CAT_PATH = {
+    food: 'M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-3 4-3 7 0 2 1 3 3 3v8',
+    groceries: 'M3 4h2l2.5 11h10L20 7H6M9.5 20h.01M17 20h.01',
+    transport: 'M4 16v-5l2-5h12l2 5v5zM4 13h16M7 19v-3M17 19v-3',
+    stay: 'M3 18V7M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5M7 11.5h.01',
+    fun: 'M3 9V6h18v3a2.5 2.5 0 0 0 0 5v3H3v-3a2.5 2.5 0 0 0 0-5zM14 6v11',
+    shopping: 'M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2',
+    bills: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6',
+    travel: 'M2 13l20-9-6 17-4-7zM12 14l10-10',
+    health: 'M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z',
+    other: 'M6 12h.01M12 12h.01M18 12h.01'
+  };
+  function catIcon(id) {
+    return '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"' + (catId(id) === 'other' ? ' stroke-width="3"' : '') + '><path d="' + CAT_PATH[catId(id)] + '"/></svg>';
+  }
+  var UJ = '<rect width="24" height="16" fill="#012169"/><path d="M0 0L24 16M24 0L0 16" stroke="#fff" stroke-width="3"/><path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" stroke-width="1"/><path d="M12 0V16M0 8H24" stroke="#fff" stroke-width="5"/><path d="M12 0V16M0 8H24" stroke="#C8102E" stroke-width="2.6"/>';
+  var FLAGS = {
+    USD: function () {
+      var r = ''; for (var i = 0; i < 13; i += 2) r += '<rect y="' + (i * 16 / 13).toFixed(2) + '" width="24" height="' + (16 / 13).toFixed(2) + '" fill="#B22234"/>';
+      var d = ''; for (var y = 0; y < 3; y++) for (var x = 0; x < 4; x++) d += '<circle cx="' + (1.6 + x * 2.5) + '" cy="' + (1.6 + y * 2.5) + '" r=".55" fill="#fff"/>';
+      return '<rect width="24" height="16" fill="#fff"/>' + r + '<rect width="10.5" height="8.6" fill="#3C3B6E"/>' + d;
+    },
+    EUR: function () {
+      var st = ''; for (var i = 0; i < 12; i++) { var a = i * Math.PI / 6; st += '<circle cx="' + (12 + 5 * Math.sin(a)).toFixed(2) + '" cy="' + (8 - 5 * Math.cos(a)).toFixed(2) + '" r=".8" fill="#FFCC00"/>'; }
+      return '<rect width="24" height="16" fill="#003399"/>' + st;
+    },
+    GBP: function () { return UJ; },
+    INR: function () {
+      return '<rect width="24" height="5.34" fill="#FF9933"/><rect y="5.33" width="24" height="5.34" fill="#fff"/><rect y="10.66" width="24" height="5.34" fill="#138808"/>' +
+        '<circle cx="12" cy="8" r="2" fill="none" stroke="#000080" stroke-width=".5"/><circle cx="12" cy="8" r=".4" fill="#000080"/>';
+    },
+    CAD: function () {
+      return '<rect width="24" height="16" fill="#fff"/><rect width="6" height="16" fill="#D80621"/><rect x="18" width="6" height="16" fill="#D80621"/>' +
+        '<polygon fill="#D80621" points="12,3 13,6 15,5 14.5,8 17,7.5 15.8,9.5 16.5,10.5 12.7,10.2 12.7,13 11.3,13 11.3,10.2 7.5,10.5 8.2,9.5 7,7.5 9.5,8 9,5 11,6"/>';
+    },
+    AUD: function () {
+      var dots = [[18, 3], [15, 7], [21, 6.5], [18, 13], [6, 12.5]].map(function (c) { return '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="1" fill="#fff"/>'; }).join('');
+      return '<rect width="24" height="16" fill="#00247D"/><g transform="scale(.5)">' + UJ + '</g>' + dots;
+    }
+  };
+  function flagSvg(code) {
+    var f = FLAGS[code];
+    return f ? '<svg class="flag" viewBox="0 0 24 16" width="24" height="16" aria-hidden="true">' + f() + '</svg>' : '';
+  }
+  var CURRENCIES = [
+    { value: 'USD', label: 'USD', sub: 'US dollar $' }, { value: 'EUR', label: 'EUR', sub: 'Euro \u20ac' },
+    { value: 'GBP', label: 'GBP', sub: 'British pound \u00a3' }, { value: 'INR', label: 'INR', sub: 'Indian rupee \u20b9' },
+    { value: 'CAD', label: 'CAD', sub: 'Canadian dollar $' }, { value: 'AUD', label: 'AUD', sub: 'Australian dollar $' }
+  ];
+  var pickers = [];
+  function closePickers(except) { pickers.forEach(function (p) { if (p !== except) p.close(); }); }
+  function makePicker(sel, items, opts) {
+    opts = opts || {};
+    var wrap = document.createElement('div');
+    wrap.className = 'picker' + (opts.grid ? ' grid' : '') + (opts.right ? ' right' : '');
+    var labelText = sel.getAttribute('aria-label') || (sel.closest('label') ? sel.closest('label').firstChild.textContent.trim() : '');
+    wrap.innerHTML = '<button type="button" class="picker-btn" aria-haspopup="listbox" aria-expanded="false"></button><div class="picker-pop" role="listbox" hidden></div>';
+    sel.classList.add('vh');
+    sel.tabIndex = -1;
+    sel.setAttribute('aria-hidden', 'true');
+    sel.parentNode.insertBefore(wrap, sel.nextSibling);
+    var btn = wrap.firstChild, pop = wrap.lastChild;
+    btn.setAttribute('aria-label', labelText);
+    pop.setAttribute('aria-label', labelText);
+    pop.innerHTML = items.map(function (it) {
+      return '<button type="button" role="option" class="picker-opt" data-v="' + it.value + '" aria-selected="false">' + it.icon +
+        '<span class="po-text"><b>' + esc(it.label) + '</b>' + (it.sub ? '<small>' + esc(it.sub) + '</small>' : '') + '</span></button>';
+    }).join('');
+    var optEls = [].slice.call(pop.querySelectorAll('.picker-opt'));
+    var api = {
+      close: function () { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); },
+      refresh: function () {
+        var v = sel.value;
+        var it = items.filter(function (x) { return x.value === v; })[0] || items[0];
+        btn.innerHTML = it.icon + '<span class="pb-label">' + esc(it.label) + '</span><svg class="icon pb-chev" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
+        optEls.forEach(function (o) { o.setAttribute('aria-selected', String(o.dataset.v === it.value)); });
+      }
+    };
+    function open() {
+      closePickers(api);
+      pop.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+      var cur = optEls.filter(function (o) { return o.getAttribute('aria-selected') === 'true'; })[0] || optEls[0];
+      cur.focus();
+    }
+    function choose(v) {
+      sel.value = v;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+      api.close();
+      btn.focus();
+    }
+    btn.addEventListener('click', function () { if (pop.hidden) open(); else api.close(); });
+    btn.addEventListener('keydown', function (ev) { if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { ev.preventDefault(); open(); } });
+    pop.addEventListener('click', function (ev) { var o = ev.target.closest('.picker-opt'); if (o) choose(o.dataset.v); });
+    pop.addEventListener('keydown', function (ev) {
+      var i = optEls.indexOf(document.activeElement), cols = opts.grid ? 3 : 1, n = -1;
+      if (ev.key === 'Escape') { ev.preventDefault(); api.close(); btn.focus(); return; }
+      if (ev.key === 'Tab') { api.close(); return; }
+      if (ev.key === 'ArrowDown') n = i + cols; else if (ev.key === 'ArrowUp') n = i - cols;
+      else if (ev.key === 'ArrowRight' && opts.grid) n = i + 1; else if (ev.key === 'ArrowLeft' && opts.grid) n = i - 1;
+      else if (ev.key === 'Home') n = 0; else if (ev.key === 'End') n = optEls.length - 1;
+      else return;
+      ev.preventDefault();
+      if (n >= 0 && n < optEls.length) optEls[n].focus();
+    });
+    sel.addEventListener('focus', function () { btn.focus(); });
+    var proto = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+    Object.defineProperty(sel, 'value', { configurable: true, get: function () { return proto.get.call(sel); }, set: function (v) { proto.set.call(sel, v); api.refresh(); } });
+    sel.addEventListener('change', api.refresh);
+    pickers.push(api);
+    api.refresh();
+    return api;
+  }
+  document.addEventListener('pointerdown', function (ev) { if (!ev.target.closest('.picker')) closePickers(); });
+  (function initPickers() {
+    var catSel = $('#fCat');
+    catSel.innerHTML = CATS.map(function (c) { return '<option value="' + c.id + '">' + c.label + '</option>'; }).join('');
+    catSel.value = 'other';
+    makePicker(catSel, CATS.map(function (c) { return { value: c.id, label: c.label, icon: catIcon(c.id) }; }), { grid: true });
+    var cur = CURRENCIES.map(function (c) { return { value: c.value, label: c.label, sub: c.sub, icon: flagSvg(c.value) }; });
+    makePicker($('#gCur'), cur, { right: true });
+    makePicker($('#ngCurrency'), cur, {});
+  })();
+
   function renderHead(g) {
     $('#gName').textContent = g.name;
     $('#gCur').value = g.currency;
@@ -2362,7 +2526,7 @@ function buildReportPdf(rep, num) {
         tag = '<span class="chip-tag pay">Payment</span>';
         meta = fmtDay(dateOf(e));
       } else {
-        title = esc(e.desc);
+        title = '<span class="cat-ico" title="' + esc(catLabel(e.category)) + '">' + catIcon(e.category) + '</span>' + esc(e.desc);
         var label = e.type === 'equal' ? 'Equal \u00b7 ' + Object.keys(e.shares).length : e.type === 'percent' ? 'By %' : 'Exact';
         tag = '<span class="chip-tag">' + label + '</span>';
         meta = esc(payer) + ' paid \u00b7 ' + fmtDay(dateOf(e));
@@ -2690,11 +2854,11 @@ function buildReportPdf(rep, num) {
     if (editing) {
       for (var i = 0; i < g.expenses.length; i++) {
         if (g.expenses[i].id === form.editingId) {
-          g.expenses[i] = Object.assign({}, g.expenses[i], { desc: desc, notes: notes, date: date, amount: total, payer: payer, type: form.type, values: values, shares: r.shares });
+          g.expenses[i] = Object.assign({}, g.expenses[i], { desc: desc, notes: notes, category: $('#fCat').value, date: date, amount: total, payer: payer, type: form.type, values: values, shares: r.shares });
         }
       }
     } else {
-      g.expenses.push({ id: uid(), desc: desc, notes: notes, date: date, amount: total, payer: payer, type: form.type, values: values, shares: r.shares, ts: Date.now(), payment: false });
+      g.expenses.push({ id: uid(), desc: desc, notes: notes, category: $('#fCat').value, date: date, amount: total, payer: payer, type: form.type, values: values, shares: r.shares, ts: Date.now(), payment: false });
     }
     save();
     renderSide(g);
@@ -2771,6 +2935,7 @@ function buildReportPdf(rep, num) {
       $('#fAmt').value = (e.amount / 100).toFixed(2);
       $('#fDate').value = dateOf(e);
       $('#fNotes').value = e.notes || '';
+      $('#fCat').value = catId(e.category);
       $('#fError').textContent = '';
       renderPayer(g, e.payer);
       syncChrome();
@@ -2888,6 +3053,17 @@ function buildReportPdf(rep, num) {
             '" style="height:' + pct + '%"></i></div><span class="col-lab">' + esc(d.label) + '</span></div>';
         }).join('') + '</div></div>';
       }
+      var byCat = {};
+      rep.audit.forEach(function (r) { if (r.kind === 'Expense') byCat[r.category] = (byCat[r.category] || 0) + r.total; });
+      var catRows = Object.keys(byCat).map(function (k) { return { label: k, amount: byCat[k] }; }).sort(function (a, b) { return b.amount - a.amount; });
+      var cmax = catRows.length ? catRows[0].amount : 1;
+      if (catRows.length > 1 || (catRows.length === 1 && catRows[0].label !== 'Other')) {
+        h += '<div class="chart"><h5>Spending by category</h5><p class="sub">Expenses only, not payments.</p><div class="hb">' + catRows.map(function (c) {
+          var w = Math.max(1, Math.round(c.amount / cmax * 100));
+          return '<div class="hb-row"><span class="hb-name">' + esc(c.label) + '</span><div class="hb-bars"><div class="bar-line"><span class="bw"><i class="tipc" tabindex="0" data-tip="' +
+            esc(c.label + ' \u00b7 ' + M(c.amount)) + '" style="width:' + w + '%;background:var(--s1)"></i></span><span class="bv">' + M(c.amount) + '</span></div></div></div>';
+        }).join('') + '</div></div>';
+      }
       h += '</div>';
     }
     h += '</div>';
@@ -2896,7 +3072,7 @@ function buildReportPdf(rep, num) {
     if (!rep.audit.length) {
       h += '<p class="muted">Nothing to audit yet.</p>';
     } else {
-      h += '<div class="tablewrap"><table class="tbl"><thead><tr><th>#</th><th>Date</th><th>Description</th><th>Notes</th><th>Paid by</th><th class="n">Total</th><th>Split</th>' +
+      h += '<div class="tablewrap"><table class="tbl"><thead><tr><th>#</th><th>Date</th><th>Category</th><th>Description</th><th>Notes</th><th>Paid by</th><th class="n">Total</th><th>Split</th>' +
         rep.members.map(function (m) { return '<th class="n">' + esc(m.name) + '</th>'; }).join('') + '<th>Check</th></tr></thead><tbody>';
       var memTot = {};
       var grand = 0;
@@ -2906,12 +3082,12 @@ function buildReportPdf(rep, num) {
           grand += r.total;
           rep.members.forEach(function (m) { memTot[m.id] = (memTot[m.id] || 0) + (r.shares[m.id] || 0); });
         }
-        h += '<tr' + (isPay ? ' class="pay-row"' : '') + '><td>' + r.n + '</td><td>' + esc(r.shortDate) + '</td><td>' + esc(r.desc) + '</td><td class="wrap">' + esc(r.notes) + '</td><td>' + esc(r.payer) +
+        h += '<tr' + (isPay ? ' class="pay-row"' : '') + '><td>' + r.n + '</td><td>' + esc(r.shortDate) + '</td><td>' + esc(r.category) + '</td><td>' + esc(r.desc) + '</td><td class="wrap">' + esc(r.notes) + '</td><td>' + esc(r.payer) +
           '</td><td class="n">' + M(r.total) + '</td><td class="wrap">' + esc(r.method + ': ' + r.detail) + '</td>' +
           rep.members.map(function (m) { return '<td class="n">' + (r.shares[m.id] != null ? M(r.shares[m.id]) : '') + '</td>'; }).join('') +
           (r.diff === 0 ? '<td class="ok-t">Matches</td>' : '<td class="neg-t">Off by ' + M(Math.abs(r.diff)) + '</td>') + '</tr>';
       });
-      h += '</tbody><tfoot><tr><td></td><td></td><td>Expense totals</td><td></td><td></td><td class="n">' + M(grand) + '</td><td></td>' +
+      h += '</tbody><tfoot><tr><td></td><td></td><td></td><td>Expense totals</td><td></td><td></td><td class="n">' + M(grand) + '</td><td></td>' +
         rep.members.map(function (m) { return '<td class="n">' + M(memTot[m.id] || 0) + '</td>'; }).join('') + '<td></td></tr></tfoot></table></div>';
       var ok = rep.checks.sharesMatch && rep.checks.balancesZero;
       h += '<p class="checks ' + (ok ? 'ok' : 'bad') + '">' + (ok
