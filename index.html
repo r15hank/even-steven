@@ -636,6 +636,15 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent);
 .picker.right .picker-pop { min-width: 220px; }
 .po-text small { white-space: nowrap; }
 .picker.grid .picker-pop:not([hidden]) { width: min(100%, 360px); }
+/* export menu: quiet list rows with small coloured file tiles */
+.head-menu-pop.export-pop .btn:not(.ghost):not(.delete-btn) { background: transparent; color: var(--ink); border: 0; border-radius: 10px; min-height: 48px; padding: 6px 10px; font-weight: 500; }
+.head-menu-pop.export-pop .btn:not(.ghost):not(.delete-btn):hover:not(:disabled), .head-menu-pop.export-pop .btn:not(.ghost):not(.delete-btn):focus-visible { background: var(--surface-2); }
+.head-menu-pop.export-pop .btn:disabled { opacity: .45; cursor: default; }
+.export-pop .file-mark { width: 34px; height: 28px; border-radius: 7px; font-size: 10px; letter-spacing: .02em; color: #fff; }
+.export-pop .xlsx-mark { background: #1F8A4C; }
+.export-pop .pdf-mark { background: #D6402B; }
+.export-pop .csv-mark { background: #3B6FD4; }
+.export-pop { min-width: 240px; padding: 6px; }
 /* ===== Apple Human Interface layer: clarity, deference, depth =====
    System type (SF Pro on Apple devices), system colours, grouped inset surfaces,
    segmented controls, translucent materials, 44pt targets, large title, reduced motion. */
